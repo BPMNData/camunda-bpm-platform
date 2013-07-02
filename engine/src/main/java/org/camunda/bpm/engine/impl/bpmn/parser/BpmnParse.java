@@ -118,6 +118,8 @@ import org.camunda.bpm.engine.impl.util.xml.Parse;
 import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
+import de.hpi.uni.potsdam.bpmnToSql.DataObject;
+
 /**
  * Specific parsing of one BPMN 2.0 XML file, created by the {@link BpmnParser}.
  * 
@@ -191,6 +193,23 @@ public class BpmnParse extends Parse {
   protected Map<String, Operation> operations = new HashMap<String, Operation>();
   protected Map<String, SignalDefinition> signals = new HashMap<String, SignalDefinition>();
 
+  //TODO: BPMN_SQL start
+  protected static Map<String, ArrayList<DataObject>> inputData = new HashMap<String, ArrayList<DataObject>>();
+  protected static Map<String, ArrayList<DataObject>> outputData = new HashMap<String, ArrayList<DataObject>>();
+  private Map<String, DataObject> dataObjectMap = new HashMap<String, DataObject>();
+  protected static Map<String, String> scopeInformation = new HashMap<String, String>();
+  
+  public static Map<String, String> getScopeInformation() {
+    return scopeInformation;
+  }
+
+  public static Map<String, ArrayList<DataObject>> getInputData() {
+    return inputData;
+  }
+
+  public static Map<String, ArrayList<DataObject>> getOutputData() {
+    return outputData;
+  }
   // Members
   protected ExpressionManager expressionManager;
   protected List<BpmnParseListener> parseListeners;
@@ -198,6 +217,7 @@ public class BpmnParse extends Parse {
   protected Map<String, String> prefixs = new HashMap<String, String>();
   protected String targetNamespace;
 
+  
   /**
    * Constructor to be called by the {@link BpmnParser}.
    */
@@ -660,7 +680,9 @@ public class BpmnParse extends Parse {
     
     HashMap<String, Element> postponedElements  = new HashMap<String, Element>();
     
+    parseScopeInformation(scopeElement, parentScope);   //TODO: BPMN_SQL
     parseStartEvents(scopeElement, parentScope);
+    parseDataObjects(scopeElement, parentScope);    //TODO: BPMN_SQL  
     parseActivities(scopeElement, parentScope, postponedElements);
     parsePostponedElements(scopeElement, parentScope, postponedElements);
     parseEndEvents(scopeElement, parentScope);
@@ -678,6 +700,56 @@ public class BpmnParse extends Parse {
     IOSpecification ioSpecification = parseIOSpecification(scopeElement.element("ioSpecification"));
     parentScope.setIoSpecification(ioSpecification);
     
+  }
+  
+  //TODO: BPMN_SQL added
+  private void parseScopeInformation(Element parentElement, ScopeImpl scopeElement) {
+    for (Element activityElement : parentElement.elements()) {
+      if (activityElement.getTagName().equals("extensionElements")) {
+        if (activityElement.element("scopeInformation") != null) {
+          scopeInformation.put(parentElement.attribute("id"), activityElement.element("scopeInformation").attribute("caseObject"));
+        }
+      }
+     
+    }
+  }
+
+  // TODO: BPMN_SQL added
+  private void parseDataObjects(Element parentElement, ScopeImpl scopeElement) {
+    for (Element activityElement : parentElement.elements()) {
+      if (activityElement.getTagName().equals("dataObject")) {
+        DataObject dataObj = new DataObject();
+        dataObj.setName(activityElement.attribute("name"));
+ 
+        if(activityElement.attribute("isCollection").equalsIgnoreCase(("true"))) {
+          dataObj.setIsCollection(true);
+        }
+ 
+        Element extension = activityElement.element("extensionElements");
+        dataObj.setPkey(extension.element("pk").getText());
+        dataObj.setPkType(extension.element("pk").attribute("type"));
+ 
+        ArrayList<String> fkList = new ArrayList<String>(); 
+        for (Element fk : extension.elements()) {
+          if(fk.getTagName().equals("fk")) {
+            if(fk.getText().startsWith("*") && fk.getText().endsWith("*")) { //fk starting and ending with * are not in the scope of action
+              //such fks are not needed for the SQL-queries
+            } else if(fk.getText().equalsIgnoreCase("null")) { //means that the specific fk is not yet set, e.g. because it was provided by another organisation
+              fkList.add(null);
+            } else {
+              fkList.add(fk.getText());
+            }
+     
+          }
+        }
+        if(!fkList.isEmpty()) {
+          dataObj.setFkeys(fkList);
+        }
+   
+        dataObj.setState(activityElement.element("dataState").attribute("name"));
+        dataObjectMap.put(activityElement.attribute("id"), dataObj);
+      }
+    }
   }
 
   protected void parsePostponedElements(Element scopeElement, ScopeImpl parentScope, HashMap<String, Element> postponedElements) {
@@ -1094,9 +1166,71 @@ public class BpmnParse extends Parse {
    */
   public void parseActivities(Element parentElement, ScopeImpl scopeElement, HashMap<String, Element> postponedElements) {
     for (Element activityElement : parentElement.elements()) {
+      
       parseActivity(activityElement, parentElement, scopeElement, postponedElements);
+      // TODO: BPMN_SQL start
+      parseDataInput(activityElement);
+      parseDataOutput(activityElement);
+      // TODO: BPMN_SQL end
     }
   }
+  
+//TODO: BPMN_SQL added
+ protected void parseDataInput(Element activityElement){ 
+   //List for saving the input data objects for this activity
+   ArrayList<DataObject> doList = new ArrayList<DataObject>();
+   
+   // check whether dataOutputAssociations exist for this activity
+   for (Element ae : activityElement.elements()) {
+   if (ae.getTagName().equals("dataInputAssociation")) {
+     System.out.println(ae.element("sourceRef").getText());
+     DataObject d =  dataObjectMap.get(ae.element("sourceRef").getText()); //get the respective data object of this dataInputAssociation
+     
+      //check whether any arc expressions exist
+     for (Element doAssElement : ae.elements()) {      
+         if (doAssElement.getTagName().equals("extensionElements")) { 
+           if (doAssElement.element("regExpression") != null) {
+             d.setRegExpression(doAssElement.element("regExpression").getText());  //update data object with content of arc expression
+
+             }
+         }
+           
+       }
+       doList.add(d);
+     }
+   }
+   if(!doList.isEmpty()) {
+     inputData.put(activityElement.attribute("id"),doList);  
+   }
+ }
+
+  // TODO: BPMN_SQL added
+  protected void parseDataOutput(Element activityElement){
+    //List for saving the output data objects for this activity
+    ArrayList<DataObject> doList = new ArrayList<DataObject>();   
+     
+    // check whether dataOutputAssociations exist for this activity
+    for (Element ae : activityElement.elements()) {
+      if (ae.getTagName().equals("dataOutputAssociation")) {    
+        DataObject d =  dataObjectMap.get(ae.element("targetRef").getText()); //get the respective data object of this dataOutAssociation
+         
+      // check whether any arc expressions exist
+      for (Element doAssElement : ae.elements()) {      
+        if (doAssElement.getTagName().equals("extensionElements")) { 
+          if (doAssElement.element("processVariable") != null) {
+            d.setProcessVariable(doAssElement.element("processVariable").getText());  //update data object with content of arc expression
+  
+            }
+          }
+           
+        }
+        doList.add(d);
+      }
+    }
+    if(!doList.isEmpty()) {
+      outputData.put(activityElement.attribute("id"),doList); //Activity with its List of output data objects will be added to the outputDataMap
+    }
+ }
 
   protected void parseActivity(Element activityElement, Element parentElement, ScopeImpl scopeElement, HashMap<String, Element> postponedElements) {
     ActivityImpl activity = null;
@@ -2714,6 +2848,10 @@ public class BpmnParse extends Parse {
    *          The current scope on which the subprocess is defined.
    */
   public ActivityImpl parseSubProcess(Element subProcessElement, ScopeImpl scope) {
+    // TODO: BPMN_SQL start
+    parseScopeInformation(subProcessElement, scope);
+    // TODO: BPMN_SQL end
+    
     ActivityImpl activity = createActivityOnScope(subProcessElement, scope);
     
     activity.setAsync(isAsync(subProcessElement));

@@ -13,20 +13,24 @@
 
 package de.hpi.uni.potsdam.test.bpmnToSql;
 
-import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 import org.camunda.bpm.engine.test.Deployment;
+
+import de.hpi.uni.potsdam.test.bpmnToSql.util.AbstractBpmnDataTestCase;
+import de.hpi.uni.potsdam.test.bpmnToSql.util.DatabaseSetup;
 
 
 /**
  * @author 
  */
-public class SqlDerivation extends PluggableProcessEngineTestCase {
+public class SqlDerivation extends AbstractBpmnDataTestCase {
 
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
   @Deployment
   public void testOneToN() {
     runtimeService.startProcessInstanceByKey("oneToN");
   }
   
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
   @Deployment
   public void testMToN() {
     runtimeService.startProcessInstanceByKey("mToN");

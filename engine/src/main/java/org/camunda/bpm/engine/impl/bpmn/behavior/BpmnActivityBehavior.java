@@ -26,6 +26,8 @@ import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.runtime.InterpretableExecution;
 
+import de.hpi.uni.potsdam.bpmnToSql.DataOutputHandler;
+
 /**
  * Helper class for implementing BPMN 2.0 activities, offering convenience
  * methods specific to BPMN 2.0.
@@ -83,6 +85,8 @@ public class BpmnActivityBehavior {
     if (log.isLoggable(Level.FINE)) {
       log.fine("Leaving activity '" + execution.getActivity().getId() + "'");
     }
+    
+    DataOutputHandler.updateOutputs(execution);
 
     String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");
     List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>();

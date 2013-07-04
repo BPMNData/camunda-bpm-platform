@@ -57,6 +57,8 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
+import de.hpi.uni.potsdam.bpmnToSql.job.AsyncDataInputJobHandler;
+
 
 
 /**
@@ -548,6 +550,11 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
   
   public void performOperation(AtomicOperation executionOperation) {
+    if (executionOperation == AtomicOperation.TRANSITION_CREATE_SCOPE) {
+      scheduleDataInputOperationAsync();
+      return;
+    }
+    
     if(executionOperation.isAsync(this)) {
       scheduleAtomicOperationAsync(executionOperation);
     } else {
@@ -568,6 +575,18 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     message.setJobHandlerType(AsyncContinuationJobHandler.TYPE);
     // At the moment, only AtomicOperationTransitionCreateScope can be performed asynchronously,
     // so there is no need to pass it to the handler
+
+    Context
+      .getCommandContext()
+      .getJobManager()
+      .send(message);
+  }
+  
+  protected void scheduleDataInputOperationAsync() {
+    MessageEntity message = new MessageEntity();
+    message.setExecution(this);
+    message.setExclusive(true);
+    message.setJobHandlerType(AsyncDataInputJobHandler.TYPE);
 
     Context
       .getCommandContext()
@@ -1530,4 +1549,20 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return activityName;
   }
   
+  //TODO: BPMN_SQL added
+  private String dataObjectId = null;
+
+  // TODO: BPMN_SQL added
+  public String getDataObjectID() {
+    if (dataObjectId != null) return dataObjectId;
+    else {
+      if (getParent() != null) return getParent().getDataObjectID();
+      else return getId();
+    }
+  }
+ 
+  // TODO: BPMN_SQL added
+  public void setDataObjectID(String id) {
+    dataObjectId = id;
+  }
 }

@@ -947,4 +947,21 @@ public class ExecutionImpl implements
   public void setActivityInstanceId(String activityInstanceId) {
     this.activityInstanceId = activityInstanceId;
   }
+
+  //TODO: BPMN_SQL added
+  private String dataObjectId = null;
+
+  // TODO: BPMN_SQL added
+  public String getDataObjectID() {
+    if (dataObjectId != null) return dataObjectId;
+    else {
+      if (getParent() != null) return getParent().getDataObjectID();
+      else return getId();
+    }
+  }
+ 
+  // TODO: BPMN_SQL added
+  public void setDataObjectID(String id) {
+    dataObjectId = id;
+  }
 }

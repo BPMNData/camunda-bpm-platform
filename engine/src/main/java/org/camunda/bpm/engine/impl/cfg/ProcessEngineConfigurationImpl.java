@@ -165,6 +165,8 @@ import org.camunda.bpm.engine.impl.variable.StringType;
 import org.camunda.bpm.engine.impl.variable.VariableType;
 import org.camunda.bpm.engine.impl.variable.VariableTypes;
 
+import de.hpi.uni.potsdam.bpmnToSql.job.AsyncDataInputJobHandler;
+
 
 /**
  * @author Tom Baeyens
@@ -775,6 +777,9 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     
     AsyncContinuationJobHandler asyncContinuationJobHandler = new AsyncContinuationJobHandler();
     jobHandlers.put(asyncContinuationJobHandler.getType(), asyncContinuationJobHandler);
+    
+    AsyncDataInputJobHandler asyncDataInputJobHandler = new AsyncDataInputJobHandler();
+    jobHandlers.put(asyncDataInputJobHandler.getType(), asyncDataInputJobHandler);
     
     ProcessEventJobHandler processEventJobHandler = new ProcessEventJobHandler();
     jobHandlers.put(processEventJobHandler.getType(), processEventJobHandler);

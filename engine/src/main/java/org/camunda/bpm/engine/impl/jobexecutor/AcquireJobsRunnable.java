@@ -146,7 +146,7 @@ public class AcquireJobsRunnable implements Runnable {
       }
   }
 
-  public void jobWasAdded() {    
+  public void jobWasAdded() {
     isJobAdded = true;
     if(isWaiting.compareAndSet(true, false)) { 
       // ensures we only notify once

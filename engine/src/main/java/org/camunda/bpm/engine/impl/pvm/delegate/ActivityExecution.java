@@ -160,4 +160,6 @@ public interface ActivityExecution extends DelegateExecution {
    */
   void destroyScope(String string);
   
+  String getDataObjectID();
+  
 }

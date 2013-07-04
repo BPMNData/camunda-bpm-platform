@@ -16,6 +16,8 @@ package de.hpi.uni.potsdam.test.bpmnToSql;
 import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 import org.camunda.bpm.engine.test.Deployment;
 
+import de.hpi.uni.potsdam.test.bpmnToSql.util.DatabaseSetup;
+
 
 /**
  * @author 
@@ -27,8 +29,10 @@ public class TestProcess extends PluggableProcessEngineTestCase {
     //runtimeService.startProcessInstanceByKey("testProcess");
   }
   
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
   @Deployment
   public void testMn() {
 	    runtimeService.startProcessInstanceByKey("mn");
+	    waitForJobExecutorToProcessAllJobs(5000L, 500);
 	  }
 }

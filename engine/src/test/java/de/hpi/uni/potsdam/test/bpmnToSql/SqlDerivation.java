@@ -13,6 +13,9 @@
 
 package de.hpi.uni.potsdam.test.bpmnToSql;
 
+import java.util.List;
+
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.test.Deployment;
 
 import de.hpi.uni.potsdam.test.bpmnToSql.util.AbstractBpmnDataTestCase;
@@ -24,15 +27,36 @@ import de.hpi.uni.potsdam.test.bpmnToSql.util.DatabaseSetup;
  */
 public class SqlDerivation extends AbstractBpmnDataTestCase {
 
+  /**
+   * FIXME: currently in error state due to mismatching db setup?!
+   */
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
   @Deployment
   public void testOneToN() {
     runtimeService.startProcessInstanceByKey("oneToN");
+    
+    waitForJobExecutorToProcessAllJobs(6000L, 500);
   }
   
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
   @Deployment
   public void testMToN() {
     runtimeService.startProcessInstanceByKey("mToN");
+    
+    waitForJobExecutorToProcessAllJobs(6000L, 500);
+  }
+  
+  public boolean areJobsAvailable() {
+    List<Job> jobs = managementService
+        .createJobQuery()
+        .executable()
+        .list();
+    
+    for (Job job : jobs) {
+      System.out.println("Execution " + job.getExecutionId());
+      System.out.println("Retries: " + job.getRetries());
+    }
+    
+    return super.areJobsAvailable();
   }
 }

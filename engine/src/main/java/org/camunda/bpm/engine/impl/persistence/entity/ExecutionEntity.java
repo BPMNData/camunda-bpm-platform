@@ -551,7 +551,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   
   public void performOperation(AtomicOperation executionOperation) {
     if (executionOperation == AtomicOperation.TRANSITION_CREATE_SCOPE 
-        && Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+        && Context.getProcessEngineConfiguration().isBpmnDataAware()
+        && activityHasDataInputs()) {
       scheduleDataInputOperationAsync();
       return;
     }
@@ -561,6 +562,10 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     } else {
       performOperationSync(executionOperation);
     }    
+  }
+  
+  private boolean activityHasDataInputs() {
+    return BpmnParse.getInputData().containsKey(this.getActivity().getId());
   }
   
   protected void performOperationSync(AtomicOperation executionOperation) {

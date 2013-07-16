@@ -14,7 +14,10 @@ package org.camunda.bpm.engine.impl.pvm.runtime;
 
 import java.util.logging.Logger;
 
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
+
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.CaseObjectUpdater;
 
 
 /**
@@ -51,6 +54,8 @@ public class AtomicOperationTransitionCreateScope implements AtomicOperation {
       propagatingExecution = execution;
     }
     
+    CaseObjectUpdater coUpdater = new CaseObjectUpdater();
+    coUpdater.updateExecution((ExecutionEntity) propagatingExecution);
     propagatingExecution.performOperation(AtomicOperation.TRANSITION_NOTIFY_LISTENER_START);
   }
 }

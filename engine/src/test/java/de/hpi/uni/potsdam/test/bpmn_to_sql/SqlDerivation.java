@@ -15,8 +15,10 @@ package de.hpi.uni.potsdam.test.bpmn_to_sql;
 
 import java.util.List;
 
+import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.test.Deployment;
+import org.junit.Assert;
 
 import de.hpi.uni.potsdam.test.bpmn_to_sql.util.AbstractBpmnDataTestCase;
 import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
@@ -35,7 +37,43 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   public void testOneToN() {
     runtimeService.startProcessInstanceByKey("oneToN");
     
-    waitForJobExecutorToProcessAllJobs(6000L, 500);
+    // activity A
+    assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB");
+    
+    // B
+    assertAndRunDataInputJobForActivity("B__sid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+    
+    // C
+    assertAndRunDataInputJobForActivity("C__sid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74");
+    
+    // sub process 1
+    assertAndRunDataInputJobForActivity("SP__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D");
+    
+    // sub process 1 -> D
+    assertAndRunDataInputJobForActivity("D__gid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+
+    // sub process 1 -> G
+    assertAndRunDataInputJobForActivity("G__gid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74");
+    
+    // H
+    assertAndRunDataInputJobForActivity("H__vsid-4C30A198-36BC-4D97-975F-08043A4CCB6E");
+    
+    // subprocess 2
+    assertAndRunDataInputJobForActivity("SP-2__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D");
+    
+    
+    //sub process 2 -> I
+    assertAndRunDataInputJobForActivity("I__shgid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+    
+    
+    // E
+    assertAndRunDataInputJobForActivity("E__sid-4C30A198-36BC-4D97-975F-08043A4CCB6E");
+    
+    // F
+    assertAndRunDataInputJobForActivity("F__sid-9B5407DB-50EE-4BC7-B6E3-B47E2B25BA9E");
+
+    Assert.assertEquals("The process instance should have ended.", 0, runtimeService.createProcessInstanceQuery().count());
+    Assert.assertEquals("There should be no further jobs in the database", 0, managementService.createJobQuery().count());
   }
   
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")

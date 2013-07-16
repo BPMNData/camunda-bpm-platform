@@ -81,7 +81,26 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   public void testMToN() {
     runtimeService.startProcessInstanceByKey("mToN");
     
-    waitForJobExecutorToProcessAllJobs(6000L, 500);
+    // A
+    assertAndRunDataInputJobForActivity("A__sid-66885BC6-9B96-45C4-B658-5A7E8EB3E0DA", 1, 1);
+    
+    // subprocess1
+    assertAndRunDataInputJobForActivity("SP1__sid-8B31A8CE-F0F8-4D27-839A-2D3188DF398E", 1, 1);
+    
+    // subprocess1 -> B
+    assertAndRunDataInputJobForActivity("B__sid-BE0561FF-F6E7-48CC-BAD2-83554CEF4CA3", 2, 2);
+    
+    // C
+    assertAndRunDataInputJobForActivity("C__sid-A10E274D-5564-4CCF-9BB6-40E096CC9DBB", 1, 1);
+    
+    // subprocess2
+    assertAndRunDataInputJobForActivity("SP2__sid-584DE683-3353-4834-9A19-05F4B314EB31", 1, 1);
+    
+    // subprocess2 -> D
+    assertAndRunDataInputJobForActivity("D__sid-CEB030D0-3FC4-43F6-9B48-F597A3959E52", 5, 5);
+    
+    Assert.assertEquals("The process instance should have ended.", 0, runtimeService.createProcessInstanceQuery().count());
+    Assert.assertEquals("There should be no further jobs in the database", 0, managementService.createJobQuery().count());
   }
   
   public boolean areJobsAvailable() {

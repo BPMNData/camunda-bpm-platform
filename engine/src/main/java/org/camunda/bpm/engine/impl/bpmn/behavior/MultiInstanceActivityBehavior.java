@@ -35,6 +35,8 @@ import org.camunda.bpm.engine.impl.pvm.delegate.CompositeActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.delegate.SubProcessActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.CaseObjectUpdater;
+
 
 /**
  * Implementation of the multi-instance functionality as described in the BPMN 2.0 spec.
@@ -84,6 +86,10 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   
   public void execute(ActivityExecution execution) throws Exception {
     if (getLocalLoopVariable(execution, LOOP_COUNTER) == null) {
+      if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+        CaseObjectUpdater updater = new CaseObjectUpdater();
+        updater.updateMICaseObjectCollection(execution);
+      }
       try {
         createInstances(execution);
       } catch (BpmnError error) {
@@ -139,6 +145,29 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
       throw new ProcessEngineException("Couldn't resolve collection expression nor variable reference");
     }
     return nrOfInstances;
+  }
+  
+  protected List<String> resolveCaseObjectIdentifiers(ActivityExecution execution) {
+    List<String> result = null;
+    if (collectionExpression != null) {
+      Object obj = collectionExpression.getValue(execution);
+      try {
+        result = (List<String>) obj;
+      } catch (ClassCastException e) {
+        throw new ProcessEngineException("Case Object list " + collectionVariable+"' is not a String Collection", e);
+      }
+    } else if(collectionVariable != null) {
+      Object obj = execution.getVariable(collectionVariable);
+      try {
+        result = (List<String>) obj;
+      } catch (ClassCastException e) {
+        throw new ProcessEngineException("Case Object list " + collectionVariable+"' is not a String Collection", e);
+      }
+    } else {
+      throw new ProcessEngineException("Cannot execute MI subprocess: no case object collection supplied");
+    }
+    
+    return result;
   }
   
   @SuppressWarnings("rawtypes")

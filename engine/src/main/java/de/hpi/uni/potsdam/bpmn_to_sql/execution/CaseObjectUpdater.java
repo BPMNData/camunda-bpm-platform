@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
@@ -23,7 +23,7 @@ public class CaseObjectUpdater {
   
   private static Logger log = Logger.getLogger(AsyncDataInputJobHandler.class.getName());
 
-  public void updateExecution(ExecutionEntity execution) {
+  public void updateExecution(ActivityExecution execution) {
     String dataObjectID = execution.getEffectiveCaseObjectID();
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
 
@@ -34,6 +34,10 @@ public class CaseObjectUpdater {
     if (execution.isScope() && activity.getProperty("type").equals("subProcess")) {
       DataObject dataObj = new DataObject();
       ArrayList<DataObject> dataObjectList = BpmnParse.getInputData().get(activity.getId());
+      if (dataObjectList == null) {
+        return;
+      }
+      
       for (DataObject dataObject : dataObjectList) {
         if (dataObject.getName().equalsIgnoreCase(BpmnParse.getScopeInformation().get(activity.getId()))) {
           dataObj = dataObject; // the dataObj is selected which has the same
@@ -88,6 +92,36 @@ public class CaseObjectUpdater {
       }
     }
   }
+  
+  public void updateMICaseObjectCollection(ActivityExecution execution) {
+    String dataObjectID = execution.getEffectiveCaseObjectID();
+    ActivityImpl activity = (ActivityImpl) execution.getActivity();
+    
+    DataObject dataObj = new DataObject();
+    ArrayList<DataObject> dataObjectList = BpmnParse.getInputData().get(activity.getId());
+    if (dataObjectList == null) {
+      return;
+    }
+    
+    for (DataObject dataObject : dataObjectList) {
+      if (dataObject.getName().equalsIgnoreCase(BpmnParse.getScopeInformation().get(activity.getId()))) {
+        dataObj = dataObject; // the dataObj is selected which has the same
+                              // name as the caseObj
+        break;
+      }
+    }
+    
+    String query = new String();
+    // create query to select the list of PKs of the scopeObject for that
+    // process instance
+    query = "SELECT `" + dataObj.getPkey() + "` FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` = \"" + dataObjectID + "\"";
+    System.out.println(query);
+    ArrayList<String> miList = dbConnection3(query);
+    
+    execution.setVariable(dataObj.getName(), miList);
+    execution.setCaseObjectID(miList.get(0));
+  }
+  
 
   // TODO: BPMN_SQL added
   public ArrayList<String> dbConnection3(String query) {

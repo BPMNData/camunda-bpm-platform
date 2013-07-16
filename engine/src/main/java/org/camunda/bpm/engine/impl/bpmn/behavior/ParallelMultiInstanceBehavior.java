@@ -13,10 +13,12 @@
 package org.camunda.bpm.engine.impl.bpmn.behavior;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
@@ -36,9 +38,17 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
    * Handles the parallel case of spawning the instances.
    * Will create child executions accordingly for every instance needed.
    */
-   protected void createInstances(ActivityExecution execution) throws Exception {
-     
-    int nrOfInstances = resolveNrOfInstances(execution);
+  protected void createInstances(ActivityExecution execution) throws Exception {
+    
+    List<String> caseObjectIdentifiers = null;
+    int nrOfInstances = 0;
+    if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+      caseObjectIdentifiers = resolveCaseObjectIdentifiers(execution);
+      nrOfInstances = caseObjectIdentifiers.size();
+    } else {
+      nrOfInstances = resolveNrOfInstances(execution);
+    }
+    
     if (nrOfInstances <= 0) {
       throw new ProcessEngineException("Invalid number of instances: must be positive integer value" 
               + ", but was " + nrOfInstances);
@@ -56,7 +66,6 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
       concurrentExecution.setActive(true);
       concurrentExecution.setConcurrent(true);
       concurrentExecution.setScope(false);
-
       
       // In case of an embedded subprocess, and extra child execution is required
       // Otherwise, all child executions would end up under the same parent,
@@ -70,6 +79,10 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
         extraScopedExecution.setScope(true);
         concurrentExecution = extraScopedExecution;
       } 
+      
+      if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+        concurrentExecution.setCaseObjectID(caseObjectIdentifiers.get(loopCounter));
+      }
       
       concurrentExecutions.add(concurrentExecution);
       logLoopDetails(concurrentExecution, "initialized", loopCounter, 0, nrOfInstances, nrOfInstances);

@@ -166,4 +166,6 @@ public interface ActivityExecution extends DelegateExecution {
    */
   String getEffectiveCaseObjectID();
   
+  void setCaseObjectID(String caseObjectId);
+  
 }

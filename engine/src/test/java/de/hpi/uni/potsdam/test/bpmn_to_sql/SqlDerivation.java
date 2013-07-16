@@ -38,39 +38,39 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
     runtimeService.startProcessInstanceByKey("oneToN");
     
     // activity A
-    assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB");
+    assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB", 1, 1);
     
     // B
-    assertAndRunDataInputJobForActivity("B__sid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+    assertAndRunDataInputJobForActivity("B__sid-689E0F52-A9A5-4826-BCC8-640BB31B579D", 1, 1);
     
     // C
-    assertAndRunDataInputJobForActivity("C__sid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74");
+    assertAndRunDataInputJobForActivity("C__sid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74", 1, 1);
     
     // sub process 1
-    assertAndRunDataInputJobForActivity("SP__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D");
+    assertAndRunDataInputJobForActivity("SP__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D", 1, 1);
     
     // sub process 1 -> D
-    assertAndRunDataInputJobForActivity("D__gid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+    assertAndRunDataInputJobForActivity("D__gid-689E0F52-A9A5-4826-BCC8-640BB31B579D", 1, 1);
 
     // sub process 1 -> G
-    assertAndRunDataInputJobForActivity("G__gid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74");
+    assertAndRunDataInputJobForActivity("G__gid-3A2CEE9F-F57C-4305-B988-EFF65ED77A74", 1, 1);
     
     // H
-    assertAndRunDataInputJobForActivity("H__vsid-4C30A198-36BC-4D97-975F-08043A4CCB6E");
+    assertAndRunDataInputJobForActivity("H__vsid-4C30A198-36BC-4D97-975F-08043A4CCB6E", 1, 1);
     
     // subprocess 2
-    assertAndRunDataInputJobForActivity("SP-2__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D");
+    assertAndRunDataInputJobForActivity("SP-2__sid-D9CCBBEC-5F65-4B6E-9C97-4E9E6C656D4D", 1, 1);
     
     
     //sub process 2 -> I
-    assertAndRunDataInputJobForActivity("I__shgid-689E0F52-A9A5-4826-BCC8-640BB31B579D");
+    assertAndRunDataInputJobForActivity("I__shgid-689E0F52-A9A5-4826-BCC8-640BB31B579D", 5, 5);
     
     
     // E
-    assertAndRunDataInputJobForActivity("E__sid-4C30A198-36BC-4D97-975F-08043A4CCB6E");
+    assertAndRunDataInputJobForActivity("E__sid-4C30A198-36BC-4D97-975F-08043A4CCB6E", 1, 1);
     
     // F
-    assertAndRunDataInputJobForActivity("F__sid-9B5407DB-50EE-4BC7-B6E3-B47E2B25BA9E");
+    assertAndRunDataInputJobForActivity("F__sid-9B5407DB-50EE-4BC7-B6E3-B47E2B25BA9E", 1, 1);
 
     Assert.assertEquals("The process instance should have ended.", 0, runtimeService.createProcessInstanceQuery().count());
     Assert.assertEquals("There should be no further jobs in the database", 0, managementService.createJobQuery().count());

@@ -22,6 +22,8 @@ import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.delegate.CompositeActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.CaseObjectUpdater;
+
 
 /**
  * Implementation of the BPMN 2.0 subprocess (formally known as 'embedded' subprocess):
@@ -32,6 +34,12 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 public class SubProcessActivityBehavior extends AbstractBpmnActivityBehavior implements CompositeActivityBehavior {
   
   public void execute(ActivityExecution execution) throws Exception {
+
+    if (execution.isScope() && ((ExecutionEntity) execution).getCaseObjectId() == null) {
+      CaseObjectUpdater coUpdater = new CaseObjectUpdater();
+      coUpdater.updateMICaseObjectCollection(execution);
+    }
+    
     PvmActivity activity = execution.getActivity();
     ActivityImpl initialActivity = (ActivityImpl) activity.getProperty(BpmnParse.PROPERTYNAME_INITIAL);
     

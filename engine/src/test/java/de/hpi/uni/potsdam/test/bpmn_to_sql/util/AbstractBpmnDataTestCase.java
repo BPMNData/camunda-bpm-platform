@@ -49,13 +49,28 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
     SqlTestHelper.sqlScriptDatabaseSetUp(getClass(), getName());
   }
   
-  protected void assertAndRunDataInputJobForActivity(String activityId) {
-    Execution execution = runtimeService.createExecutionQuery()
-        .activityId(activityId).singleResult();
+  /**
+   * Asserts for the given activity, that <code>numExistingInstances</code> of it exist in the database (i.e. executions waiting in that activity)
+   * and subsequently executes <code>numInstancesToExecute</code> of these.
+   * @param activityId
+   * @param numInstancesToExecute
+   * @param numExistingInstances
+   */
+  protected void assertAndRunDataInputJobForActivity(String activityId, int numInstancesToExecute, int numExistingInstances) {
+    Assert.assertEquals(numExistingInstances, runtimeService.createExecutionQuery().activityId(activityId).count());
     
-    Assert.assertNotNull("There is one execution waiting in the activity " + activityId, execution);
+    List<Execution> executions = runtimeService.createExecutionQuery()
+        .activityId(activityId).list();
     
-    Job currentInputDataJob = managementService.createJobQuery().executionId(execution.getId()).singleResult();
-    managementService.executeJob(currentInputDataJob.getId());
+    Assert.assertEquals("There number of waiting executions doesn't match for activity " + activityId, numExistingInstances, executions.size());
+    
+    List<Execution> executionsToBeProcessed = executions.subList(0, numInstancesToExecute);
+    
+    for (Execution execution : executionsToBeProcessed) {
+      Job currentInputDataJob = managementService.createJobQuery().executionId(execution.getId()).singleResult();
+      managementService.executeJob(currentInputDataJob.getId());
+    }
+    
   }
+  
 }

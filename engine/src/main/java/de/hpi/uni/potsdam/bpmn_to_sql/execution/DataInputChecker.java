@@ -28,7 +28,7 @@ public class DataInputChecker {
   }
   
   public boolean checkDataInput(ExecutionEntity execution) {
-    if (BpmnParse.getInputData().containsKey(execution.getActivity().getId())) {
+    if (!BpmnParse.getInputData().containsKey(execution.getActivity().getId())) {
       return true;
     }
 

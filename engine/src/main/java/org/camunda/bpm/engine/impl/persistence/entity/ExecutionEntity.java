@@ -550,7 +550,8 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
   
   public void performOperation(AtomicOperation executionOperation) {
-    if (executionOperation == AtomicOperation.TRANSITION_CREATE_SCOPE) {
+    if (executionOperation == AtomicOperation.TRANSITION_CREATE_SCOPE 
+        && Context.getProcessEngineConfiguration().isBpmnDataAware()) {
       scheduleDataInputOperationAsync();
       return;
     }

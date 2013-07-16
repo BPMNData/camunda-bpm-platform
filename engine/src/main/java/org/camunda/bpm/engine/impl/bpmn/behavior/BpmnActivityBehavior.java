@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.Condition;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.runtime.InterpretableExecution;
@@ -86,7 +87,9 @@ public class BpmnActivityBehavior {
       log.fine("Leaving activity '" + execution.getActivity().getId() + "'");
     }
     
-    DataOutputHandler.updateOutputs(execution);
+    if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+      DataOutputHandler.updateOutputs(execution);
+    }
 
     String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");
     List<PvmTransition> transitionsToTake = new ArrayList<PvmTransition>();

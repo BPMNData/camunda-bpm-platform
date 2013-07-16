@@ -320,6 +320,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected ProcessApplicationManager processApplicationManager;
   
   protected CorrelationHandler correlationHandler;
+  
+  protected boolean isBpmnDataAware = false;
     
   // buildProcessEngine ///////////////////////////////////////////////////////
   
@@ -1827,4 +1829,12 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     this.customIncidentHandlers = customIncidentHandlers;
   }
   
+  public boolean isBpmnDataAware() {
+    return isBpmnDataAware;
+  }
+
+  public ProcessEngineConfigurationImpl setBpmnDataAware(boolean isBpmnDataAware) {
+    this.isBpmnDataAware = isBpmnDataAware;
+    return this;
+  }
 }

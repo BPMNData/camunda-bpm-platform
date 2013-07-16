@@ -81,7 +81,7 @@
 			<script>numberOfItems2 = "5"</script>
 		</scriptTask>
 		
-		<serviceTask id="C2__sid-A10E274D-5564-4CCF-9BB6-40E096CC9DBB" name="C2" activiti:class="de.hpi.uni.potsdam.test.bpmnToSql.MappingMItoMO">
+		<serviceTask id="C2__sid-A10E274D-5564-4CCF-9BB6-40E096CC9DBB" name="C2" activiti:class="de.hpi.uni.potsdam.test.bpmn_to_sql.MappingMItoMO">
 		</serviceTask>
 		
 		<subProcess completionQuantity="1" id="SP2__sid-584DE683-3353-4834-9A19-05F4B314EB31" isForCompensation="false" startQuantity="1" triggeredByEvent="false">
@@ -98,7 +98,7 @@
 			</dataOutputAssociation>-->
 			<multiInstanceLoopCharacteristics id="sid-a9b4da82-727f-4cf1-8867-19094821420f" isSequential="false" activiti:collection="Material Order" activiti:elementVariable="moid"></multiInstanceLoopCharacteristics>
 			<startEvent id="SE__SP2__sid-A606A453-A343-4905-9ACC-47A57AEB1B1C"></startEvent>
-			<serviceTask id="D__sid-CEB030D0-3FC4-43F6-9B48-F597A3959E52" name="D" activiti:class="de.hpi.uni.potsdam.test.bpmnToSql.QueryProductDB">
+			<serviceTask id="D__sid-CEB030D0-3FC4-43F6-9B48-F597A3959E52" name="D" activiti:class="de.hpi.uni.potsdam.test.bpmn_to_sql.QueryProductDB">
 				<dataInputAssociation id="sid-A65B9211-CD6F-43F9-B11E-C1E35F4F4663">
 					<sourceRef>sid-A1F8CE03-E8FA-4B09-A383-1DEF61A4F874</sourceRef>
 					<targetRef>D__sid-CEB030D0-3FC4-43F6-9B48-F597A3959E52</targetRef>

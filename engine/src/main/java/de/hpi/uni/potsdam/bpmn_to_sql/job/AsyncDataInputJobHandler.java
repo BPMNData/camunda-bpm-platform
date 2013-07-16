@@ -11,14 +11,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.DataInputChecker;
-import de.hpi.uni.potsdam.bpmn_to_sql.DataInputUnavailableException;
 import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputChecker;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputUnavailableException;
 
 public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
 
@@ -34,9 +35,8 @@ public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
   @Override
   public void execute(String configuration, ExecutionEntity execution, CommandContext commandContext) {
 
-    System.out.println("Running job");
-    
-    if (DataInputChecker.checkDataInput(execution)) {
+    DataInputChecker dbInputChecker = new DataInputChecker(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    if (dbInputChecker.checkDataInput(execution)) {
       updateExecution(execution);
     } else {
       throw new DataInputUnavailableException("Data input for activity " + execution.getActivityId() + " unavailable.");

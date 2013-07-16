@@ -29,7 +29,7 @@ public class TestProcess extends PluggableProcessEngineTestCase {
     //runtimeService.startProcessInstanceByKey("testProcess");
   }
   
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testMn() {
 	    runtimeService.startProcessInstanceByKey("mn");

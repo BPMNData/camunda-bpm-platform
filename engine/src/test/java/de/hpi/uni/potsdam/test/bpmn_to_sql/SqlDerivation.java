@@ -30,7 +30,7 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   /**
    * FIXME: currently in error state due to mismatching db setup?!
    */
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testOneToN() {
     runtimeService.startProcessInstanceByKey("oneToN");
@@ -38,7 +38,7 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
     waitForJobExecutorToProcessAllJobs(6000L, 500);
   }
   
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmnToSql/testdb.sql")
+  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testMToN() {
     runtimeService.startProcessInstanceByKey("mToN");

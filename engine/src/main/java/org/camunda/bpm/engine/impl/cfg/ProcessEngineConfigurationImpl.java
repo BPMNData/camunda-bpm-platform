@@ -165,6 +165,7 @@ import org.camunda.bpm.engine.impl.variable.StringType;
 import org.camunda.bpm.engine.impl.variable.VariableType;
 import org.camunda.bpm.engine.impl.variable.VariableTypes;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
 
 
@@ -322,6 +323,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected CorrelationHandler correlationHandler;
   
   protected boolean isBpmnDataAware = false;
+  
+  protected BpmnDataConfiguration bpmnDataConfiguration;
     
   // buildProcessEngine ///////////////////////////////////////////////////////
   
@@ -360,6 +363,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initProcessApplicationManager();
     initCorrelationHandler();
     initIncidentHandlers();
+    
+    if (isBpmnDataAware) {
+      initBpmnDataConfiguration();
+    }
   }
 
   // failedJobCommandFactory ////////////////////////////////////////////////////////
@@ -1028,6 +1035,13 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       correlationHandler = new DefaultCorrelationHandler();
     }
     
+  }
+  
+  // BPMN Data
+  protected void initBpmnDataConfiguration() {
+    if (bpmnDataConfiguration == null) {
+      bpmnDataConfiguration = new BpmnDataConfiguration();
+    }
   }
 
   // getters and setters //////////////////////////////////////////////////////
@@ -1832,9 +1846,18 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   public boolean isBpmnDataAware() {
     return isBpmnDataAware;
   }
-
+  
   public ProcessEngineConfigurationImpl setBpmnDataAware(boolean isBpmnDataAware) {
     this.isBpmnDataAware = isBpmnDataAware;
+    return this;
+  }
+  
+  public BpmnDataConfiguration getBpmnDataConfiguration() {
+    return bpmnDataConfiguration;
+  }
+  
+  public ProcessEngineConfigurationImpl setBpmnDataConfiguration(BpmnDataConfiguration bpmnDataConfiguration) {
+    this.bpmnDataConfiguration = bpmnDataConfiguration;
     return this;
   }
 }

@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.bpmn_to_sql;
+package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,11 +14,20 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+
 public class DataInputChecker {
 
   private static Logger log = Logger.getLogger(AtomicOperationActivityExecute.class.getName());
 
-  public static boolean checkDataInput(ExecutionEntity execution) {
+  protected BpmnDataConfiguration configuration;
+  
+  public DataInputChecker(BpmnDataConfiguration configuration) {
+    this.configuration = configuration;
+  }
+  
+  public boolean checkDataInput(ExecutionEntity execution) {
     if (BpmnParse.getInputData().containsKey(execution.getActivity().getId())) {
       return true;
     }
@@ -32,7 +41,7 @@ public class DataInputChecker {
     return isInputDataAvailable(activityId, activityParentId, dataObjectID, instanceId);
   }
 
-  public static boolean isInputDataAvailable(String activityId, String activityParentId, String dataObjectID, String instanceId) {
+  public boolean isInputDataAvailable(String activityId, String activityParentId, String dataObjectID, String instanceId) {
     boolean missingInputData = false;
 
     if (BpmnParse.getInputData().containsKey(activityId)) { // true if activity
@@ -134,7 +143,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // main data object
-  private static String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId) {
+  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId) {
     // TODO our stuff
     String query;
     String state = new String();
@@ -172,7 +181,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // dependent data object
-  private static String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String type) {
+  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String type) {
     // TODO our stuff
     String query;
     String state = new String();
@@ -210,7 +219,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // dependent data object with null foreign key
-  private static String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String caseObjectPk, String type) {
+  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String caseObjectPk, String type) {
     // TODO our stuff
     String query;
     String state = new String();
@@ -230,7 +239,7 @@ public class DataInputChecker {
   }
 
   // TODO: BPMN_SQL added
-  private static int numberOfMultipleInstanceInTable(DataObject dataObj, String instanceId, String caseObject) {
+  private int numberOfMultipleInstanceInTable(DataObject dataObj, String instanceId, String caseObject) {
     int numberOfMI = 0;
     String query;
 
@@ -242,15 +251,15 @@ public class DataInputChecker {
   }
 
   // TODO: BPMN_SQL added
-  public static int dbConnection(String query) {
+  public int dbConnection(String query) {
     Connection con = null;
     Statement st = null;
     ResultSet rs = null;
     int count = 0;
 
-    String url = "jdbc:mysql://localhost:3306/testdb";
-    String user = "testuser";
-    String password = "test623";
+    String url = configuration.getJdbcUrl();
+    String user = configuration.getJdbcUsername();
+    String password = configuration.getJdbcPassword();
 
     try {
       con = DriverManager.getConnection(url, user, password);

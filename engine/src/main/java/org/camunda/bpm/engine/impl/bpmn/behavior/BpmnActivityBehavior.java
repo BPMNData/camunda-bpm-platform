@@ -27,7 +27,7 @@ import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.runtime.InterpretableExecution;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.DataOutputHandler;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataOutputHandler;
 
 /**
  * Helper class for implementing BPMN 2.0 activities, offering convenience
@@ -88,7 +88,8 @@ public class BpmnActivityBehavior {
     }
     
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
-      DataOutputHandler.updateOutputs(execution);
+      DataOutputHandler outputHandler = new DataOutputHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+      outputHandler.updateOutputs(execution);
     }
 
     String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");

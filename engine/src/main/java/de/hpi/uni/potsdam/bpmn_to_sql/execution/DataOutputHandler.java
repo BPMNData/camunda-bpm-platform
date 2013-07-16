@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.bpmn_to_sql;
+package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,11 +13,20 @@ import java.util.logging.Logger;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+
 public class DataOutputHandler {
 
   private static Logger log = Logger.getLogger(DataOutputHandler.class.getName());
   
-  public static void updateOutputs(ActivityExecution execution) {
+  protected BpmnDataConfiguration configuration;
+  
+  public DataOutputHandler(BpmnDataConfiguration configuration) {
+    this.configuration = configuration;
+  }
+  
+  public void updateOutputs(ActivityExecution execution) {
     // get id of scope or process depending whether activity is part of a scope
     // (i.e., subprocess) or the process itself
     // if(execution.getParentId()==null) {
@@ -146,7 +155,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  private static ArrayList<DataObject> getMatchingInputDataObject(DataObject item, String id) {
+  private ArrayList<DataObject> getMatchingInputDataObject(DataObject item, String id) {
     ArrayList<DataObject> dataObjects = new ArrayList<DataObject>();
     if (BpmnParse.getInputData().get(id) != null) {
       for (DataObject inputDo : BpmnParse.getInputData().get(id)) {
@@ -161,7 +170,7 @@ public class DataOutputHandler {
 
   // TODO: BPMN_SQL added
   // Creation of SQL-Queries(insert, update, delete) only for main data object
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId) {
+  private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId) {
     String query = "";
 
     if (dataObj.getPkType().equals("new")) {
@@ -177,7 +186,7 @@ public class DataOutputHandler {
 
   // TODO: BPMN_SQL added
   // Creation of SQL-Queries(insert, update, delete) only for main data object
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, ArrayList<String> stateList, String scopeInstanceId) {
+  private String createSqlQuery(DataObject dataObj, String dataObjState, ArrayList<String> stateList, String scopeInstanceId) {
     String query = "";
     String state = new String();
 
@@ -202,7 +211,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type) {
+  private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type) {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
 
@@ -235,7 +244,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList,
+  private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList,
       String expression, String type) {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
@@ -293,7 +302,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type, int count) {
+  private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type, int count) {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
 
@@ -323,7 +332,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  private static String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList, String type,
+  private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList, String type,
       int count) {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
@@ -364,14 +373,14 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  public static void dbConnection(String query) {
+  private void dbConnection(String query) {
     System.out.println("Running output query: " + query);
     Connection con = null;
     Statement st = null;
 
-    String url = "jdbc:mysql://localhost:3306/testdb";
-    String user = "testuser";
-    String password = "test623";
+    String url = configuration.getJdbcUrl();
+    String user = configuration.getJdbcUsername();
+    String password = configuration.getJdbcPassword();
 
     try {
       con = DriverManager.getConnection(url, user, password);
@@ -397,16 +406,16 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
-  public static String dbConnection2(String query) {
+  private String dbConnection2(String query) {
     System.out.println("Running output query: " + query);
     Connection con = null;
     Statement st = null;
     ResultSet rs = null;
     String result = new String();
 
-    String url = "jdbc:mysql://localhost:3306/testdb";
-    String user = "testuser";
-    String password = "test623";
+    String url = configuration.getJdbcUrl();
+    String user = configuration.getJdbcUsername();
+    String password = configuration.getJdbcPassword();
 
     try {
       con = DriverManager.getConnection(url, user, password);

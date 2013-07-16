@@ -37,7 +37,7 @@ public class DataOutputHandler {
     // ScopeInstanceID = execution.getParentId();
     // }
     //
-    String dataObjectID = execution.getDataObjectID();
+    String dataObjectID = execution.getEffectiveCaseObjectID();
 
     if (BpmnParse.getOutputData().containsKey(execution.getActivity().getId())) { // true
                                                                                   // if

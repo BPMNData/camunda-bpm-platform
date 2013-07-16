@@ -47,6 +47,7 @@ create table ACT_RU_EXECUTION (
     IS_EVENT_SCOPE_ bit,
     SUSPENSION_STATE_ integer,
     CACHED_ENT_STATE_ integer,
+    CASE_OBJECT_ID_ varchar(64),
     primary key (ID_)
 );
 

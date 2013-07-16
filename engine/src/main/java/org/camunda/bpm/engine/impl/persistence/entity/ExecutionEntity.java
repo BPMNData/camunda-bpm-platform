@@ -1211,6 +1211,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
       persistentState.put("forcedUpdate", Boolean.TRUE);
     }
     persistentState.put("suspensionState", this.suspensionState);
+    persistentState.put("caseObjectId", this.caseObjectId);
     persistentState.put("cachedEntityState", getCachedEntityState());
     return persistentState;
   }
@@ -1556,19 +1557,25 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
   
   //TODO: BPMN_SQL added
-  private String dataObjectId = null;
+  private String caseObjectId = null;
 
   // TODO: BPMN_SQL added
-  public String getDataObjectID() {
-    if (dataObjectId != null) return dataObjectId;
+  public String getEffectiveCaseObjectID() {
+    if (caseObjectId != null) return caseObjectId;
     else {
-      if (getParent() != null) return getParent().getDataObjectID();
+      if (getParent() != null) return getParent().getEffectiveCaseObjectID();
       else return getId();
     }
   }
  
   // TODO: BPMN_SQL added
-  public void setDataObjectID(String id) {
-    dataObjectId = id;
+  public void setCaseObjectID(String id) {
+    caseObjectId = id;
   }
+  
+  public String getCaseObjectId() {
+    return caseObjectId;
+  }
+  
+  
 }

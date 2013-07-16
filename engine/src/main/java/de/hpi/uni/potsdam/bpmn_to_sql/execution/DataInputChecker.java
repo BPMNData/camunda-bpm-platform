@@ -35,7 +35,7 @@ public class DataInputChecker {
     final String activityId = execution.getActivity().getId();
     final String instanceId = execution.getProcessInstanceId();
     final String activityParentId = execution.getActivity().getParent().getId();
-    final String dataObjectID = execution.getDataObjectID();
+    final String dataObjectID = execution.getEffectiveCaseObjectID();
     // final AtomicOperationActivityExecute taskBehavior = this;
 
     return isInputDataAvailable(activityId, activityParentId, dataObjectID, instanceId);

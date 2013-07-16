@@ -952,16 +952,16 @@ public class ExecutionImpl implements
   private String dataObjectId = null;
 
   // TODO: BPMN_SQL added
-  public String getDataObjectID() {
+  public String getEffectiveCaseObjectID() {
     if (dataObjectId != null) return dataObjectId;
     else {
-      if (getParent() != null) return getParent().getDataObjectID();
+      if (getParent() != null) return getParent().getEffectiveCaseObjectID();
       else return getId();
     }
   }
  
   // TODO: BPMN_SQL added
-  public void setDataObjectID(String id) {
+  public void setCaseObjectID(String id) {
     dataObjectId = id;
   }
 }

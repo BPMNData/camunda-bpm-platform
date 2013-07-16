@@ -160,6 +160,10 @@ public interface ActivityExecution extends DelegateExecution {
    */
   void destroyScope(String string);
   
-  String getDataObjectID();
+  /**
+   * Gets the case object id that is valid in the context of this execution.
+   * @return
+   */
+  String getEffectiveCaseObjectID();
   
 }

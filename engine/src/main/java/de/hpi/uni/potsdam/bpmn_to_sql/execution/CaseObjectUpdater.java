@@ -24,7 +24,7 @@ public class CaseObjectUpdater {
   private static Logger log = Logger.getLogger(AsyncDataInputJobHandler.class.getName());
 
   public void updateExecution(ExecutionEntity execution) {
-    String dataObjectID = execution.getDataObjectID();
+    String dataObjectID = execution.getEffectiveCaseObjectID();
     ActivityImpl activity = (ActivityImpl) execution.getActivity();
 
     // if process is an MI-sub-process, the activiti:collection variable is set
@@ -69,22 +69,22 @@ public class CaseObjectUpdater {
           // if MI-instance, the activiti:collection variable is set with the
           // list of PKs
           execution.setVariable(dataObj.getName(), miList);
-          execution.setDataObjectID(miList.get(0)); // current sub-process
+          execution.setCaseObjectID(miList.get(0)); // current sub-process
                                                     // instance gets the first
                                                     // primary key of the return
                                                     // ArrayList
         } else {
-          execution.setDataObjectID(miList.get(miList.size() - 1));
+          execution.setCaseObjectID(miList.get(miList.size() - 1));
         }
 
-        execution.setDataObjectID(miList.get(0)); // current sub-process
+        execution.setCaseObjectID(miList.get(0)); // current sub-process
                                                   // instance gets the first
                                                   // primary key of the return
                                                   // ArrayList (in case of
                                                   // simple sub-process, is it
                                                   // only one)
       } else {
-        execution.setDataObjectID((String) execution.getVariable(dataObj.getPkey()));
+        execution.setCaseObjectID((String) execution.getVariable(dataObj.getPkey()));
       }
     }
   }

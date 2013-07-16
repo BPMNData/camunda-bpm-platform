@@ -165,7 +165,7 @@ import org.camunda.bpm.engine.impl.variable.StringType;
 import org.camunda.bpm.engine.impl.variable.VariableType;
 import org.camunda.bpm.engine.impl.variable.VariableTypes;
 
-import de.hpi.uni.potsdam.bpmnToSql.job.AsyncDataInputJobHandler;
+import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
 
 
 /**

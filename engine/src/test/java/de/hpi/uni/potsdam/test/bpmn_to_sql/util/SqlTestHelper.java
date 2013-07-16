@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.test.bpmnToSql.util;
+package de.hpi.uni.potsdam.test.bpmn_to_sql.util;
 
 import java.io.StringReader;
 import java.lang.reflect.Method;

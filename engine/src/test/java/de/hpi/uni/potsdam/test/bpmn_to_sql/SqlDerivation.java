@@ -11,15 +11,15 @@
  * limitations under the License.
  */
 
-package de.hpi.uni.potsdam.test.bpmnToSql;
+package de.hpi.uni.potsdam.test.bpmn_to_sql;
 
 import java.util.List;
 
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.test.Deployment;
 
-import de.hpi.uni.potsdam.test.bpmnToSql.util.AbstractBpmnDataTestCase;
-import de.hpi.uni.potsdam.test.bpmnToSql.util.DatabaseSetup;
+import de.hpi.uni.potsdam.test.bpmn_to_sql.util.AbstractBpmnDataTestCase;
+import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
 
 
 /**

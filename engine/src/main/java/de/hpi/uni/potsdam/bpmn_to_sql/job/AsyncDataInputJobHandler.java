@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.bpmnToSql.job;
+package de.hpi.uni.potsdam.bpmn_to_sql.job;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,9 +16,9 @@ import org.camunda.bpm.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmnToSql.DataInputChecker;
-import de.hpi.uni.potsdam.bpmnToSql.DataInputUnavailableException;
-import de.hpi.uni.potsdam.bpmnToSql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataInputChecker;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataInputUnavailableException;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
 
 public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
 

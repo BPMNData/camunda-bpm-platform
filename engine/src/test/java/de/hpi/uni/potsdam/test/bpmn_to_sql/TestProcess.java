@@ -11,12 +11,12 @@
  * limitations under the License.
  */
 
-package de.hpi.uni.potsdam.test.bpmnToSql;
+package de.hpi.uni.potsdam.test.bpmn_to_sql;
 
 import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 import org.camunda.bpm.engine.test.Deployment;
 
-import de.hpi.uni.potsdam.test.bpmnToSql.util.DatabaseSetup;
+import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
 
 
 /**

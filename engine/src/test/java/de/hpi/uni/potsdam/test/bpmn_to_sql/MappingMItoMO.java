@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.test.bpmnToSql;
+package de.hpi.uni.potsdam.test.bpmn_to_sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

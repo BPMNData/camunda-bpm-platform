@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.test.bpmnToSql.util;
+package de.hpi.uni.potsdam.test.bpmn_to_sql.util;
 
 import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 

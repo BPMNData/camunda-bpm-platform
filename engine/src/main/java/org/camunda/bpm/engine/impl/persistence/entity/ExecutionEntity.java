@@ -57,7 +57,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
-import de.hpi.uni.potsdam.bpmnToSql.job.AsyncDataInputJobHandler;
+import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
 
 
 

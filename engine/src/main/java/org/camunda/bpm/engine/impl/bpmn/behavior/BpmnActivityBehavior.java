@@ -26,7 +26,7 @@ import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.runtime.InterpretableExecution;
 
-import de.hpi.uni.potsdam.bpmnToSql.DataOutputHandler;
+import de.hpi.uni.potsdam.bpmn_to_sql.DataOutputHandler;
 
 /**
  * Helper class for implementing BPMN 2.0 activities, offering convenience

@@ -123,16 +123,20 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
     // subprocess1 -> B
     assertAndRunDataInputJobForActivity("B__sid-BE0561FF-F6E7-48CC-BAD2-83554CEF4CA3", 2, 2);
     
-//    dataObjects("MaterialItem", 26).shouldHave("state", "partitioned").doAssert();
+    dataObjects("MaterialItem", 26).shouldHave("state", "partitioned").doAssert();
     
     // C
     assertAndRunDataInputJobForActivity("C__sid-A10E274D-5564-4CCF-9BB6-40E096CC9DBB", 1, 1);
+    
+    dataObjects("MaterialOrder", 5).where("btoid", caseObjectId).shouldHave("state", "created").doAssert();
     
     // subprocess2
     assertAndRunDataInputJobForActivity("SP2__sid-584DE683-3353-4834-9A19-05F4B314EB31", 1, 1);
     
     // subprocess2 -> D
     assertAndRunDataInputJobForActivity("D__sid-CEB030D0-3FC4-43F6-9B48-F597A3959E52", 5, 5);
+    
+    dataObjects("MaterialItem", 26).where("btoid", caseObjectId).shouldHave("state", "delivered").doAssert();
     
     Assert.assertEquals("The process instance should have ended.", 0, runtimeService.createProcessInstanceQuery().count());
     Assert.assertEquals("There should be no further jobs in the database", 0, managementService.createJobQuery().count());

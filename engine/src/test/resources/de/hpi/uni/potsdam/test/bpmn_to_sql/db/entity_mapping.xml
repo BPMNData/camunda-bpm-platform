@@ -14,7 +14,7 @@
         </if>
     </where>
   </select>
-  <select id="selectSingleMaterialItem" parameterType="java.util.Map" resultType="java.util.HashMap">
+  <select id="selectSingleMaterialitem" parameterType="java.util.Map" resultType="java.util.HashMap">
     select miid, oid, moid, state from `material item` 
     <where>
         <if test="miid != null">
@@ -31,7 +31,7 @@
         </if>
     </where>
   </select>
-  <select id="selectSingleMaterialOrder" parameterType="java.util.Map" resultType="java.util.HashMap">
+  <select id="selectSingleMaterialorder" parameterType="java.util.Map" resultType="java.util.HashMap">
     select moid, btoid, state from `material order` 
     <where>
         <if test="moid != null">

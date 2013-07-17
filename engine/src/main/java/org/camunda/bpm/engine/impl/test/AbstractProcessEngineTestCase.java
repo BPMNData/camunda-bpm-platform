@@ -24,6 +24,7 @@ import java.util.logging.Level;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.ibatis.logging.LogFactory;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.IdentityService;
@@ -54,7 +55,7 @@ public abstract class AbstractProcessEngineTestCase extends PvmTestCase {
 
   static {
     // this ensures that mybatis uses the jdk logging
-//    LogFactory.useJdkLogging();
+    LogFactory.useJdkLogging();
     // with an upgrade of mybatis, this might have to become org.mybatis.generator.logging.LogFactory.forceJavaLogging();
   }
   

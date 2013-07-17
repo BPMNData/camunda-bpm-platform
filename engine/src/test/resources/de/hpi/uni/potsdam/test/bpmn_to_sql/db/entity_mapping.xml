@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="de.hpi.uni.potsdam.test.bpmn_to_sql.db">
+  <select id="selectSingleBto" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select btoid, state from bto where btoid = #{id}
+  </select>
+  <select id="selectSingleMaterialItem" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select miid, oid, moid, state from material_item where miid = #{id}
+  </select>
+  <select id="selectSingleMaterialOrder" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select moid, btoid, state from material_order where moid = #{id}
+  </select>
+  <select id="selectSingleShipment" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select sid, oid, state from shipment where sid = #{id}
+  </select>
+  <select id="selectSingleBill" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select bid, oid, state from bill where bid = #{id}
+  </select>
+  <select id="selectSingleInvoice" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select iid, oid, state from invoice where iid = #{id}
+  </select>
+  <select id="selectSingleOrder" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select oid, btoid, state from `order` where oid = #{id}
+  </select>
+  <select id="selectSingleProduct" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select pid, oid, state from product where pid = #{id}
+  </select>
+  <select id="selectSingleReceipt" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select rid, oid, state from order where rid = #{id}
+  </select>
+</mapper>
+

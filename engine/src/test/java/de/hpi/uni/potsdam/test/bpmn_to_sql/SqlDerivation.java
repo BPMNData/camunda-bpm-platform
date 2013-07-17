@@ -29,14 +29,12 @@ import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
  */
 public class SqlDerivation extends AbstractBpmnDataTestCase {
 
-  /**
-   * FIXME: currently in error state due to mismatching db setup?!
-   */
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testOneToN() {
     runtimeService.startBpmnDataAwareProcessInstanceByKey("oneToN", "4");
     
+    assertDataObjectAttribute("Order", "4", "state", "created");
     // activity A
     assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB", 1, 1);
     

@@ -17,9 +17,9 @@ public class PersistentObjectAssertionSpecification {
   private static PersistentObjectManager poManager;
   
   private static final String SINGLE_OBJECT_ERROR_MESSAGE_FORMAT = 
-      "Persistent Object %s[%s]: attribute %s does not match";
+      "Persistent Object %s[%s]: attribute %s does not match.";
   private static final String MISMATCHING_OBJECT_NUMBER_ERROR_MESSAGE_FORMAT = 
-      "Persistent Table %s: Mismatching result set size for selections";
+      "Persistent Table %s: Mismatching result set size for selections.";
   
   private PersistentObjectAssertionSpecification() {
     selections = new HashMap<String, Object>();

@@ -4,15 +4,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -34,8 +33,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
   
   protected static final String BPMN_DATA_MAPPING_FILE = "de/hpi/uni/potsdam/test/bpmn_to_sql/db/mappings.xml";
   protected static SqlSessionFactory bpmnDataSessionFactory;
-  protected SqlSession sqlSession;
-  protected PersistentObjectManager poManager;
+  protected static PersistentObjectManager poManager;
   
   protected void initializeBpmnDataConfiguration() {
     if (bpmnDataConfiguration == null) {
@@ -46,6 +44,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
       bpmnDataConfiguration.setJdbcUrl("jdbc:mysql://localhost:3306/testdb");
       
       initializeBpmnDataSessionFactory(bpmnDataConfiguration);
+      initPersistentObjectManager();
     }
   }
   
@@ -62,11 +61,9 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
         Reader reader = new InputStreamReader(inputStream);
         
         Properties properties = new Properties();
-        properties.put("prefix", "testdb");
         XMLConfigBuilder parser = new XMLConfigBuilder(reader, "bpmnDataTest", properties);
         Configuration mybatisConfiguration = parser.getConfiguration();
         mybatisConfiguration.setEnvironment(environment);
-        //mybatisConfiguration.getTypeHandlerRegistry().register(VariableType.class, JdbcType.VARCHAR, new IbatisVariableTypeHandler());
         mybatisConfiguration = parser.parse();
 
         bpmnDataSessionFactory = new DefaultSqlSessionFactory(mybatisConfiguration);
@@ -79,8 +76,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
   
   protected void initPersistentObjectManager() {
     if (poManager == null) {
-      sqlSession = bpmnDataSessionFactory.openSession();
-      poManager = new PersistentObjectManager(sqlSession);
+      poManager = new PersistentObjectManager(SqlSessionManager.newInstance(bpmnDataSessionFactory));
       PersistentObjectAssertionSpecification.setPersitentObjectManager(poManager);
     }
   }
@@ -103,7 +99,6 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
   protected void setUp() throws Exception {
     super.setUp();
     SqlTestHelper.sqlScriptDatabaseSetUp(getClass(), getName());
-    initPersistentObjectManager();
   }
   
   /**
@@ -131,12 +126,6 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
   
   @Override
   protected void assertAndEnsureCleanDb() throws Throwable {
-    if (sqlSession != null) {
-      sqlSession.close();
-      sqlSession = null;
-      poManager = null;
-    }
-    
     super.assertAndEnsureCleanDb();
   }
 }

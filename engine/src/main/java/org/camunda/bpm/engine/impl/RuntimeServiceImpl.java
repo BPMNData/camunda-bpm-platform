@@ -35,6 +35,7 @@ import org.camunda.bpm.engine.impl.cmd.RemoveExecutionVariablesCmd;
 import org.camunda.bpm.engine.impl.cmd.SetExecutionVariablesCmd;
 import org.camunda.bpm.engine.impl.cmd.SignalCmd;
 import org.camunda.bpm.engine.impl.cmd.SignalEventReceivedCmd;
+import org.camunda.bpm.engine.impl.cmd.StartBpmnDataAwareProcessInstanceCmd;
 import org.camunda.bpm.engine.impl.cmd.StartProcessInstanceByMessageCmd;
 import org.camunda.bpm.engine.impl.cmd.StartProcessInstanceCmd;
 import org.camunda.bpm.engine.impl.cmd.SuspendProcessInstanceCmd;
@@ -83,6 +84,15 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   
   public ProcessInstance startProcessInstanceById(String processDefinitionId, String businessKey, Map<String, Object> variables) {
     return commandExecutor.execute(new StartProcessInstanceCmd(null, processDefinitionId, businessKey, variables));
+  }
+  
+
+  public ProcessInstance startBpmnDataAwareProcessInstanceById(String processDefinitionId, String caseObjectId) {
+    return commandExecutor.execute(new StartBpmnDataAwareProcessInstanceCmd(null, processDefinitionId, null, caseObjectId));
+  }
+
+  public ProcessInstance startBpmnDataAwareProcessInstanceByKey(String processDefinitionKey, String caseObjectId) {
+    return commandExecutor.execute(new StartBpmnDataAwareProcessInstanceCmd(processDefinitionKey, null, null, caseObjectId));
   }
   
   public void deleteProcessInstance(String processInstanceId, String deleteReason) {

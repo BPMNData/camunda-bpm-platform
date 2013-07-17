@@ -243,6 +243,12 @@ public interface RuntimeService {
    * @since 5.9
    */
   ProcessInstance startProcessInstanceByMessage(String messageName, String businessKey, Map<String, Object> processVariables);
+  
+  // TODO add methods with other starting parameters if required
+  ProcessInstance startBpmnDataAwareProcessInstanceById(String processDefinitionId, String caseObjectId);
+  
+  ProcessInstance startBpmnDataAwareProcessInstanceByKey(String processDefinitionKey, String caseObjectId);
+  
 
   /** Delete an existing runtime process instance.
    * @param processInstanceId id of process instance to delete, cannot be null.

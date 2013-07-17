@@ -35,7 +35,7 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testOneToN() {
-    runtimeService.startProcessInstanceByKey("oneToN");
+    runtimeService.startBpmnDataAwareProcessInstanceByKey("oneToN", "4");
     
     // activity A
     assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB", 1, 1);
@@ -79,7 +79,7 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testMToN() {
-    runtimeService.startProcessInstanceByKey("mToN");
+    runtimeService.startBpmnDataAwareProcessInstanceByKey("mToN", "4");
     
     // A
     assertAndRunDataInputJobForActivity("A__sid-66885BC6-9B96-45C4-B658-5A7E8EB3E0DA", 1, 1);

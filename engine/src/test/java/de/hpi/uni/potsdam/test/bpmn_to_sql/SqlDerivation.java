@@ -13,9 +13,10 @@
 
 package de.hpi.uni.potsdam.test.bpmn_to_sql;
 
+import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
+
 import java.util.List;
 
-import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
@@ -32,11 +33,16 @@ public class SqlDerivation extends AbstractBpmnDataTestCase {
   @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
   @Deployment
   public void testOneToN() {
-    runtimeService.startBpmnDataAwareProcessInstanceByKey("oneToN", "4");
+    String caseObjectId = "4";
     
-    assertDataObjectAttribute("Order", "4", "state", "created");
+    runtimeService.startBpmnDataAwareProcessInstanceByKey("oneToN", caseObjectId);
+    
+    dataObjects("Order", 1).where("id", caseObjectId).shouldHave("state", "created").doAssert();
+
     // activity A
     assertAndRunDataInputJobForActivity("A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB", 1, 1);
+    
+    //dataObjects("Invoice", 1).where("oid", caseObjectId).shouldHave("state", "created").doAssert();
     
     // B
     assertAndRunDataInputJobForActivity("B__sid-689E0F52-A9A5-4826-BCC8-640BB31B579D", 1, 1);

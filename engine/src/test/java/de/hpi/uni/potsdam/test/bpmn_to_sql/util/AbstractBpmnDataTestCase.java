@@ -24,7 +24,6 @@ import org.camunda.bpm.engine.impl.util.ReflectUtil;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.junit.Assert;
-import org.junit.Before;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 
@@ -82,6 +81,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
     if (poManager == null) {
       sqlSession = bpmnDataSessionFactory.openSession();
       poManager = new PersistentObjectManager(sqlSession);
+      PersistentObjectAssertionSpecification.setPersitentObjectManager(poManager);
     }
   }
 
@@ -139,16 +139,4 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
     
     super.assertAndEnsureCleanDb();
   }
-  
-  protected void assertDataObjectAttribute(String type, String id, String attributeName, Object expectedAttributeValue) {
-    Map<String, Object> persistentObject = poManager.getPersistentObject(type, id);
-    Object persistedAttributeValue = persistentObject.get(attributeName);
-    
-    StringBuilder assertionMessage = new StringBuilder();
-    assertionMessage.append("Attribute ").append(type).append("[").append(id)
-      .append("].").append(attributeName).append(" should be correctly set.");
-    Assert.assertEquals(assertionMessage.toString(), expectedAttributeValue, persistedAttributeValue);
-    
-  }
-  
 }

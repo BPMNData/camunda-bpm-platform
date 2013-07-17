@@ -1,6 +1,7 @@
 package de.hpi.uni.potsdam.test.bpmn_to_sql.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
@@ -24,5 +25,10 @@ public class PersistentObjectManager {
   
   private String getSelectStatementForType(String type) {
     return MAPPER_NAMESPACE + ".selectSingle" + type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+  }
+  
+  public List<Map<String, Object>> getPersistentObjects(String type, Map<String, Object> selections) {
+    String selectStatement = getSelectStatementForType(type);
+    return sqlSession.selectList(selectStatement, selections);
   }
 }

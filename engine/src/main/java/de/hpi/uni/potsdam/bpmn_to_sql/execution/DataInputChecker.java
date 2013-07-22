@@ -16,6 +16,7 @@ import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class DataInputChecker {
 
@@ -256,6 +257,8 @@ public class DataInputChecker {
     Statement st = null;
     ResultSet rs = null;
     int count = 0;
+    XQueryHandler handler = new XQueryHandler();
+    ArrayList<String> doc = new ArrayList<String>();
 
     String url = configuration.getJdbcUrl();
     String user = configuration.getJdbcUsername();
@@ -264,11 +267,20 @@ public class DataInputChecker {
     try {
       con = DriverManager.getConnection(url, user, password);
       st = con.createStatement();
+      query = query.replaceAll("SELECT COUNT\\([^\\)]*\\)", "SELECT *");
       rs = st.executeQuery(query);
-      if (rs.next()) {
-        System.out.println(rs.getString(1));
+      
+      if (query.startsWith("SELECT *")) {
+        doc = handler.buildObjectXML(rs, "test");
+        count = doc.size();
+      }      
+      else if (rs.next()) {
         count = Integer.parseInt(rs.getString(1));
       }
+      
+      System.out.println(count);
+      
+      testQuery(doc);
 
     } catch (SQLException ex) {
       log.log(Level.SEVERE, ex.getMessage(), ex);
@@ -286,5 +298,29 @@ public class DataInputChecker {
       }
     }
     return count;
+  }
+  
+  private void testQuery(ArrayList<String> doc){
+    XQueryHandler handler = new XQueryHandler();
+    ArrayList<String> messages = new ArrayList<String>();
+    
+    String query = "for $d in ./bto return <message name=\"BTOMessage\"><correlation><key name=\"Global_BTO\"><property name=\"BTO_ID\"> {$d/btoid/text()} </property></key></correlation><payload><object name=\"Global_BTO\"><property name=\"BTO_ID\"> {$d/btoid/text()} </property><property name=\"BTO_State\"> {$d/state/text()} </property></object></payload></message>";
+    messages = handler.runXQuery(doc, query);
+    //testCorrelationExtraction(messages);
+    //testPayloadExtraction(messages);
+    }
+
+  private void testCorrelationExtraction(ArrayList<String> messages){
+    XQueryHandler handler = new XQueryHandler();
+    for (String message : messages){
+      HashMap<String, HashMap<String,String>> correlationInformation = handler.getCorrelationInformation(message);
+    }
+  }
+
+  private void testPayloadExtraction(ArrayList<String> messages){
+    XQueryHandler handler = new XQueryHandler();
+    for (String message : messages){
+      HashMap<String, HashMap<String,String>> payloadInformation = handler.getPayloadInformation(message);
+    } 
   }
 }

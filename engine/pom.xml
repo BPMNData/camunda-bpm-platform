@@ -153,6 +153,13 @@
       <version>3.1.0.Final</version>
       <scope>provided</scope>    
     </dependency>
+    
+    <!-- BPMN-Data dependencies -->
+    <dependency>
+	  <groupId>net.sf.saxon</groupId>
+	  <artifactId>Saxon-HE</artifactId>
+	  <version>9.4</version>
+    </dependency>
        
   </dependencies>
   

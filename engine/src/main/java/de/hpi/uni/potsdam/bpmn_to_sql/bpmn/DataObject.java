@@ -1,4 +1,4 @@
-package de.hpi.uni.potsdam.bpmn_to_sql;
+package de.hpi.uni.potsdam.bpmn_to_sql.bpmn;
 
 import java.util.ArrayList;
 

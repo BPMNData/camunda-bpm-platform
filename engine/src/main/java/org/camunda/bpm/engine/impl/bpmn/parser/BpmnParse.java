@@ -118,7 +118,7 @@ import org.camunda.bpm.engine.impl.util.xml.Parse;
 import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 /**
  * Specific parsing of one BPMN 2.0 XML file, created by the {@link BpmnParser}.

@@ -14,7 +14,7 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
-import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 public class DataOutputHandler {
 

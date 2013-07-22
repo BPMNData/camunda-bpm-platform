@@ -15,7 +15,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
-import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 public class DataInputChecker {
 

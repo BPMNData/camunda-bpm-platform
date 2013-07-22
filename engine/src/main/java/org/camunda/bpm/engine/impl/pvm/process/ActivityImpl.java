@@ -48,6 +48,7 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   protected int height = -1;
   
   protected MessageFlow outgoingMessageFlow;
+  protected MessageFlow incomingMessageFlow;
   
   public ActivityImpl(String id, ProcessDefinitionImpl processDefinition) {
     super(id, processDefinition);
@@ -192,5 +193,13 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
 
   public void setOutgoingMessageFlow(MessageFlow outgoingMessageFlow) {
     this.outgoingMessageFlow = outgoingMessageFlow;
+  }
+
+  public MessageFlow getIncomingMessageFlow() {
+    return incomingMessageFlow;
+  }
+
+  public void setIncomingMessageFlow(MessageFlow incomingMessageFlow) {
+    this.incomingMessageFlow = incomingMessageFlow;
   }
 }

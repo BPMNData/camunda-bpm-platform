@@ -30,9 +30,9 @@ import org.camunda.bpm.engine.runtime.Execution;
  */
 public class CorrelateMessageCmd implements Command<Void> {
 
-  protected final String messageName;
+  protected String messageName;
   protected final String businessKey;
-  protected final Map<String, Object> correlationKeys;
+  protected Map<String, Object> correlationKeys;
   protected final Map<String, Object> processVariables;
   
   public CorrelateMessageCmd(String messageName, String businessKey,
@@ -72,11 +72,11 @@ public class CorrelateMessageCmd implements Command<Void> {
     throw new MismatchingMessageCorrelationException(messageName, "No process definition or execution matches the parameters");
   }
 
-  private void triggerExecution(CommandContext commandContext, Execution matchingExecution) {
+  protected void triggerExecution(CommandContext commandContext, Execution matchingExecution) {
     new MessageEventReceivedCmd(messageName, matchingExecution.getId(), processVariables).execute(commandContext);
   }
   
-  private void instantiateProcess(CommandContext commandContext,
+  protected void instantiateProcess(CommandContext commandContext,
       ProcessDefinition matchingDefinition) {
     new StartProcessInstanceCmd(null, matchingDefinition.getId(), null, processVariables).execute(commandContext);
   }

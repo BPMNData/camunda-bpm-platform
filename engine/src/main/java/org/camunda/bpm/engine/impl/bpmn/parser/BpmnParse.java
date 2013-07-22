@@ -118,7 +118,10 @@ import org.camunda.bpm.engine.impl.util.xml.Parse;
 import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 
 /**
  * Specific parsing of one BPMN 2.0 XML file, created by the {@link BpmnParser}.
@@ -210,6 +213,11 @@ public class BpmnParse extends Parse {
   public static Map<String, ArrayList<DataObject>> getOutputData() {
     return outputData;
   }
+  
+  protected Map<String, CorrelationProperty> correlationProperties = new HashMap<String, CorrelationProperty>();
+  protected Map<String, ActivityImpl> activities = new HashMap<String, ActivityImpl>();
+  protected Map<String, MessageFlow> messageFlows = new HashMap<String, MessageFlow>();
+  
   // Members
   protected ExpressionManager expressionManager;
   protected List<BpmnParseListener> parseListeners;
@@ -278,6 +286,7 @@ public class BpmnParse extends Parse {
     parseErrors();
     parseSignals();
     parseProcessDefinitions();
+    parseCorrelationProperties();
     parseCollaboration();
 
     // Diagram interchange parsing must be after parseProcessDefinitions,
@@ -287,6 +296,28 @@ public class BpmnParse extends Parse {
     for (BpmnParseListener parseListener : parseListeners) {
       parseListener.parseRootElement(rootElement, getProcessDefinitions());
     }
+  }
+
+  private void parseCorrelationProperties() {
+    for (Element correlationPropertyElement : rootElement.elements("correlationProperty")) {
+      CorrelationProperty correlationProperty = new CorrelationProperty();
+      correlationProperty.setId(correlationPropertyElement.attribute("id"));
+      correlationProperty.setName(correlationPropertyElement.attribute("name"));
+      
+      Element retrievalExpressionElement = correlationPropertyElement.element("correlationPropertyRetrievalExpression");
+      if (retrievalExpressionElement == null) {
+        addError("Correlation property requires a correlationPropertyRetrievalExpression", correlationPropertyElement);
+      } else {
+        Element messagePathElement = retrievalExpressionElement.element("messagePath");
+        if (messagePathElement == null) {
+          addError("retrieval expression requires messagePath element", correlationPropertyElement);
+        } else {
+          correlationProperty.setRetrievalExpression(messagePathElement.getText());
+        }
+      }
+      correlationProperties.put(correlationProperty.getId(), correlationProperty);
+    }
+    
   }
 
   protected void collectElementIds() {
@@ -577,8 +608,66 @@ public class BpmnParse extends Parse {
         }
       }
     }
+    
+    
+    for (Element messageFlowElement : collaboration.elements("messageFlow")) {
+      MessageFlow flow = new MessageFlow();
+      flow.setMessage(messages.get(messageFlowElement.attribute("messageRef")));
+      flow.setId(messageFlowElement.attribute("id"));
+      
+      ActivityImpl source = activities.get(messageFlowElement.attribute("sourceRef"));
+      if (source != null) {
+        source.setOutgoingMessageFlow(flow);
+      }
+      
+      ActivityImpl target = activities.get((messageFlowElement).attribute("targetRef"));
+      if (target != null) {
+        target.setIncomingMessageFlow(flow);
+      }
+      
+      messageFlows.put(flow.getId(), flow);
+    }
+    
+    for (Element conversationElement : collaboration.elements("conversation")) {
+      parseConversation(conversationElement);
+    }
   }
   
+  private void parseConversation(Element conversationElement) {
+
+    List<MessageFlow> containedFlows = new ArrayList<MessageFlow>();
+    for (Element messageFlowRefElement : conversationElement.elements("messageFlowRef")) {
+      MessageFlow flow = messageFlows.get(messageFlowRefElement.getText());
+      if (flow != null) {
+        containedFlows.add(flow);
+      }
+    }
+    
+    for (Element correlationKey : conversationElement.elements("correlationKey")) {
+      CorrelationKey key = parseCorrelationKey(correlationKey);
+      for (MessageFlow flow : containedFlows) {
+        flow.addCorrelationKey(key);
+      }
+    }
+    
+  }
+
+  private CorrelationKey parseCorrelationKey(Element correlationKey) {
+    CorrelationKey key = new CorrelationKey();
+    key.setId(correlationKey.attribute("id"));
+    
+    List<CorrelationProperty> referencedCorrelationProperties = new ArrayList<CorrelationProperty>();
+    for (Element correlationPropElement : correlationKey.elements("correlationPropertyRef")) {
+      String correlationPropertyId = correlationPropElement.getText();
+      CorrelationProperty prop = correlationProperties.get(correlationPropertyId);
+      referencedCorrelationProperties.add(prop);
+    }
+
+    key.setCorrelationProperties(referencedCorrelationProperties);
+    
+    return key;
+  }
+
   /**
    * Parses one process (ie anything inside a &lt;process&gt; element).
    * 
@@ -1271,6 +1360,10 @@ public class BpmnParse extends Parse {
       activity = parseTransaction(activityElement, scopeElement);
     } else if (activityElement.getTagName().equals("adHocSubProcess") || activityElement.getTagName().equals("complexGateway")) {
       addWarning("Ignoring unsupported activity type", activityElement);
+    }
+    
+    if (activity != null) {
+      activities.put(activity.getId(), activity);
     }
 
     // Parse stuff common to activities above
@@ -2186,6 +2279,10 @@ public class BpmnParse extends Parse {
     
     activity.setAsync(isAsync(receiveTaskElement));
     activity.setExclusive(isExclusive(receiveTaskElement));
+    
+    EventSubscriptionDeclaration messageDefinition =  parseMessageEventDefinition(receiveTaskElement);
+    activity.setScope(true);
+    addEventSubscriptionDeclaration(messageDefinition, activity, receiveTaskElement);
 
     parseExecutionListenersOnScope(receiveTaskElement, activity);
 

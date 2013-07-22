@@ -48,6 +48,8 @@ import org.camunda.bpm.engine.runtime.NativeProcessInstanceQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelateBpmnDataMessageCmd;
+
 /**
  * @author Tom Baeyens
  * @author Daniel Meyer
@@ -296,6 +298,10 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   public void correlateMessage(String messageName, String businessKey,
       Map<String, Object> processVariables) {
     commandExecutor.execute(new CorrelateMessageCmd(messageName, businessKey, null, processVariables));
+  }
+
+  public void correlateBpmnDataMessage(String message) {
+    commandExecutor.execute(new CorrelateBpmnDataMessageCmd(message));
   }
 
 }

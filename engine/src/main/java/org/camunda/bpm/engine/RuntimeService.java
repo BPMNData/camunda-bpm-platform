@@ -715,4 +715,6 @@ public interface RuntimeService {
    * @throws ProcessEngineException if messageName is null
    */
   void correlateMessage(String messageName, String businessKey, Map<String, Object> correlationKeys, Map<String, Object> processVariables);
+
+  void correlateBpmnDataMessage(String payload);
 }

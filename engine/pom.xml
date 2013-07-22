@@ -154,12 +154,18 @@
       <scope>provided</scope>    
     </dependency>
     
-    <!-- BPMN Data -->
+    <!-- BPMN Data dependencies -->
     <dependency>
 	  <groupId>org.apache.httpcomponents</groupId>
 	  <artifactId>httpclient</artifactId>
 	  <version>4.2.5</version>
 	</dependency>
+    
+    <dependency>
+	  <groupId>net.sf.saxon</groupId>
+	  <artifactId>Saxon-HE</artifactId>
+	  <version>9.4</version>
+    </dependency>
        
   </dependencies>
   

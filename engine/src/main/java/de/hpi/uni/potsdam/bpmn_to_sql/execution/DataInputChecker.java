@@ -280,7 +280,7 @@ public class DataInputChecker {
       
       System.out.println(count);
       
-      testQuery(doc);
+      //testQuery(doc);
 
     } catch (SQLException ex) {
       log.log(Level.SEVERE, ex.getMessage(), ex);

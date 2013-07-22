@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>camunda BPM - engine</name>
-  <artifactId>camunda-engine</artifactId>
+  <artifactId>bpmn-data-camunda-engine</artifactId>
 
 	<parent>
 		<groupId>org.camunda.bpm</groupId>

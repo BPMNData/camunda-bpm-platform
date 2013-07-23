@@ -23,6 +23,7 @@ public class DeploymentMetadataConstants {
   public static final String NAME = "name";
   public static final String DEFAULT = "default";
   public static final String PROPERTIES = "properties";
+  public static final String BPMN_DATA_PROPERTIES = "bpmnDataProperties";
   public static final String PROPERTY = "property";
   
   public static final String PROCESS_APPLICATION = "process-application";

@@ -63,5 +63,7 @@ public interface ProcessEngineXml {
    * @return the name of the job acquisition to be used.
    */
   public String getJobAcquisitionName();
+  
+  public Map<String, String> getBpmnDataProperties();
 
 }

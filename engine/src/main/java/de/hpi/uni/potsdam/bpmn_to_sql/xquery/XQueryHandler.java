@@ -16,6 +16,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import javax.xml.xquery.XQConnection;
 import javax.xml.xquery.XQConstants;
 import javax.xml.xquery.XQDataSource;
@@ -24,13 +28,14 @@ import javax.xml.xquery.XQItem;
 import javax.xml.xquery.XQPreparedExpression;
 import javax.xml.xquery.XQSequence;
 
+import net.sf.saxon.xqj.SaxonXQDataSource;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.QueryExecutionHandler;
 import net.sf.saxon.xqj.SaxonXQDataSource;
 
@@ -116,6 +121,22 @@ public class XQueryHandler {
     }
     
 		return null;		
+	}
+	
+	public String runXPath(String xml, String xPathExpression) {
+	  Document doc = transformStringToDoc(xml);
+	  XPathFactory factory = XPathFactory.newInstance();
+	  XPath xpath = factory.newXPath();
+	  String result = null;
+	  
+	  try {
+	    XPathExpression expression = xpath.compile(xPathExpression);
+	    result =  expression.evaluate(doc);
+	  } catch (XPathExpressionException e) {
+	    e.printStackTrace();
+	  }
+	  
+	  return result;
 	}
 	
 	public ArrayList<String> runXQuery(ArrayList<String> sourceDocs, String query){

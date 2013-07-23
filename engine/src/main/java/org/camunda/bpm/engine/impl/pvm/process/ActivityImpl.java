@@ -23,6 +23,8 @@ import org.camunda.bpm.engine.impl.pvm.PvmException;
 import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
+
 
 /**
  * @author Tom Baeyens
@@ -44,6 +46,9 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   protected int y = -1;
   protected int width = -1;
   protected int height = -1;
+  
+  protected MessageFlow outgoingMessageFlow;
+  protected MessageFlow incomingMessageFlow;
   
   public ActivityImpl(String id, ProcessDefinitionImpl processDefinition) {
     super(id, processDefinition);
@@ -181,5 +186,20 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   public String getActivityId() {
     return super.getId();
   }
-  
+
+  public MessageFlow getOutgoingMessageFlow() {
+    return outgoingMessageFlow;
+  }
+
+  public void setOutgoingMessageFlow(MessageFlow outgoingMessageFlow) {
+    this.outgoingMessageFlow = outgoingMessageFlow;
+  }
+
+  public MessageFlow getIncomingMessageFlow() {
+    return incomingMessageFlow;
+  }
+
+  public void setIncomingMessageFlow(MessageFlow incomingMessageFlow) {
+    this.incomingMessageFlow = incomingMessageFlow;
+  }
 }

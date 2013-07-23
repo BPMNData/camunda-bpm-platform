@@ -18,6 +18,7 @@ import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstant
 import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstants.JOB_ACQUISITION;
 import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstants.NAME;
 import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstants.PROPERTIES;
+import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstants.BPMN_DATA_PROPERTIES;
 import static org.camunda.bpm.container.impl.metadata.DeploymentMetadataConstants.PROPERTY;
 
 import java.util.HashMap;
@@ -95,6 +96,7 @@ public abstract class DeploymentMetadataParse extends Parse {
     }
 
     Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> bpmnDataProperties = new HashMap<String, String>();
     
     for (Element childElement : element.elements()) {
       if(CONFIGURATION.equals(childElement.getTagName())) {
@@ -108,12 +110,15 @@ public abstract class DeploymentMetadataParse extends Parse {
         
       } else if(PROPERTIES.equals(childElement.getTagName())) {
         parseProperties(childElement, properties);
-        
+      } else if(BPMN_DATA_PROPERTIES.equals(childElement.getTagName())) {
+        parseProperties(childElement, bpmnDataProperties);
       }
     }
     
     // set collected properties
     processEngine.setProperties(properties);
+    processEngine.setBpmnDataProperties(bpmnDataProperties);
+    
     // add the process engine to the list of parsed engines. 
     parsedProcessEngines.add(processEngine);
             

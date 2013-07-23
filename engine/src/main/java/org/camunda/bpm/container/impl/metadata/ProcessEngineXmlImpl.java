@@ -29,6 +29,7 @@ public class ProcessEngineXmlImpl implements ProcessEngineXml {
   private String jobAcquisitionName;
   private String datasource;
   private Map<String, String> properties;
+  private Map<String, String> bpmnDataProperties;
   
   public String getName() {
     return name;
@@ -76,6 +77,14 @@ public class ProcessEngineXmlImpl implements ProcessEngineXml {
   
   public void setJobAcquisitionName(String jobAcquisitionName) {
     this.jobAcquisitionName = jobAcquisitionName;
+  }
+  
+  public void setBpmnDataProperties(Map<String, String> bpmnDataProperties) {
+    this.bpmnDataProperties = bpmnDataProperties;
+  }
+
+  public Map<String, String> getBpmnDataProperties() {
+    return bpmnDataProperties;
   }
 
 }

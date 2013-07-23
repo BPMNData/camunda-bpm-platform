@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
-
-import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 public class CaseObjectUpdater {
 

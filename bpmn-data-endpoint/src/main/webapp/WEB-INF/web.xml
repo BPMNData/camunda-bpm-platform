@@ -1,0 +1,19 @@
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee    http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+  <filter>
+    <filter-name>Resteasy</filter-name>
+    <filter-class>
+      org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
+    </filter-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataApplication</param-value>
+    </init-param>
+  </filter>
+    <filter-mapping>
+      <filter-name>Resteasy</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
-import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class MessageCreationHandler{

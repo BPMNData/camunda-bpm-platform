@@ -12,27 +12,28 @@
  */
 
 package de.hpi.uni.potsdam.test.bpmn_to_sql;
-
-import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+//
+//import org.camunda.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 import org.camunda.bpm.engine.test.Deployment;
+import org.junit.Ignore;
 
 import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
-
-
-/**
- * @author 
- */
-public class TestProcess extends PluggableProcessEngineTestCase {
-
-  @Deployment
-  public void testBpmnToSql() {
-    //runtimeService.startProcessInstanceByKey("testProcess");
-  }
-  
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
-  @Deployment
-  public void testMn() {
-	    runtimeService.startProcessInstanceByKey("mn");
-	    waitForJobExecutorToProcessAllJobs(5000L, 500);
-	  }
-}
+//
+//
+///**
+// * @author 
+// */
+//public class TestProcess extends PluggableProcessEngineTestCase {
+//
+//  @Deployment
+//  public void testBpmnToSql() {
+//    //runtimeService.startProcessInstanceByKey("testProcess");
+//  }
+//  
+//  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/testdb.sql")
+//  @Deployment
+//  public void testMn() {
+//	    runtimeService.startProcessInstanceByKey("mn");
+//	    waitForJobExecutorToProcessAllJobs(5000L, 500);
+//	  }
+//}

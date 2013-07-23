@@ -3,35 +3,46 @@ ngDefine('camunda.common.directives', [ 'jquery' ], function(module, $) {
   var Directive = function() {
     return {
       restrict: 'A',
-      scope : {
-        helpText: "@",
-        helpTitle: "@",
-        helpTextVar: "&",
-        helpTitleVar: "&",
-        colorInvert: "@"
-      },
-      template: '<span ng-transclude></span><span class="help-toggle"><i class="icon-question-sign" ng-class="colorInvertCls()"></i></span>',
-      transclude: true,
       link: function(scope, element, attrs) {
-        var help = attrs.helpText || scope.helpTextVar,
-            helpTitle = attrs.helpTitle || scope.helpTitleVar,
-            colorInvert = !!attrs.colorInvert;
-
-        scope.colorInvertCls = function() {
-          return (colorInvert ? 'icon-white' : '');
-        };
-
+        var help = attrs.helpText || scope.$eval(attrs["helpTextVar"]);
         var p = "right";
-        if(attrs.helpPlacement) {
+
+        if (attrs.helpPlacement) {
           p = scope.$eval(attrs.helpPlacement);
         }
 
-        $(element).find(".help-toggle").popover({content: help, title: helpTitle, delay: { show: 0, hide: 0 }, placement: p});
+        var shown;
+
+        function show() {
+          var e = this;
+
+          // optimization to work correctly with menues
+          if ($(e).is('.open')) {
+            return;
+          }
+
+          shown = true;
+          
+          setTimeout(function() {
+            if (shown) {
+              $(e).tooltip('show');
+            }
+          }, 200);
+        }
+
+        function hide() {
+          shown = false;
+          $(this).tooltip('hide');
+        }
+
+        $(element)
+          .tooltip({ title: help, placement: p, trigger: 'manual', container: 'body' })
+          .click(hide)
+          .hover(show, hide);
       }
     };
   };
 
-  module
-    .directive("help", Directive);
+  module.directive("help", Directive);
 
 });

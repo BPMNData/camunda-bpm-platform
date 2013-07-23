@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
@@ -38,20 +37,11 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
    * Handles the parallel case of spawning the instances.
    * Will create child executions accordingly for every instance needed.
    */
-  protected void createInstances(ActivityExecution execution) throws Exception {
+  protected void createInstances(ActivityExecution execution, int nrOfInstances) throws Exception {
     
     List<String> caseObjectIdentifiers = null;
-    int nrOfInstances = 0;
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
       caseObjectIdentifiers = resolveCaseObjectIdentifiers(execution);
-      nrOfInstances = caseObjectIdentifiers.size();
-    } else {
-      nrOfInstances = resolveNrOfInstances(execution);
-    }
-    
-    if (nrOfInstances <= 0) {
-      throw new ProcessEngineException("Invalid number of instances: must be positive integer value" 
-              + ", but was " + nrOfInstances);
     }
     
     setLoopVariable(execution, NUMBER_OF_INSTANCES, nrOfInstances);
@@ -141,7 +131,6 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
     
     List<ActivityExecution> joinedExecutions = executionEntity.findInactiveConcurrentExecutions(execution.getActivity());
     if (joinedExecutions.size() == nrOfInstances || completionConditionSatisfied(execution)) {
-      
       execution.getParent().getParent().setActivityInstanceId(execution.getActivityInstanceId());      
       
       // Removing all active child executions (ie because completionCondition is true)
@@ -161,6 +150,8 @@ public class ParallelMultiInstanceBehavior extends MultiInstanceActivityBehavior
       }
       
       executionEntity.takeAll(activity.getOutgoingTransitions(), joinedExecutions);
+    } else {
+      executionEntity.setActivityInstanceId(null);
     }
   }
  

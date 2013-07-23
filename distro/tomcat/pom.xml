@@ -5,10 +5,10 @@
     <groupId>org.camunda.bpm</groupId>
     <artifactId>camunda-root</artifactId>
     <relativePath>../..</relativePath>
-    <version>7.0.0-alpha6</version>
+    <version>7.0.0-alpha8</version>
   </parent>
 
-  <artifactId>camunda-tomcat</artifactId>
+  <artifactId>bpmn-data-camunda-tomcat</artifactId>
   <groupId>org.camunda.bpm.tomcat</groupId>
   <packaging>pom</packaging>
 

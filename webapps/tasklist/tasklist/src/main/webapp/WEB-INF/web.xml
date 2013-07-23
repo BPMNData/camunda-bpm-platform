@@ -5,6 +5,10 @@
 
   <display-name>camunda bpm tasklist</display-name>
 
+  <listener>
+    <listener-class>org.camunda.bpm.pa.DevProcessApplication</listener-class>
+  </listener>
+  
   <filter>
     <filter-name>AuthenticationFilter</filter-name>
     <filter-class>org.camunda.bpm.tasklist.AuthenticationFilter</filter-class>
@@ -13,6 +17,20 @@
   <filter-mapping>
     <filter-name>AuthenticationFilter</filter-name>
     <url-pattern>/engine/*</url-pattern>
+  </filter-mapping>
+  
+  <!-- REST cache control filter -->
+  <filter>
+    <filter-name>CacheControlFilter</filter-name>
+    <filter-class>org.camunda.bpm.engine.rest.filter.CacheControlFilter</filter-class>    
+  </filter>
+  <filter-mapping>
+    <filter-name>CacheControlFilter</filter-name>
+    <url-pattern>/engine/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CacheControlFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
 
   <servlet>

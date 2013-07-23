@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>camunda BPM - engine</name>
-  <artifactId>camunda-engine</artifactId>
+  <artifactId>bpmn-data-camunda-engine</artifactId>
 
 	<parent>
 		<groupId>org.camunda.bpm</groupId>
 		<artifactId>camunda-root</artifactId>
-		<version>7.0.0-alpha6</version>
+		<version>7.0.0-alpha8</version>
 	</parent>
 
   <dependencies>
@@ -154,7 +154,13 @@
       <scope>provided</scope>    
     </dependency>
     
-    <!-- BPMN-Data dependencies -->
+    <!-- BPMN Data dependencies -->
+    <dependency>
+	  <groupId>org.apache.httpcomponents</groupId>
+	  <artifactId>httpclient</artifactId>
+	  <version>4.2.5</version>
+	</dependency>
+    
     <dependency>
 	  <groupId>net.sf.saxon</groupId>
 	  <artifactId>Saxon-HE</artifactId>
@@ -685,7 +691,24 @@
 		  </dependency>
 	   </dependencies>
 	</profile>
-	
+
+    <profile>
+	  <id>mssql12</id>
+	    <activation>
+		  <property>
+			<name>database</name>
+			<value>mssql12</value>
+		  </property>
+		</activation>
+		<dependencies>
+		  <dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>sqljdbc4</artifactId>
+			<scope>test</scope>
+		  </dependency>
+	   </dependencies>
+	</profile>
+
 	<profile>
 	  <id>mysql</id>
 	    <activation>

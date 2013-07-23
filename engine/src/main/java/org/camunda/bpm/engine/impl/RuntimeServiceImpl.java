@@ -47,6 +47,9 @@ import org.camunda.bpm.engine.runtime.NativeExecutionQuery;
 import org.camunda.bpm.engine.runtime.NativeProcessInstanceQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+import org.camunda.bpm.engine.runtime.VariableInstanceQuery;
+
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelateBpmnDataMessageCmd;
 
 /**
  * @author Tom Baeyens
@@ -118,6 +121,10 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
 
   public EventSubscriptionQuery createEventSubscriptionQuery() {
     return new EventSubscriptionQueryImpl(commandExecutor);
+  }
+  
+  public VariableInstanceQuery createVariableInstanceQuery() {
+    return new VariableInstanceQueryImpl(commandExecutor);
   }
   
   public Map<String, Object> getVariables(String executionId) {
@@ -296,6 +303,10 @@ public class RuntimeServiceImpl extends ServiceImpl implements RuntimeService {
   public void correlateMessage(String messageName, String businessKey,
       Map<String, Object> processVariables) {
     commandExecutor.execute(new CorrelateMessageCmd(messageName, businessKey, null, processVariables));
+  }
+
+  public void correlateBpmnDataMessage(String message) {
+    commandExecutor.execute(new CorrelateBpmnDataMessageCmd(message));
   }
 
 }

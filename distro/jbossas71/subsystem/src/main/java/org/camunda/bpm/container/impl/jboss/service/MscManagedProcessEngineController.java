@@ -27,6 +27,7 @@ import org.camunda.bpm.container.impl.jboss.config.ManagedProcessEngineMetadata;
 import org.camunda.bpm.container.impl.jboss.util.Tccl;
 import org.camunda.bpm.container.impl.jboss.util.Tccl.Operation;
 import org.camunda.bpm.container.impl.jmx.services.JmxManagedProcessEngineController;
+import org.camunda.bpm.container.impl.metadata.PropertyHelper;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -64,7 +65,7 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
   // This ensures that they are available when this service is started
   protected final InjectedValue<TransactionManager> transactionManagerInjector = new InjectedValue<TransactionManager>();
   protected final InjectedValue<DataSourceReferenceFactoryService> datasourceBinderServiceInjector = new InjectedValue<DataSourceReferenceFactoryService>();
-  protected final InjectedValue<MscRuntimeContainerDelegate> containerPlatformServiceInjector = new InjectedValue<MscRuntimeContainerDelegate>();
+  protected final InjectedValue<MscRuntimeContainerDelegate> runtimeContainerDelegate = new InjectedValue<MscRuntimeContainerDelegate>();
   protected final InjectedValue<MscRuntimeContainerJobExecutor> mscRuntimeContainerJobExecutorInjector = new InjectedValue<MscRuntimeContainerJobExecutor>();
     
   protected ManagedProcessEngineMetadata processEngineMetadata;
@@ -106,6 +107,10 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
           }      
           
         } finally {
+          
+          MscRuntimeContainerDelegate mscRuntimeContainerDelegate = runtimeContainerDelegate.getValue();
+          mscRuntimeContainerDelegate.processEngineStopped(processEngine);
+          
           context.complete();
         }
       }
@@ -123,7 +128,9 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
       }
 
     }, ProcessEngine.class.getClassLoader());   
-      
+    
+    MscRuntimeContainerDelegate mscRuntimeContainerDelegate = runtimeContainerDelegate.getValue();
+    mscRuntimeContainerDelegate.processEngineStarted(processEngine);
   }
     
   protected void startProcessEngine() {
@@ -145,6 +152,8 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
     // set auto schema update
     if(processEngineMetadata.isAutoSchemaUpdate()) {
       processEngineConfiguration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+    } else {
+      processEngineConfiguration.setDatabaseSchemaUpdate("off");
     }
 
     // set db table prefix
@@ -155,6 +164,8 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
     // set job executor on process engine.
     MscRuntimeContainerJobExecutor mscRuntimeContainerJobExecutor = mscRuntimeContainerJobExecutorInjector.getValue();
     processEngineConfiguration.setJobExecutor(mscRuntimeContainerJobExecutor);
+    
+    PropertyHelper.applyProperties(processEngineConfiguration, processEngineMetadata.getConfigurationProperties());
     
     processEngine = processEngineConfiguration.buildProcessEngine();        
   }
@@ -196,7 +207,7 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
   }
     
   public InjectedValue<MscRuntimeContainerDelegate> getContainerPlatformServiceInjector() {
-    return containerPlatformServiceInjector;
+    return runtimeContainerDelegate;
   }
   
   public InjectedValue<MscRuntimeContainerJobExecutor> getMscRuntimeContainerJobExecutorInjector() {
@@ -214,6 +225,10 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
       .addDependency(ServiceNames.forMscExecutorService())         
       .setInitialMode(Mode.ACTIVE);
     
+    if(processEngineConfiguration.isDefault()) {
+      serviceBuilder.addAliases(ServiceNames.forDefaultProcessEngine());
+    }
+    
     Services.addServerExecutorDependency(serviceBuilder, service.getExecutorInjector(), false);
     
   }
@@ -225,5 +240,8 @@ public class MscManagedProcessEngineController extends MscManagedProcessEngine {
   public InjectedValue<ExecutorService> getExecutorInjector() {
     return executorInjector;
   }
-  
+
+  public ManagedProcessEngineMetadata getProcessEngineMetadata() {
+    return processEngineMetadata;
+  }
 }

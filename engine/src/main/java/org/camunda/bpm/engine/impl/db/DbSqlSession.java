@@ -14,6 +14,9 @@
 package org.camunda.bpm.engine.impl.db;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -52,6 +55,9 @@ import org.camunda.bpm.engine.impl.UserQueryImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.upgrade.DbUpgradeStep;
+import org.camunda.bpm.engine.impl.identity.Authentication;
+import org.camunda.bpm.engine.impl.identity.db.DbGroupQueryImpl;
+import org.camunda.bpm.engine.impl.identity.db.DbUserQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.Session;
 import org.camunda.bpm.engine.impl.persistence.entity.PropertyEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.VariableInstanceEntity;
@@ -78,6 +84,7 @@ public class DbSqlSession implements Session {
   protected List<PersistentObject> insertedObjects = new ArrayList<PersistentObject>();
   protected List<PersistentObject> updatedObjects = new ArrayList<PersistentObject>();
   protected Map<Class<?>, Map<String, CachedObject>> cachedObjects = new HashMap<Class<?>, Map<String,CachedObject>>();
+  protected List<BulkUpdateOperation> bulkUpdates = new ArrayList<BulkUpdateOperation>();
   protected List<DeleteOperation> deleteOperations = new ArrayList<DeleteOperation>();
   protected List<DeserializedObject> deserializedObjects = new ArrayList<DeserializedObject>();
   protected String connectionMetadataDefaultCatalog = null;
@@ -163,6 +170,11 @@ public class DbSqlSession implements Session {
     deleteOperations.add(new BulkDeleteOperation(statement, parameter));
   }
   
+  public void update(String statement, Object parameter) {
+    BulkUpdateOperation updateOperation = new BulkUpdateOperation(statement, parameter);
+    bulkUpdates.add(updateOperation);
+  }
+  
   /**
    * Use this {@link DeleteOperation} to execute a dedicated delete statement.
    * It is important to note there won't be any optimistic locking checks done 
@@ -187,6 +199,24 @@ public class DbSqlSession implements Session {
     }
     public String toString() {
       return "bulk delete: "+statement;
+    }
+  }
+  
+  public class BulkUpdateOperation {
+    String statement;
+    Object parameter;
+    
+    public BulkUpdateOperation(String statement, Object parameter) {
+      this.statement = statement;
+      this.parameter = parameter;
+    }
+    
+    public String getStatement() {
+      return statement;
+    }
+    
+    public Object getParameter() {
+      return parameter;
     }
   }
   
@@ -305,6 +335,12 @@ public class DbSqlSession implements Session {
     }
     return result;
   }
+  
+  public boolean selectBoolean(String statement, Object parameter) {
+    statement = dbSqlSessionFactory.mapStatement(statement);
+    List<Object> result = sqlSession.selectList(statement, parameter);
+    return (result == null || result.isEmpty()) ? false : true;
+  } 
   
   @SuppressWarnings("unchecked")
   public <T extends PersistentObject> T selectById(Class<T> entityClass, String id) {
@@ -443,6 +479,9 @@ public class DbSqlSession implements Session {
       for (PersistentObject updatedObject: updatedObjects) {
         log.fine("  update "+toString(updatedObject));
       }
+      for (BulkUpdateOperation bulkUpdateOperation: bulkUpdates) {
+        log.fine(" bulk update "+ bulkUpdateOperation);
+      }
       for (Object deleteOperation: deleteOperations) {
         log.fine("  "+deleteOperation);
       }
@@ -451,6 +490,7 @@ public class DbSqlSession implements Session {
 
     flushInserts();
     flushUpdates(updatedObjects);
+    flushBulkUpdates();
     flushDeletes();
   }
 
@@ -652,6 +692,20 @@ public class DbSqlSession implements Session {
       
     }
     updatedObjects.clear();
+  }
+  
+  protected void flushBulkUpdates() {
+    for (BulkUpdateOperation bulkUpdateOperation : bulkUpdates) {
+      String updateStatement = bulkUpdateOperation.getStatement();
+      if (updateStatement==null) {
+        throw new ProcessEngineException("no update statement " + updateStatement + " in the ibatis mapping files");
+      }
+      if(log.isLoggable(Level.FINE)) {
+        log.fine("bulk updating: "+ bulkUpdateOperation);
+      }
+      sqlSession.update(updateStatement, bulkUpdateOperation.parameter);
+    }
+    
   }
 
   protected void flushDeletes() {
@@ -960,6 +1014,18 @@ public class DbSqlSession implements Session {
       IoUtil.closeSilently(inputStream);
     }
   }
+  
+  public void executeSchemaResource(String schemaFileResourceName) {
+    FileInputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(new File(schemaFileResourceName));
+      executeSchemaResource("schema operation", "process engine", schemaFileResourceName, inputStream);
+    } catch (FileNotFoundException e) {
+      throw new ProcessEngineException("Cannot find schema resource file '"+schemaFileResourceName,e);
+    } finally {
+      IoUtil.closeSilently(inputStream);
+    }
+  }
 
   private void executeSchemaResource(String operation, String component, String resourceName, InputStream inputStream) {
     log.info("performing "+operation+" on "+component+" with resource "+resourceName);
@@ -1134,10 +1200,10 @@ public class DbSqlSession implements Session {
     return new HistoricVariableInstanceQueryImpl();
   }
   public UserQueryImpl createUserQuery() {
-    return new UserQueryImpl();
+    return new DbUserQueryImpl();
   }
   public GroupQueryImpl createGroupQuery() {
-    return new GroupQueryImpl();
+    return new DbGroupQueryImpl();
   }
 
   // getters and setters //////////////////////////////////////////////////////
@@ -1148,4 +1214,6 @@ public class DbSqlSession implements Session {
   public DbSqlSessionFactory getDbSqlSessionFactory() {
     return dbSqlSessionFactory;
   }
+
+
 }

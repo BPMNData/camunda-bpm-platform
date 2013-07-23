@@ -6,13 +6,13 @@
     The assembly is installed to maven later in the reactor, if the integration tests pass sucessfully
   </description>
 
-  <artifactId>camunda-tomcat-assembly</artifactId>
+  <artifactId>bpmn-data-camunda-tomcat-assembly</artifactId>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.camunda.bpm.tomcat</groupId>
-    <artifactId>camunda-tomcat</artifactId>
-    <version>7.0.0-alpha6</version>
+    <artifactId>bpmn-data-camunda-tomcat</artifactId>
+    <version>7.0.0-alpha8</version>
   </parent>
 
   <name>camunda BPM - tomcat Assembly</name>
@@ -54,7 +54,8 @@
     
     <dependency>
       <groupId>org.camunda.bpm</groupId>
-      <artifactId>camunda-engine</artifactId>
+      <artifactId>bpmn-data-camunda-engine</artifactId>
+      <version>${project.version}</version>
     </dependency>
     
     <dependency>

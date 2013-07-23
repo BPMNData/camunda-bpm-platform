@@ -35,10 +35,18 @@
         <include>com.fasterxml.uuid:java-uuid-generator:jar:*</include>
         <include>joda-time:joda-time:jar:*</include>
         
-        <!-- Bpmn Data additions -->
+        
+      </includes>     
+    </dependencySet>
+    
+    <!-- Bpmn Data additions -->
+    <dependencySet>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <outputDirectory>server/apache-tomcat-${tomcat.version}/lib</outputDirectory>
+      <includes>
         <include>org.apache.httpcomponents:httpclient:jar:*</include>  
         <include>net.sf.saxon:Saxon-HE:jar:*</include>          
-      </includes>     
+      </includes>
     </dependencySet>
     
     <dependencySet>

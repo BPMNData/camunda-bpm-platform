@@ -205,6 +205,8 @@ public class BpmnParse extends Parse {
   private Map<String, DataObject> dataObjectMap = new HashMap<String, DataObject>();
   protected static Map<String, String> scopeInformation = new HashMap<String, String>();
   
+  protected static final String BPMN_DATA_IMPLEMENTATION_URI = "http://bpt.hpi.uni-potsdam.de/Public/BPMNData";
+  
   public static Map<String, String> getScopeInformation() {
     return scopeInformation;
   }
@@ -2100,7 +2102,7 @@ public class BpmnParse extends Parse {
       }
       
       // bpmn data send task
-    } else if (implementation != null && implementation.equalsIgnoreCase("##BpmnData")) {
+    } else if (implementation != null && implementation.equalsIgnoreCase(BPMN_DATA_IMPLEMENTATION_URI)) {
       BpmnDataSendTaskBehavior behavior = new BpmnDataSendTaskBehavior();
       activity.setActivityBehavior(behavior);
     } else {

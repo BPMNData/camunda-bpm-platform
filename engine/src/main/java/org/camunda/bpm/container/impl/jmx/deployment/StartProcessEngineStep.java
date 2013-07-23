@@ -38,6 +38,8 @@ import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
 import org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator;
 import org.camunda.bpm.engine.impl.util.ReflectUtil;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+
 /**
  * <p>Deployment operation step responsible for starting a managed process engine 
  * inside the runtime container.</p> 
@@ -104,6 +106,10 @@ public class StartProcessEngineStep extends MBeanDeploymentOperationStep {
     
     Map<String, String> properties = processEngineXml.getProperties();
     PropertyHelper.applyProperties(configuration, properties);
+    
+    BpmnDataConfiguration bpmnDataConfig = new BpmnDataConfiguration();
+    PropertyHelper.applyProperties(bpmnDataConfig, processEngineXml.getBpmnDataProperties());
+    configurationImpl.setBpmnDataConfiguration(bpmnDataConfig);
     
     if(processEngineXml.getJobAcquisitionName() != null && !processEngineXml.getJobAcquisitionName().isEmpty()) {
       JobExecutor jobExecutor = getJobExecutorService(serviceContainer);

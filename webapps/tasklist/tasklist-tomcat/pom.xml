@@ -3,7 +3,7 @@
   <parent>
     <artifactId>camunda-tasklist-root</artifactId>
     <groupId>org.camunda.bpm.tasklist</groupId>
-    <version>7.0.0-alpha6</version>
+    <version>7.0.0-alpha8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>camunda BPM - tasklist - Tomcat</name>
@@ -27,23 +27,25 @@
   <build>
     <finalName>tasklist</finalName>
 
-    <!--resources>
+    <!--
+    <resources>
       <resource>
         <directory>../tasklist/src/main/runtime/tomcat/resources</directory>
         <filtering>true</filtering>
       </resource>
-    </resources-->
+    </resources>
+    -->
 
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <!--webResources>
+          <webResources>
             <resource>
               <directory>../tasklist/src/main/runtime/tomcat/webapp</directory>
             </resource>
-          </webResources-->
+          </webResources>
         </configuration>
       </plugin>
     </plugins>

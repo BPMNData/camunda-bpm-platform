@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.SuspendedEntityInteractionException;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -90,8 +91,12 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
         CaseObjectUpdater updater = new CaseObjectUpdater();
         updater.updateMICaseObjectCollection(execution);
       }
-      try {
-        createInstances(execution);
+      try {        
+        if (!createInstancesIfPossible(execution)) {
+          // leave the state through the default behavior (so we have to call super.!)
+          // no multiple instance needed in this case
+          super.leave(execution);
+        }
       } catch (BpmnError error) {
         ErrorPropagation.propagateError(error, execution);
       }
@@ -100,7 +105,27 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     }
   }
   
-  protected abstract void createInstances(ActivityExecution execution) throws Exception;
+  /**
+   * protects the createInstance method - it is only called if the numberOfInstances is valid
+   * (negative is invalid -> exception; zero means the sub instances are skipped)
+   * 
+   * Returns true if instances were created
+   */
+  protected boolean createInstancesIfPossible(ActivityExecution execution) throws Exception {
+    int nrOfInstances = resolveNrOfInstances(execution);
+    if (nrOfInstances ==0) {
+      // we have nothing to do here - but it is valid to hand in empty collections according to the BPMN specification
+      return false;
+    }
+    else if (nrOfInstances < 0) {
+      throw new ProcessEngineException("Invalid number of instances: must be positive integer value or zero" 
+              + ", but was " + nrOfInstances);
+    }
+    createInstances(execution, nrOfInstances);
+    return true;
+  }
+  
+  protected abstract void createInstances(ActivityExecution execution, int nrOfInstances) throws Exception;
   
   // Intercepts signals, and delegates it to the wrapped {@link ActivityBehavior}.
   public void signal(ActivityExecution execution, String signalName, Object signalData) throws Exception {
@@ -127,6 +152,13 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
   @SuppressWarnings("rawtypes")
   protected int resolveNrOfInstances(ActivityExecution execution) {
     int nrOfInstances = -1;
+    
+    if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+      List<String> caseObjectIdentifiers = resolveCaseObjectIdentifiers(execution);
+      nrOfInstances = caseObjectIdentifiers.size();
+      return nrOfInstances;
+    }
+    
     if (loopCardinalityExpression != null) {
       nrOfInstances = resolveLoopCardinality(execution);
     } else if (collectionExpression != null) {

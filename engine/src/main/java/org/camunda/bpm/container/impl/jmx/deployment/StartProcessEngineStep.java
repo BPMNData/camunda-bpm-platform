@@ -14,11 +14,9 @@ package org.camunda.bpm.container.impl.jmx.deployment;
 
 import static org.camunda.bpm.container.impl.jmx.deployment.Attachments.PROCESS_APPLICATION;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.camunda.bpm.application.AbstractProcessApplication;
 import org.camunda.bpm.container.impl.jmx.JmxRuntimeContainerDelegate.ServiceTypes;
@@ -27,6 +25,7 @@ import org.camunda.bpm.container.impl.jmx.kernel.MBeanDeploymentOperationStep;
 import org.camunda.bpm.container.impl.jmx.kernel.MBeanServiceContainer;
 import org.camunda.bpm.container.impl.jmx.services.JmxManagedProcessEngine;
 import org.camunda.bpm.container.impl.jmx.services.JmxManagedProcessEngineController;
+import org.camunda.bpm.container.impl.metadata.PropertyHelper;
 import org.camunda.bpm.container.impl.metadata.spi.ProcessEngineXml;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -104,20 +103,7 @@ public class StartProcessEngineStep extends MBeanDeploymentOperationStep {
     configuration.setDataSourceJndiName(datasourceJndiName);
     
     Map<String, String> properties = processEngineXml.getProperties();
-    for (Entry<String, String> property : properties.entrySet()) {
-      
-      Method setter = ReflectUtil.getSetter(property.getKey(), configurationClass, String.class);
-      if(setter != null) {
-        try {
-          setter.invoke(configuration, property.getValue());
-        } catch (Exception e) {
-          throw new ProcessEngineException("Could not set value for property '"+property.getKey(), e);
-        }
-      } else {
-        throw new ProcessEngineException("Could not find setter for property '"+property.getKey());
-      }
-      
-    }
+    PropertyHelper.applyProperties(configuration, properties);
     
     if(processEngineXml.getJobAcquisitionName() != null && !processEngineXml.getJobAcquisitionName().isEmpty()) {
       JobExecutor jobExecutor = getJobExecutorService(serviceContainer);

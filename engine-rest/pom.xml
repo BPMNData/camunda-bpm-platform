@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.camunda.bpm</groupId>
     <artifactId>camunda-root</artifactId>
-    <version>7.0.0-alpha6</version>
+    <version>7.0.0-alpha8</version>
   </parent>
 
   <properties>
@@ -201,6 +201,13 @@
       <artifactId>groovy</artifactId>
       <!-- override version -->
       <version>1.8.4</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert</artifactId>
+      <version>1.4</version>
       <scope>test</scope>
     </dependency>
 

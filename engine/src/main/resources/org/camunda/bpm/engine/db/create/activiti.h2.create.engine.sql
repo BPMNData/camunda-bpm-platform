@@ -67,6 +67,7 @@ create table ACT_RU_JOB (
     REPEAT_ varchar(255),
     HANDLER_TYPE_ varchar(255),
     HANDLER_CFG_ varchar(4000),
+    DEPLOYMENT_ID_ varchar(64),
     primary key (ID_)
 );
 
@@ -101,6 +102,7 @@ create table ACT_RU_TASK (
     PRIORITY_ integer,
     CREATE_TIME_ timestamp,
     DUE_DATE_ timestamp,
+    SUSPENSION_STATE_ integer,
     primary key (ID_)
 );
 
@@ -157,6 +159,18 @@ create table ACT_RU_INCIDENT (
   CONFIGURATION_ varchar(255),
   primary key (ID_)
 );
+
+create table ACT_RU_AUTHORIZATION (
+    ID_ varchar(64) not null,
+    REV_ integer not null,
+    GROUP_ID_ varchar(255),
+    USER_ID_ varchar(255),
+    RESOURCE_TYPE_ varchar(255) not null,
+    RESOURCE_ID_ varchar(64),
+    PERMS_ integer,
+    primary key (ID_)
+);
+
 
 create index ACT_IDX_EXEC_BUSKEY on ACT_RU_EXECUTION(BUSINESS_KEY_);
 create index ACT_IDX_TASK_CREATE on ACT_RU_TASK(CREATE_TIME_);
@@ -274,3 +288,11 @@ alter table ACT_RU_INCIDENT
     add constraint ACT_FK_INC_RCAUSE 
     foreign key (ROOT_CAUSE_INCIDENT_ID_) 
     references ACT_RU_INCIDENT (ID_);
+    
+alter table ACT_RU_AUTHORIZATION
+    add constraint ACT_UNIQ_AUTH_USER
+    unique (USER_ID_,RESOURCE_TYPE_,RESOURCE_ID_);
+    
+alter table ACT_RU_AUTHORIZATION
+    add constraint ACT_UNIQ_AUTH_GROUP
+    unique (GROUP_ID_,RESOURCE_TYPE_,RESOURCE_ID_);

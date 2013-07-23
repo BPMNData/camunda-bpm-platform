@@ -1,10 +1,11 @@
 ngDefine('camunda.common.services', [
+  'module:camunda.common.services.authentication:./Authentication',
   './debouncer',
-  './errors',
-  './httpStatusInterceptor',
-  './httpUtils',
+  'module:camunda.common.services.notifications:./Notifications',
+  'module:camunda.common.services.resolver:./ResourceResolver',
+  'module:camunda.common.services.uri:./uri',
   './requestStatus',
-  './uri'
+  './httpStatusInterceptor'
 ], function(module) {
 
 });

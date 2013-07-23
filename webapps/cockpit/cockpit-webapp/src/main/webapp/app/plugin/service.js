@@ -2,9 +2,7 @@
 
 /* Plugin Services */
 
-define([ "angular" ], function(angular) {
-
-  var module = angular.module("cockpit.plugin");
+ngDefine('cockpit.plugin', [ 'angular' ], function(module, angular) {
 
   function ViewsProvider() {
 
@@ -53,6 +51,24 @@ define([ "angular" ], function(angular) {
       });
     }
 
+    /**
+     * Registers the given viewProvider for the specified view
+     *
+     * View provider is an object like the following:
+     *
+     * <pre>
+     *   {
+     *     id: // id if the view
+     *     label: String, // label of the view
+     *     url: String, // url to the provided view; may be prefixed with plugin://
+     *     controller: Function || String, // controller reference or name
+     *     priority: // priority of the view (default 0)
+     *   }
+     * </pre>
+     *
+     * @param {string} key
+     * @param {Object} viewProvider
+     */
     this.registerDefaultView = function(key, viewProvider) {
       internalRegisterProvider(key, viewProvider, defaultViewMap);
     };
@@ -82,6 +98,12 @@ define([ "angular" ], function(angular) {
           }
 
           var viewProviders = defaultViewMap[component];
+
+          // filter by id and other filter criterias
+          if (options.id) {
+            viewProviders = $filter('filter')(viewProviders, { id: options.id });
+          }
+
           return viewProviders || [];
         },
 
@@ -119,7 +141,5 @@ define([ "angular" ], function(angular) {
   }
 
   module.provider('Views', ViewsProvider);
-  // end config
 
-  return module;
 });

@@ -166,6 +166,7 @@ import org.camunda.bpm.engine.impl.variable.VariableType;
 import org.camunda.bpm.engine.impl.variable.VariableTypes;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.BpmnDataCorrelationHandler;
 import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
 
 
@@ -1032,7 +1033,11 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // correlation handler //////////////////////////////////////////////////////
   protected void initCorrelationHandler() {
     if (correlationHandler == null) {
-      correlationHandler = new DefaultCorrelationHandler();
+      if (isBpmnDataAware) {
+        correlationHandler = new BpmnDataCorrelationHandler();
+      } else {
+        correlationHandler = new DefaultCorrelationHandler();
+      }
     }
     
   }

@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>camunda-bpm-tomcat</artifactId>
+  <artifactId>bpmn-data-camunda-bpm-tomcat</artifactId>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>org.camunda.bpm.tomcat</groupId>
-    <artifactId>camunda-tomcat</artifactId>
+    <artifactId>bpmn-data-camunda-tomcat</artifactId>
     <version>7.0.0-alpha8</version>
   </parent>
 
@@ -16,7 +16,7 @@
 
     <dependency>
       <groupId>org.camunda.bpm.tomcat</groupId>
-      <artifactId>camunda-tomcat-assembly</artifactId>
+      <artifactId>bpmn-data-camunda-tomcat-assembly</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
     </dependency>

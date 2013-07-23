@@ -8,7 +8,7 @@
     <version>7.0.0-alpha8</version>
   </parent>
 
-  <artifactId>camunda-tomcat</artifactId>
+  <artifactId>bpmn-data-camunda-tomcat</artifactId>
   <groupId>org.camunda.bpm.tomcat</groupId>
   <packaging>pom</packaging>
 

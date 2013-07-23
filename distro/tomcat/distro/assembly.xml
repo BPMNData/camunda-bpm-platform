@@ -14,7 +14,7 @@
     <dependencySet>
       <unpack>true</unpack>
       <includes>
-        <include>org.camunda.bpm.tomcat:camunda-tomcat-assembly</include>
+        <include>org.camunda.bpm.tomcat:bpmn-data-camunda-tomcat-assembly</include>
       </includes>
       <outputDirectory />
     </dependencySet>

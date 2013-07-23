@@ -609,27 +609,28 @@ public class BpmnParse extends Parse {
       }
     }
     
-    
-    for (Element messageFlowElement : collaboration.elements("messageFlow")) {
-      MessageFlow flow = new MessageFlow();
-      flow.setMessage(messages.get(messageFlowElement.attribute("messageRef")));
-      flow.setId(messageFlowElement.attribute("id"));
-      
-      ActivityImpl source = activities.get(messageFlowElement.attribute("sourceRef"));
-      if (source != null) {
-        source.setOutgoingMessageFlow(flow);
+    if (collaboration != null) {
+      for (Element messageFlowElement : collaboration.elements("messageFlow")) {
+        MessageFlow flow = new MessageFlow();
+        flow.setMessage(messages.get(messageFlowElement.attribute("messageRef")));
+        flow.setId(messageFlowElement.attribute("id"));
+        
+        ActivityImpl source = activities.get(messageFlowElement.attribute("sourceRef"));
+        if (source != null) {
+          source.setOutgoingMessageFlow(flow);
+        }
+        
+        ActivityImpl target = activities.get((messageFlowElement).attribute("targetRef"));
+        if (target != null) {
+          target.setIncomingMessageFlow(flow);
+        }
+        
+        messageFlows.put(flow.getId(), flow);
       }
       
-      ActivityImpl target = activities.get((messageFlowElement).attribute("targetRef"));
-      if (target != null) {
-        target.setIncomingMessageFlow(flow);
+      for (Element conversationElement : collaboration.elements("conversation")) {
+        parseConversation(conversationElement);
       }
-      
-      messageFlows.put(flow.getId(), flow);
-    }
-    
-    for (Element conversationElement : collaboration.elements("conversation")) {
-      parseConversation(conversationElement);
     }
   }
   
@@ -2280,9 +2281,11 @@ public class BpmnParse extends Parse {
     activity.setAsync(isAsync(receiveTaskElement));
     activity.setExclusive(isExclusive(receiveTaskElement));
     
-    EventSubscriptionDeclaration messageDefinition =  parseMessageEventDefinition(receiveTaskElement);
-    activity.setScope(true);
-    addEventSubscriptionDeclaration(messageDefinition, activity, receiveTaskElement);
+    if (receiveTaskElement.attribute("messageRef") != null) {
+      EventSubscriptionDeclaration messageDefinition =  parseMessageEventDefinition(receiveTaskElement);
+      activity.setScope(true);
+      addEventSubscriptionDeclaration(messageDefinition, activity, receiveTaskElement);
+    }
 
     parseExecutionListenersOnScope(receiveTaskElement, activity);
 

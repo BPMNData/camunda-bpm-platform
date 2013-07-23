@@ -45,7 +45,7 @@ public class MessageIntermediateEventTest extends PluggableProcessEngineTestCase
     
     assertNotNull(execution);
 
-    runtimeService.messageEventReceived(messageName, "4");
+    runtimeService.messageEventReceived(messageName, execution.getId());
     
     Task task = taskService.createTaskQuery()
       .singleResult();    

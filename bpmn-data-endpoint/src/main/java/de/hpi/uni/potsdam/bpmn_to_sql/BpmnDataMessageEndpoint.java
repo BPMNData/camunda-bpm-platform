@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
 
-@Path("/messsage")
+@Path("/message")
 public class BpmnDataMessageEndpoint {
 
   @POST

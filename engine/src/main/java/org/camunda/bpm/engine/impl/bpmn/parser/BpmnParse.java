@@ -119,6 +119,7 @@ import org.camunda.bpm.engine.impl.util.xml.Parse;
 import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataSendTaskBehavior;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
@@ -2097,6 +2098,11 @@ public class BpmnParse extends Parse {
 
         activity.setActivityBehavior(webServiceActivityBehavior);
       }
+      
+      // bpmn data send task
+    } else if (implementation != null && implementation.equalsIgnoreCase("##BpmnData")) {
+      BpmnDataSendTaskBehavior behavior = new BpmnDataSendTaskBehavior();
+      activity.setActivityBehavior(behavior);
     } else {
       addError("One of the attributes 'type' or 'operation' is mandatory on sendTask.", sendTaskElement);
     }

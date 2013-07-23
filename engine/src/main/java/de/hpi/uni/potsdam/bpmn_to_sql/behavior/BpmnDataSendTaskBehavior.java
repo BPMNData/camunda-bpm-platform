@@ -13,6 +13,7 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
+import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
@@ -58,7 +59,10 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
   }
   
   protected void populatePropertyFromMessage(ActivityExecution execution, CorrelationProperty correlationProperty, String message) {
-    // TODO evaluate property expression message here
-    execution.setVariable(correlationProperty.getId(), "some correlation key");
+    XQueryHandler handler = new XQueryHandler();
+    String property = handler.runXPath(message, correlationProperty.getRetrievalExpression());
+    if (property != null && !property.trim().equals("")) {
+      execution.setVariable(correlationProperty.getId(), property);
+    }
   }
 }

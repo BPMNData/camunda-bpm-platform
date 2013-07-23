@@ -1,26 +1,13 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
-
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
-import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class DataInputChecker {
-
-  private static Logger log = Logger.getLogger(AtomicOperationActivityExecute.class.getName());
 
   protected BpmnDataConfiguration configuration;
   
@@ -133,7 +120,9 @@ public class DataInputChecker {
       // check is restarted until all satisfy the check
       for (String query : queryMap.keySet()) {
         System.out.println("Running input check query: " + query);
-        if (dbConnection(query) < queryMap.get(query)) {
+        QueryExecutionHandler handler = QueryExecutionHandler.getInstance();
+        handler.runQuery(query);
+        if (Integer.parseInt(handler.getNextResult().get(0).toString()) < queryMap.get(query)) {
           missingInputData = true;
           System.out.println("waiting for " + query);
         }
@@ -246,81 +235,10 @@ public class DataInputChecker {
 
     query = "SELECT COUNT(D." + dataObj.getFkeys().get(0) + ") FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
         + dataObj.getFkeys().get(0) + ") WHERE M." + dataObj.getFkeys().get(0) + "=\"" + instanceId + "\"";
-    numberOfMI = dbConnection(query);
+    QueryExecutionHandler handler = QueryExecutionHandler.getInstance();
+    handler.runQuery(query);
+    numberOfMI = Integer.parseInt(handler.getNextResult().get(0).toString());
 
     return numberOfMI;
-  }
-
-  // TODO: BPMN_SQL added
-  public int dbConnection(String query) {
-    Connection con = null;
-    Statement st = null;
-    ResultSet rs = null;
-    int count = 0;
-    XQueryHandler handler = new XQueryHandler();
-    ArrayList<String> doc = new ArrayList<String>();
-
-    String url = configuration.getJdbcUrl();
-    String user = configuration.getJdbcUsername();
-    String password = configuration.getJdbcPassword();
-
-    try {
-      con = DriverManager.getConnection(url, user, password);
-      st = con.createStatement();
-      query = query.replaceAll("SELECT COUNT\\([^\\)]*\\)", "SELECT *");
-      rs = st.executeQuery(query);
-      
-      if (query.startsWith("SELECT *")) {
-        doc = handler.buildObjectXML(rs, "test");
-        count = doc.size();
-      }      
-      else if (rs.next()) {
-        count = Integer.parseInt(rs.getString(1));
-      }
-      
-      System.out.println(count);
-      
-      //testQuery(doc);
-
-    } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
-
-    } finally {
-      try {
-        if (st != null) {
-          st.close();
-        }
-        if (con != null) {
-          con.close();
-        }
-      } catch (SQLException ex) {
-        log.log(Level.WARNING, ex.getMessage(), ex);
-      }
-    }
-    return count;
-  }
-  
-  private void testQuery(ArrayList<String> doc){
-    XQueryHandler handler = new XQueryHandler();
-    ArrayList<String> messages = new ArrayList<String>();
-    
-    String query = "for $d in ./bto return <message name=\"BTOMessage\"><correlation><key name=\"Global_BTO\"><property name=\"BTO_ID\"> {$d/btoid/text()} </property></key></correlation><payload><object name=\"Global_BTO\"><property name=\"BTO_ID\"> {$d/btoid/text()} </property><property name=\"BTO_State\"> {$d/state/text()} </property></object></payload></message>";
-    messages = handler.runXQuery(doc, query);
-    //testCorrelationExtraction(messages);
-    //testPayloadExtraction(messages);
-    }
-
-  private void testCorrelationExtraction(ArrayList<String> messages){
-    XQueryHandler handler = new XQueryHandler();
-    for (String message : messages){
-      HashMap<String, HashMap<String,String>> correlationInformation = handler.getCorrelationInformation(message);
-    }
-  }
-
-  private void testPayloadExtraction(ArrayList<String> messages){
-    XQueryHandler handler = new XQueryHandler();
-    for (String message : messages){
-      HashMap<String, HashMap<String,String>> payloadInformation = handler.getPayloadInformation(message);
-    } 
   }
 }

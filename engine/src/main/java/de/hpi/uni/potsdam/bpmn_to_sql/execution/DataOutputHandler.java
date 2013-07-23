@@ -1,15 +1,7 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
@@ -17,8 +9,6 @@ import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
 
 public class DataOutputHandler {
-
-  private static Logger log = Logger.getLogger(DataOutputHandler.class.getName());
   
   protected BpmnDataConfiguration configuration;
   
@@ -148,7 +138,8 @@ public class DataOutputHandler {
             }
           }
         }
-        dbConnection(query);
+        QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
+        queryHandler.runUpdate(query);
       }
     }
     // TODO: BPMN_SQL end
@@ -213,6 +204,7 @@ public class DataOutputHandler {
   // TODO: BPMN_SQL added
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type) {
     String query = "";
+    QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
 
     if (type == "dependent") {
@@ -225,7 +217,8 @@ public class DataOutputHandler {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ")";
-        String pkey = dbConnection2(q);
+        queryHandler.runQuery(q);
+        String pkey = queryHandler.getNextResult().get(0).toString();
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\" AND `state` = \"" + dataObjState + "\""; // has
                                                                                                                                                       // to
                                                                                                                                                       // be
@@ -234,7 +227,8 @@ public class DataOutputHandler {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ") WHERE M." + dataObj.getFkeys().get(0) + "=\"" + scopeInstanceId + "\"";
-        String pkey = dbConnection2(q);
+        queryHandler.runQuery(q);
+        String pkey = queryHandler.getNextResult().get(0).toString();
         query = "UPDATE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\"";
       }
     } else {
@@ -247,6 +241,7 @@ public class DataOutputHandler {
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList,
       String expression, String type) {
     String query = "";
+    QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
     String state = new String();
 
@@ -268,7 +263,8 @@ public class DataOutputHandler {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ")";
-        String pkey = dbConnection2(q);
+        queryHandler.runQuery(q);
+        String pkey = queryHandler.getNextResult().get(0).toString();
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\" AND `state` = \"" + dataObjState + "\""; // has
                                                                                                                                                       // to
                                                                                                                                                       // be
@@ -277,7 +273,8 @@ public class DataOutputHandler {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ") WHERE M." + dataObj.getFkeys().get(0) + "=\"" + scopeInstanceId + "\"";
-        String pkey = dbConnection2(q);
+        queryHandler.runQuery(q);
+        String pkey = queryHandler.getNextResult().get(0).toString();
         query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey
             + "\" and `state` = (" + state + ")";
       }
@@ -370,77 +367,5 @@ public class DataOutputHandler {
       System.out.println("wrong type");
     }
     return query;
-  }
-
-  // TODO: BPMN_SQL added
-  private void dbConnection(String query) {
-    System.out.println("Running output query: " + query);
-    Connection con = null;
-    Statement st = null;
-
-    String url = configuration.getJdbcUrl();
-    String user = configuration.getJdbcUsername();
-    String password = configuration.getJdbcPassword();
-
-    try {
-      con = DriverManager.getConnection(url, user, password);
-      st = con.createStatement();
-      System.out.println(query);
-      st.executeUpdate(query);
-
-    } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
-
-    } finally {
-      try {
-        if (st != null) {
-          st.close();
-        }
-        if (con != null) {
-          con.close();
-        }
-      } catch (SQLException ex) {
-        log.log(Level.WARNING, ex.getMessage(), ex);
-      }
-    }
-  }
-
-  // TODO: BPMN_SQL added
-  private String dbConnection2(String query) {
-    System.out.println("Running output query: " + query);
-    Connection con = null;
-    Statement st = null;
-    ResultSet rs = null;
-    String result = new String();
-
-    String url = configuration.getJdbcUrl();
-    String user = configuration.getJdbcUsername();
-    String password = configuration.getJdbcPassword();
-
-    try {
-      con = DriverManager.getConnection(url, user, password);
-      st = con.createStatement();
-      rs = st.executeQuery(query);
-
-      if (rs.next()) {
-        result = rs.getString(1);
-      }
-
-    } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
-
-    } finally {
-      try {
-        if (st != null) {
-          st.close();
-        }
-        if (con != null) {
-          con.close();
-        }
-      } catch (SQLException ex) {
-        log.log(Level.WARNING, ex.getMessage(), ex);
-      }
-    }
-    return result;
   }
 }

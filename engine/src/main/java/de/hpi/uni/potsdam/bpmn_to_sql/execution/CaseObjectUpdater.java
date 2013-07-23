@@ -1,27 +1,13 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
-import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.DataObject;
-import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
 
 public class CaseObjectUpdater {
-  
-  private static Logger log = Logger.getLogger(AsyncDataInputJobHandler.class.getName());
 
   public void updateExecution(ActivityExecution execution) {
     String dataObjectID = execution.getEffectiveCaseObjectID();
@@ -45,7 +31,6 @@ public class CaseObjectUpdater {
           break;
         }
       }
-      HashMap<String, Object> m = (HashMap<String, Object>) execution.getVariables();
       // if(!execution.hasVariables()) ////Sub-Process Instance has usually no
       // variables besides it is a started multi-sub-process instance by a scope
       // execution
@@ -61,7 +46,7 @@ public class CaseObjectUpdater {
         // process instance
         query = "SELECT `" + dataObj.getPkey() + "` FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` = \"" + dataObjectID + "\"";
         System.out.println(query);
-        ArrayList<String> miList = dbConnection3(query);
+        ArrayList<String> miList = getQueryResult(query);
 
         if (activity.getProperties().containsKey("multiInstance")) { // check
                                                                      // whether
@@ -116,7 +101,7 @@ public class CaseObjectUpdater {
     // process instance
     query = "SELECT `" + dataObj.getPkey() + "` FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` = \"" + dataObjectID + "\"";
     System.out.println(query);
-    ArrayList<String> miList = dbConnection3(query);
+    ArrayList<String> miList = getQueryResult(query);    
     
     execution.setVariable(dataObj.getName(), miList);
     execution.setCaseObjectID(miList.get(0));
@@ -124,40 +109,15 @@ public class CaseObjectUpdater {
   
 
   // TODO: BPMN_SQL added
-  public ArrayList<String> dbConnection3(String query) {
-    Connection con = null;
-    Statement st = null;
-    ResultSet rs = null;
+  public ArrayList<String> getQueryResult(String query) {
     ArrayList<String> result = new ArrayList<String>();
-
-    BpmnDataConfiguration config = Context.getProcessEngineConfiguration().getBpmnDataConfiguration();
-    String url = config.getJdbcUrl();
-    String user = config.getJdbcUsername();
-    String password = config.getJdbcPassword();
-
-    try {
-      con = DriverManager.getConnection(url, user, password);
-      st = con.createStatement();
-      rs = st.executeQuery(query);
-
-      while (rs.next()) {
-        result.add(rs.getString(1));
-      }
-
-    } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
-
-    } finally {
-      try {
-        if (st != null) {
-          st.close();
-        }
-        if (con != null) {
-          con.close();
-        }
-      } catch (SQLException ex) {
-        log.log(Level.WARNING, ex.getMessage(), ex);
-      }
+    QueryExecutionHandler sqlHandler = QueryExecutionHandler.getInstance();
+    
+    sqlHandler.runQuery(query);
+    ArrayList<Object> sqlResult = sqlHandler.getNextResult();
+    while (sqlResult != null){
+      result.add(sqlResult.get(0).toString());
+      sqlResult = sqlHandler.getNextResult();
     }
     return result;
   }

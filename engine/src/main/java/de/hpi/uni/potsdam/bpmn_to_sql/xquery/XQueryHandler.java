@@ -3,9 +3,6 @@ package de.hpi.uni.potsdam.bpmn_to_sql.xquery;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,34 +31,31 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.QueryExecutionHandler;
 import net.sf.saxon.xqj.SaxonXQDataSource;
 
 public class XQueryHandler {
 	
-	public ArrayList<String> buildObjectXML(ResultSet result, String objectName) throws SQLException{
-		ArrayList<String> results = new ArrayList<String>();
-		ResultSetMetaData resultMetaData = result.getMetaData();
-		int columnCount = resultMetaData.getColumnCount();
+	public ArrayList<String> buildObjectXML(String objectName){
+		ArrayList<String> results = new ArrayList<String>();		
+		QueryExecutionHandler sqlHandler = QueryExecutionHandler.getInstance();
+		ArrayList<String> resultMetaData = sqlHandler.getColumnNames();
+		int columnCount = sqlHandler.getColumnCount();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder;
 		
     try {
-      builder = factory.newDocumentBuilder();      
-  		while (result.next()){
+      builder = factory.newDocumentBuilder();
+      ArrayList<Object> result = sqlHandler.getNextResult();
+  		while (result != null){
   			HashMap<String,Document> objects = new HashMap<String,Document>();
   			for (int i = 1; i <= columnCount; i++){
-  				String tableName = resultMetaData.getTableName(i).replace(" ", "_");
-  				Document object;				
-  				if(objects.containsKey(tableName)){
-  					object = objects.get(tableName);
-  				} else{
-  					object = builder.newDocument();
-  					Element rootElement = object.createElement(tableName);
-  					object.appendChild(rootElement);
-  					objects.put(tableName, object);
-  				}
-  				Element column = object.createElement(resultMetaData.getColumnName(i));
-  				column.appendChild(object.createTextNode(result.getString(i)));
+  				Document object = builder.newDocument();;				
+  				Element rootElement = object.createElement(objectName);
+  				object.appendChild(rootElement);
+  				objects.put(objectName, object);
+  				Element column = object.createElement(resultMetaData.get(i));
+  				column.appendChild(object.createTextNode(result.get(i).toString()));
   				object.getFirstChild().appendChild(column);
   				object.getDocumentElement().normalize();
   			}
@@ -125,15 +119,15 @@ public class XQueryHandler {
 	}
 	
 	public ArrayList<String> runXQuery(ArrayList<String> sourceDocs, String query){
-		ArrayList<String> results = new ArrayList<String>();
+		String tempSource = "";
 		for (String sourceDoc : sourceDocs){
-			ArrayList<String> tempResults = runXQuery(sourceDoc, query);
-			results.addAll(tempResults);
+		  tempSource += sourceDoc;
 		}
+		ArrayList<String> results = runXQuery(tempSource, query);
 		return results;
 	}
 	
-	protected ArrayList<String> runXQuery(String source, String query){
+	public ArrayList<String> runXQuery(String source, String query){
 		ArrayList<String> results = new ArrayList<String>();
 		Document doc = transformStringToDoc(source);
 		XQDataSource ds = new SaxonXQDataSource();
@@ -159,43 +153,23 @@ public class XQueryHandler {
 		return results;		
 	}
 	
-	public HashMap<String, HashMap<String, String>> getCorrelationInformation(String message){
-		String query = "for $d in ./message/correlation/key return $d";
-		HashMap<String, HashMap<String, String>> correlationKeys = extractInformation(message, query);
-		
-		return correlationKeys;
-	}
-
-	public HashMap<String, HashMap<String, String>> getPayloadInformation(String message){
-		String query = "for $d in ./message/payload/object return $d";
-		HashMap<String, HashMap<String, String>> payload = extractInformation(message, query);
-		
-		return payload;
-	}
-	
-	public HashMap<String, HashMap<String, String>> extractInformation(String message, String query){
+	public HashMap<String, HashMap<String, String>> extractInformation(String xmlObject){
 		HashMap<String, HashMap<String, String>> extractedInformation = new HashMap<String, HashMap<String, String>>();
-		ArrayList<String> tempInformations = runXQuery(message, query);
+		HashMap<String, String> keys = new HashMap<String, String>();
 		
-		for (String tempInformation : tempInformations){
-			Document doc = transformStringToDoc(tempInformation);
-			Element currentElement = doc.getDocumentElement();
-			String objectName = currentElement.getAttribute("name");
-			HashMap<String, String> keys;
-			if(extractedInformation.containsKey(objectName)){
-				keys = extractedInformation.get(objectName);				
-			} else {
-			  keys = new HashMap<String, String>();
-				extractedInformation.put(objectName, keys);
-			}
-			NodeList childNodes = currentElement.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++) {
-			  Node child = childNodes.item(i);
-			  if (child.getNodeType() != Node.TEXT_NODE){
-			    keys.put(child.getAttributes().item(0).getNodeValue(), child.getFirstChild().getNodeValue());
-			  }
-			}		
+		Document doc = transformStringToDoc(xmlObject);
+		Element currentElement = doc.getDocumentElement();
+		String objectName = currentElement.getTagName();
+		extractedInformation.put(objectName, keys);
+		
+		NodeList childNodes = currentElement.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+		  Node child = childNodes.item(i);
+		  if (child.getNodeType() != Node.TEXT_NODE){
+		    keys.put(child.getNodeName(), child.getFirstChild().getNodeValue());
+		  }
 		}
+		
 		return extractedInformation;
 	}
 

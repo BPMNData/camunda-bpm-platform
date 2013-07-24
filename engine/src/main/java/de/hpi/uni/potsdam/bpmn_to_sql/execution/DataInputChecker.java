@@ -6,7 +6,6 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
-import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class DataInputChecker {
 
@@ -185,7 +184,7 @@ public class DataInputChecker {
       }
     }
 
-    if (type == "dependent") {
+    if (type == "dependent" || type == "dependent_MI") {
       // "SELECT COUNT(`" + dataObjectList.get(0).getPkey() + "`) FROM `" +
       // dataObjectList.get(0).getName() + "` WHERE `" +
       // dataObjectList.get(0).getFkeys().get(0) + "` =" + instanceId +
@@ -197,10 +196,10 @@ public class DataInputChecker {
           + "\" and D.state =(" + state + ")";
       // does not work anymore as soon as several foreign keys are allowed,
       // i.e., when we extend the data object chain to more than 2 in length
-    } else if (type == "dependent_MI") {
+    /*} else if (type == "dependent_MI") {
       query = "SELECT COUNT(D." + dataObjectList.get(0).getFkeys().get(0) + ") FROM `" + dataObjectList.get(0).getName() + "` D INNER JOIN `" + caseObject
-          + "` M USING (" + dataObjectList.get(0).getFkeys().get(0) + ") WHERE M." + dataObjectList.get(0).getFkeys().get(0) + "=\"" + instanceId
-          + "\" and D.state =(" + state + ")";
+          + "` M USING (" + dataObjectList.get(0).getFkeys().get(0) + ") WHERE M." + dataObjectList.get(0).getFkeys().get(0) + "= \"" + instanceId
+          + "\" and D.state =(" + state + ")";*/
     } else { // wrong type
       query = null;
     }

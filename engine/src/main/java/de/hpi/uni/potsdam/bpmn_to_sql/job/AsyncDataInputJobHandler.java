@@ -7,6 +7,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputChecker;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputUnavailableException;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.MessageCreationHandler;
 
 public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
 
@@ -21,7 +22,9 @@ public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
   public void execute(String configuration, ExecutionEntity execution, CommandContext commandContext) {
 
     DataInputChecker dbInputChecker = new DataInputChecker(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    MessageCreationHandler messageHandler = new MessageCreationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
     if (dbInputChecker.checkDataInput(execution)) {
+      messageHandler.getXMLMessages(execution, "test");
       super.execute(configuration, execution, commandContext);
     } else {
       throw new DataInputUnavailableException("Data input for activity " + execution.getActivityId() + " unavailable.");

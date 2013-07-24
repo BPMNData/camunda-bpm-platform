@@ -22,9 +22,9 @@ public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
   public void execute(String configuration, ExecutionEntity execution, CommandContext commandContext) {
 
     DataInputChecker dbInputChecker = new DataInputChecker(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
-    MessageCreationHandler messageHandler = new MessageCreationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    //MessageCreationHandler messageHandler = new MessageCreationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
     if (dbInputChecker.checkDataInput(execution)) {
-      messageHandler.getXMLMessages(execution, "test");
+      //messageHandler.getXMLMessages(execution, "test");
       super.execute(configuration, execution, commandContext);
     } else {
       throw new DataInputUnavailableException("Data input for activity " + execution.getActivityId() + " unavailable.");

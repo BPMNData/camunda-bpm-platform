@@ -66,11 +66,11 @@ public class DataOutputHandler {
         // create SQL query with respect to type of data object (main,
         // dependent, dependent_MI, dependent_WithoutFK)
         if (DataObjectClassification.isMainDataObject(item, execution.getActivity().getParent().getId().split(":")[0])) {
-          if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) {
+          if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) { // TODO: CU2
             // if(!stateList.isEmpty()) {
             // input data object exists
             query = createSqlQuery(item, item_state, stateList, dataObjectID);
-          } else {
+          } else { // TODO: CC1; CC2; CU1; CD1
             // no input data object
             query = createSqlQuery(item, item_state, dataObjectID);
           }
@@ -88,7 +88,7 @@ public class DataOutputHandler {
             // if(!stateList.isEmpty()) {
             // TODO: make available for OR statement
             if (DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(getMatchingInputDataObject(item, execution.getActivity().getId()).get(0),
-                execution.getActivity().getParent().getId().split(":")[0])) {
+                execution.getActivity().getParent().getId().split(":")[0])) { // TODO: D^1:1 U3; D^1:n U3; D^m:n U4
               if (item.getProcessVariable() != null) {
                 expression = (String) execution.getVariable(item.getProcessVariable());
               }
@@ -104,12 +104,12 @@ public class DataOutputHandler {
               // provide case object of the scope to enable JOINALL; case object
               // is in a map called getScopeInformation which has as key the
               // scope (e.g., process, sub-process) name
-              if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) {
+              if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) { // TODO: D^1:1 U2
                 // if(!stateList.isEmpty()) {
                 // input data object exists
                 query = createSqlQuery(item, item_state, dataObjectID,
                     BpmnParse.getScopeInformation().get(execution.getActivity().getParent().getId().split(":")[0]), stateList, expression, "dependent");
-              } else {
+              } else { // TODO: D^1:1 C1; C2; U1; D1
                 // no input data object
                 query = createSqlQuery(item, item_state, dataObjectID,
                     BpmnParse.getScopeInformation().get(execution.getActivity().getParent().getId().split(":")[0]), "dependent");
@@ -123,12 +123,12 @@ public class DataOutputHandler {
                 numberOfItems = Integer.parseInt((String) execution.getVariable(item.getProcessVariable()));
               }
 
-              if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) {
+              if (!getMatchingInputDataObject(item, execution.getActivity().getId()).isEmpty()) { // TODO: D^1:n U2; D^m:n U3
                 // if(!stateList.isEmpty()) {
                 // input data object exists
                 query = createSqlQuery(item, item_state, dataObjectID,
                     BpmnParse.getScopeInformation().get(execution.getActivity().getParent().getId().split(":")[0]), stateList, "dependent_MI", numberOfItems);
-              } else {
+              } else { // TODO: D^1:n C1; C2; U1; D1; D^m:n C1; C2; U1; U2; D1; D2
                 // no input data object
                 query = createSqlQuery(item, item_state, dataObjectID,
                     BpmnParse.getScopeInformation().get(execution.getActivity().getParent().getId().split(":")[0]), "dependent_MI", numberOfItems);

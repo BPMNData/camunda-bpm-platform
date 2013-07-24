@@ -58,10 +58,10 @@ public class DataInputChecker {
         int r;
         // create SQL query with respect to type of data object (main,
         // dependent, dependent_MI, external_input)
-        if (DataObjectClassification.isMainDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) {
+        if (DataObjectClassification.isMainDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: CR1; CR2
           q = createSqlQuery(dataObjectList, dataObjectID);
           r = 1;
-        } else if (DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(dataObjectList.get(0), activityParentId.split(":")[0])) {
+        } else if (DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R3; D^1:n R3; D^m:n R2; R4
 
           // get primary key of case object because of assumption that all
           // dependent DOs relate to main data object
@@ -93,13 +93,13 @@ public class DataInputChecker {
           q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), caseObjPk,
               "dependent_WithoutFK");
           r = 1;
-        } else if (DataObjectClassification.isDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) {
+        } else if (DataObjectClassification.isDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R1; R2
           // provide case object of the scope to enable JOINALL; case object is
           // in a map called getScopeInformation which has as key the scope
           // (e.g., process, sub-process) name
           q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), "dependent");
           r = 1;
-        } else if (DataObjectClassification.isMIDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) {
+        } else if (DataObjectClassification.isMIDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:n R1; R2; D^m:n R1; R3
           q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), "dependent_MI");
           r = numberOfMultipleInstanceInTable(dataObjectList.get(0), dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0])); // has
                                                                                                                                                          // to

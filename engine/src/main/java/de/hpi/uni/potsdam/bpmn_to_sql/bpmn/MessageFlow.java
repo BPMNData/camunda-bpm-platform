@@ -10,6 +10,7 @@ public class MessageFlow {
   protected String id;
   protected List<CorrelationKey> correlationKeys = new ArrayList<CorrelationKey>();
   protected MessageDefinition message;
+  protected String endpointAddress;
   
   public String getId() {
     return id;
@@ -30,5 +31,11 @@ public class MessageFlow {
   }
   public void setMessage(MessageDefinition message) {
     this.message = message;
+  }
+  public String getEndpointAddress() {
+    return endpointAddress;
+  }
+  public void setEndpointAddress(String endpointAddress) {
+    this.endpointAddress = endpointAddress;
   }
 }

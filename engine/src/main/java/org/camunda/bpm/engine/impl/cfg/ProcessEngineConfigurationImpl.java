@@ -341,7 +341,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   
   protected Set<String> registeredDeployments;
 
-  protected boolean isBpmnDataAware = false;
+  protected boolean bpmnDataAware = false;
   
   protected BpmnDataConfiguration bpmnDataConfiguration;
   
@@ -387,7 +387,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initPasswordDigest();
     initDeploymentRegistration();
     
-    if (isBpmnDataAware) {
+    if (bpmnDataAware) {
       initBpmnDataConfiguration();
     }
   }
@@ -1079,7 +1079,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // correlation handler //////////////////////////////////////////////////////
   protected void initCorrelationHandler() {
     if (correlationHandler == null) {
-      if (isBpmnDataAware) {
+      if (bpmnDataAware) {
         correlationHandler = new BpmnDataCorrelationHandler();
       } else {
         correlationHandler = new DefaultCorrelationHandler();
@@ -1913,11 +1913,11 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   }
 
   public boolean isBpmnDataAware() {
-    return isBpmnDataAware;
+    return bpmnDataAware;
   }
   
   public ProcessEngineConfigurationImpl setBpmnDataAware(boolean isBpmnDataAware) {
-    this.isBpmnDataAware = isBpmnDataAware;
+    this.bpmnDataAware = isBpmnDataAware;
     return this;
   }
   

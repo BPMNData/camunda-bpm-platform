@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:camundabpm="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.2.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-c37b42b5-708e-47ce-acb8-f32a1f3478db" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+   
+   <correlationProperty id="correlation-property">
+     <correlationPropertyRetrievalExpression messageRef="sid-7896005A-8D9E-414C-8422-A9567CE231EB">
+       <messagePath>/message/correlation/key[@name='some key']/property[@name='some-prop']/text()</messagePath>
+     </correlationPropertyRetrievalExpression>
+   </correlationProperty>
+   
+   
+   <message id="auctionRequestMessage" name="AuctionRequest"/>
+   <endPoint id="auctioningServiceEndPoint">
+     <extensionElements>
+        <camundabpm:address>http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+     </extensionElements>
+   </endPoint>
+   <collaboration id="collaboration">
+      <participant id="auctioning_service" name="Auctioning Service">
+         <endPointRef>auctioningServiceEndPoint</endPointRef>
+      </participant>
+      <participant id="seller" name="Seller" processRef="sellerProcess">
+      </participant>
+      <messageFlow id="sendMessageFlow" messageRef="auctionRequestMessage" sourceRef="send" targetRef="auctioning_service">
+      </messageFlow>
+	  
+	  <conversation id="conversation">
+        <messageFlowRef>sendMessageFlow</messageFlowRef>
+        <correlationKey id="correlation-key">
+            <correlationPropertyRef>correlation-property</correlationPropertyRef>
+        </correlationKey>
+      </conversation>
+   </collaboration>
+   <process id="sellerWithSubprocess" isExecutable="true" name="Seller">
+      <startEvent id="start"/>
+      
+      <subProcess id="subProcess">
+        <startEvent id="subProcessStart" />
+      
+        <parallelGateway id="subProcessFork" />
+        
+        <parallelGateway id="subProcessInnerFork" />
+      
+        <sendTask id="send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" name="Send Auction Request"/>
+        <userTask id="taskA" name="Review A"/>
+        
+        <userTask id="taskB" name="Review B"/>
+        
+        <parallelGateway id="subProcessInnerJoin" />
+        
+        <userTask id="taskC" name="Review C"/>
+        <parallelGateway id="subProcessJoin" />
+        
+        <endEvent id="subProcessEnd"/>
+      
+        <sequenceFlow id="flow2" sourceRef="subProcessStart" targetRef="subProcessFork"/>
+        <sequenceFlow id="flow3" sourceRef="subProcessFork" targetRef="subProcessInnerFork"/>
+        <sequenceFlow id="flow4" sourceRef="subProcessInnerFork" targetRef="send"/>
+        <sequenceFlow id="flow5" sourceRef="send" targetRef="taskA"/>
+        
+        
+        <sequenceFlow id="flow6" sourceRef="subProcessInnerFork" targetRef="taskB"/>
+        <sequenceFlow id="flow7" sourceRef="taskA" targetRef="subProcessInnerJoin"/>
+        <sequenceFlow id="flow8" sourceRef="taskB" targetRef="subProcessInnerJoin"/>
+        
+        <sequenceFlow id="flow9" sourceRef="subProcessFork" targetRef="taskC"/>
+        <sequenceFlow id="flow10" sourceRef="taskC" targetRef="subProcessJoin"/>
+        <sequenceFlow id="flow11" sourceRef="subProcessInnerJoin" targetRef="subProcessJoin"/>
+        <sequenceFlow id="flow12" sourceRef="subProcessJoin" targetRef="subProcessEnd"/>
+      </subProcess>
+      
+      <endEvent id="end"/>
+      <sequenceFlow id="flow1" sourceRef="start" targetRef="subProcess"/>
+      <sequenceFlow id="flow13" sourceRef="subProcess" targetRef="end"/>
+   </process>
+</definitions>

@@ -357,5 +357,8 @@ public abstract class MultiInstanceActivityBehavior extends FlowNodeActivityBeha
     this.innerActivityBehavior = innerActivityBehavior;
     this.innerActivityBehavior.setMultiInstanceActivityBehavior(this);
   }
+  public AbstractBpmnActivityBehavior getInnerActivityBehavior() {
+    return this.innerActivityBehavior;
+  }
   
 }

@@ -7,6 +7,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
+import org.camunda.bpm.engine.impl.bpmn.helper.ScopeUtil;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
@@ -17,12 +19,16 @@ import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
-  private static final String ENDPOINT_VARIABLE_NAME = "bpmn_data_endpoint";
   private static final String MESSAGE_INPUT_VARIABLE_NAME = "messageInput";
+//  private static final String SUB_PROCESS_TYPE = "subProcess";
   
   @Override
   public void execute(ActivityExecution execution) throws Exception {
     String messageContent = (String) execution.getVariable(MESSAGE_INPUT_VARIABLE_NAME);
+    
+    if(messageContent == null || messageContent.trim().isEmpty()) {
+      throw new ProcessEngineException(execution.getActivity().toString() + ": message content is empty");
+    }
     
     MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getOutgoingMessageFlow();
     String endPointAddress = messageFlow.getEndpointAddress();
@@ -53,18 +59,48 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
       throw new ProcessEngineException("Send task " + execution.getActivity().getId() + " has no outgoing message flow");
     }
     
+    // determine the correlation scope execution
+    ExecutionEntity scopeExecution = determineCorrelationScopeExecution(execution); 
+    
+    
+    
     for (CorrelationKey correlationKey : messageFlow.getCorrelationKeys()) {
       for (CorrelationProperty property : correlationKey.getCorrelationProperties()) {
-        populatePropertyFromMessage(execution, property, message);
+        populatePropertyFromMessage(scopeExecution, property, message);
       }
     }
   }
   
-  protected void populatePropertyFromMessage(ActivityExecution execution, CorrelationProperty correlationProperty, String message) {
+  protected ExecutionEntity determineCorrelationScopeExecution(ActivityExecution execution) {
+    ExecutionEntity correlationScopeExecution = (ExecutionEntity) ScopeUtil.findScopeExecution(execution);
+    
+    return correlationScopeExecution;
+  }
+  
+//  protected boolean isSubprocessActivity(ActivityImpl activity) {
+//    Class<?> subprocessBehaviorClass = SubProcessActivityBehavior.class;
+//    Class<?> multInstanceBehaviorClass = MultiInstanceActivityBehavior.class;
+//    
+//    ActivityBehavior behavior = activity.getActivityBehavior();
+//    
+//    if (subprocessBehaviorClass.isAssignableFrom(behavior.getClass())) {
+//      return true;
+//    }
+//    if (multInstanceBehaviorClass.isAssignableFrom(behavior.getClass())) {
+//      MultiInstanceActivityBehavior miBehavior = (MultiInstanceActivityBehavior) behavior;
+//      if (subprocessBehaviorClass.isAssignableFrom(miBehavior.getInnerActivityBehavior().getClass())) {
+//        return true;
+//      }
+//    }
+//    
+//    return false;
+//  }
+
+  protected void populatePropertyFromMessage(ActivityExecution correlationScopeExecution, CorrelationProperty correlationProperty, String message) {
     XQueryHandler handler = new XQueryHandler();
     String property = handler.runXPath(message, correlationProperty.getRetrievalExpression());
     if (property != null && !property.trim().equals("")) {
-      execution.setVariable(correlationProperty.getId(), property);
+      correlationScopeExecution.setVariableLocal(correlationProperty.getId(), property);
     }
   }
 }

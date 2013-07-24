@@ -3,7 +3,6 @@ package de.hpi.uni.potsdam.bpmn_to_sql.correlation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.camunda.bpm.engine.MismatchingMessageCorrelationException;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.ExecutionQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -62,7 +61,7 @@ public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
     // otherwise an exception should be thrown
     
     if (matchingExecutions.isEmpty()) {
-      throw new MismatchingMessageCorrelationException(messageName, "No matching execution found");
+      return null;
     }
     
     return matchingExecutions.get(0);

@@ -222,6 +222,7 @@ public class BpmnParse extends Parse {
   protected Map<String, CorrelationProperty> correlationProperties = new HashMap<String, CorrelationProperty>();
   protected Map<String, ActivityImpl> activities = new HashMap<String, ActivityImpl>();
   protected Map<String, MessageFlow> messageFlows = new HashMap<String, MessageFlow>();
+  protected Map<String, String> endpointAddresses = new HashMap<String, String>();
   
   // Members
   protected ExpressionManager expressionManager;
@@ -294,6 +295,7 @@ public class BpmnParse extends Parse {
     parseSignals();
     parseProcessDefinitions();
     parseCorrelationProperties();
+    parseEndpoints();
     parseCollaboration();
 
     // Diagram interchange parsing must be after parseProcessDefinitions,
@@ -303,6 +305,21 @@ public class BpmnParse extends Parse {
     for (BpmnParseListener parseListener : parseListeners) {
       parseListener.parseRootElement(rootElement, getProcessDefinitions());
     }
+  }
+
+  private void parseEndpoints() {
+    for (Element endpointElement : rootElement.elements("endPoint")) {
+      Element extensionElement = endpointElement.element("extensionElements");
+      if (extensionElement == null) {
+        addError("endpoint requires an extension element with an address element", endpointElement);
+      }
+      Element addressElement = extensionElement.elementNS(BpmnParser.ACTIVITI_BPMN_EXTENSIONS_NS, "address");
+      if (addressElement == null || addressElement.getText().trim().isEmpty()) {
+        addError("endpoint requires address element", endpointElement);
+      }
+      endpointAddresses.put(endpointElement.attribute("id"), addressElement.getText().trim());
+    }
+    
   }
 
   private void parseCorrelationProperties() {
@@ -597,6 +614,7 @@ public class BpmnParse extends Parse {
    * during DI parsing.
    */
   public void parseCollaboration() {
+    Map<String, String> participantEndpointMapping = new HashMap<String, String>();
     Element collaboration = rootElement.element("collaboration");
     if (collaboration != null) {
       for (Element participant : collaboration.elements("participant")) {
@@ -613,6 +631,12 @@ public class BpmnParse extends Parse {
             participantProcesses.put(participantProcess.getId(), processRef);
           }
         }
+        
+        Element endpointRef = participant.element("endPointRef");
+        if (endpointRef != null) {
+          String endpointAddress = endpointAddresses.get(endpointRef.getText());
+          participantEndpointMapping.put(participant.attribute("id"), endpointAddress);
+        }
       }
     }
     
@@ -622,14 +646,21 @@ public class BpmnParse extends Parse {
         flow.setMessage(messages.get(messageFlowElement.attribute("messageRef")));
         flow.setId(messageFlowElement.attribute("id"));
         
+        
         ActivityImpl source = activities.get(messageFlowElement.attribute("sourceRef"));
         if (source != null) {
           source.setOutgoingMessageFlow(flow);
         }
         
-        ActivityImpl target = activities.get((messageFlowElement).attribute("targetRef"));
+        String targetRef = (messageFlowElement).attribute("targetRef");
+        ActivityImpl target = activities.get(targetRef);
         if (target != null) {
           target.setIncomingMessageFlow(flow);
+        }
+        
+
+        if (participantEndpointMapping.containsKey(targetRef)) {
+          flow.setEndpointAddress(participantEndpointMapping.get(targetRef));
         }
         
         messageFlows.put(flow.getId(), flow);

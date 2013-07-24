@@ -22,8 +22,10 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
   
   @Override
   public void execute(ActivityExecution execution) throws Exception {
-    String endPointAddress = (String) execution.getVariable(ENDPOINT_VARIABLE_NAME);
     String messageContent = (String) execution.getVariable(MESSAGE_INPUT_VARIABLE_NAME);
+    
+    MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getOutgoingMessageFlow();
+    String endPointAddress = messageFlow.getEndpointAddress();
     
     DefaultHttpClient client = new DefaultHttpClient();
     HttpPost post =  new HttpPost(endPointAddress);

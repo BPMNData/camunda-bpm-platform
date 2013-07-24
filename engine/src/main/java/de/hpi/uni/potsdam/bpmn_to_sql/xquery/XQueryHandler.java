@@ -5,6 +5,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,16 +32,19 @@ import javax.xml.xquery.XQSequence;
 
 import net.sf.saxon.xqj.SaxonXQDataSource;
 
+import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.QueryExecutionHandler;
-import net.sf.saxon.xqj.SaxonXQDataSource;
 
 public class XQueryHandler {
+  
+  private static Logger log = Logger.getLogger(AtomicOperationActivityExecute.class.getName());
 	
 	public ArrayList<String> buildObjectXML(String objectName){
 		ArrayList<String> results = new ArrayList<String>();		
@@ -51,28 +56,31 @@ public class XQueryHandler {
 		
     try {
       builder = factory.newDocumentBuilder();
+      Document object = builder.newDocument();        
+      Element rootElement = object.createElement(objectName);
+      object.appendChild(rootElement);
+      String resultXML = "";
       ArrayList<Object> result = sqlHandler.getNextResult();
   		while (result != null){
-  			HashMap<String,Document> objects = new HashMap<String,Document>();
-  			for (int i = 1; i <= columnCount; i++){
-  				Document object = builder.newDocument();;				
-  				Element rootElement = object.createElement(objectName);
-  				object.appendChild(rootElement);
-  				objects.put(objectName, object);
+  		  Element objectElement = object.createElement("Object");
+  			for (int i = 0; i < columnCount; i++){
   				Element column = object.createElement(resultMetaData.get(i));
-  				column.appendChild(object.createTextNode(result.get(i).toString()));
-  				object.getFirstChild().appendChild(column);
-  				object.getDocumentElement().normalize();
-  			}
-  			String resultXML = "";
-  			for(Document resultObject : objects.values()){
-  				resultXML += transformDocToString(resultObject);				
-  			}
-  			results.add(resultXML);
+  				if(result.get(i) == null){
+  				  column.appendChild(object.createTextNode(""));  				  
+  				} else
+  				{
+  				  column.appendChild(object.createTextNode(result.get(i).toString()));
+  				}  				
+  				objectElement.appendChild(column);
+  			}  			
+  			rootElement.appendChild(objectElement);
+  			result = sqlHandler.getNextResult();
   		}
+  		object.getDocumentElement().normalize();
+  		resultXML = transformDocToString(object);
+  		results.add(resultXML);
     } catch (ParserConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     }
     
 		return results;
@@ -90,11 +98,9 @@ public class XQueryHandler {
 	    transformer.transform(new DOMSource(doc), new StreamResult(writer));
 	    output = writer.getBuffer().toString();
     } catch (TransformerConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     } catch (TransformerException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     }
 	  
     return output;
@@ -110,14 +116,11 @@ public class XQueryHandler {
       doc = builder.parse(new InputSource(new StringReader(xml)));
       return doc;
     } catch (ParserConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     } catch (SAXException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     }
     
 		return null;		
@@ -133,7 +136,7 @@ public class XQueryHandler {
 	    XPathExpression expression = xpath.compile(xPathExpression);
 	    result =  expression.evaluate(doc);
 	  } catch (XPathExpressionException e) {
-	    e.printStackTrace();
+	    log.log(Level.SEVERE, e.getMessage(), e);
 	  }
 	  
 	  return result;
@@ -167,8 +170,7 @@ public class XQueryHandler {
         results.add(xml);
       }
     } catch (XQException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.log(Level.SEVERE, e.getMessage(), e);
     }
     
 		return results;		

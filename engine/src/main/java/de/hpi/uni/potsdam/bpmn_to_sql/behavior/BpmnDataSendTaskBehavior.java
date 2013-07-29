@@ -15,6 +15,7 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
@@ -52,55 +53,12 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
   }
 
   private void updateCorrelationKeys(ActivityExecution execution, String message) {
-    // TODO set the keys on the correlation scope here (i.e. subprocess or process instance)
     MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getOutgoingMessageFlow();
     
     if (messageFlow == null) {
       throw new ProcessEngineException("Send task " + execution.getActivity().getId() + " has no outgoing message flow");
     }
     
-    // determine the correlation scope execution
-    ExecutionEntity scopeExecution = determineCorrelationScopeExecution(execution); 
-    
-    
-    
-    for (CorrelationKey correlationKey : messageFlow.getCorrelationKeys()) {
-      for (CorrelationProperty property : correlationKey.getCorrelationProperties()) {
-        populatePropertyFromMessage(scopeExecution, property, message);
-      }
-    }
-  }
-  
-  protected ExecutionEntity determineCorrelationScopeExecution(ActivityExecution execution) {
-    ExecutionEntity correlationScopeExecution = (ExecutionEntity) ScopeUtil.findScopeExecution(execution);
-    
-    return correlationScopeExecution;
-  }
-  
-//  protected boolean isSubprocessActivity(ActivityImpl activity) {
-//    Class<?> subprocessBehaviorClass = SubProcessActivityBehavior.class;
-//    Class<?> multInstanceBehaviorClass = MultiInstanceActivityBehavior.class;
-//    
-//    ActivityBehavior behavior = activity.getActivityBehavior();
-//    
-//    if (subprocessBehaviorClass.isAssignableFrom(behavior.getClass())) {
-//      return true;
-//    }
-//    if (multInstanceBehaviorClass.isAssignableFrom(behavior.getClass())) {
-//      MultiInstanceActivityBehavior miBehavior = (MultiInstanceActivityBehavior) behavior;
-//      if (subprocessBehaviorClass.isAssignableFrom(miBehavior.getInnerActivityBehavior().getClass())) {
-//        return true;
-//      }
-//    }
-//    
-//    return false;
-//  }
-
-  protected void populatePropertyFromMessage(ActivityExecution correlationScopeExecution, CorrelationProperty correlationProperty, String message) {
-    XQueryHandler handler = new XQueryHandler();
-    String property = handler.runXPath(message, correlationProperty.getRetrievalExpression());
-    if (property != null && !property.trim().equals("")) {
-      correlationScopeExecution.setVariableLocal(correlationProperty.getId(), property);
-    }
+    CorrelationHelper.populateCorrelationKeysInScope(execution, message, messageFlow.getCorrelationKeys());
   }
 }

@@ -25,6 +25,7 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
         .createProcessEngineConfigurationFromResource("activiti.cfg.xml");
     
     config.setCorrelationHandler(new BpmnDataCorrelationHandler());
+    config.setBpmnDataAware(true);
     processEngine = config.buildProcessEngine();
   }
   
@@ -49,4 +50,24 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
     
     Assert.assertNotNull(waitingExecution);
   }
+  
+  @Deployment
+  public void testCorrelationPropertyPopulationOnMessageStart() {
+    runtimeService.correlateBpmnDataMessage(BPMN_DATA_MESSAGE);
+    
+    Execution processInstance = runtimeService.createExecutionQuery().singleResult();
+    
+    Assert.assertNotNull("a process instance should have been started", processInstance);
+    
+    Object variable = runtimeService.getVariable(processInstance.getId(), "correlation-property");
+    
+    Assert.assertNotNull("the correlation property should have been set", variable);
+    Assert.assertEquals("the correlation property should have been populated correctly", "8", variable);
+    
+  }
+  
+//  @Deployment
+//  public void testCorrelationPropertyPopulationOnIntermediateMessageCatch() {
+//    
+//  }
 }

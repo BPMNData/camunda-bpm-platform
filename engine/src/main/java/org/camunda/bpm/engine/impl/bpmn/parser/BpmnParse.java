@@ -119,6 +119,7 @@ import org.camunda.bpm.engine.impl.util.xml.Parse;
 import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataMessageStartEventBehavior;
 import de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataSendTaskBehavior;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
@@ -1086,13 +1087,16 @@ public class BpmnParse extends Parse {
       for (BpmnParseListener parseListener : parseListeners) {
         parseListener.parseStartEvent(startEventElement, scope, startEventActivity);
       }
-      parseExecutionListenersOnScope(startEventElement, startEventActivity);      
+      parseExecutionListenersOnScope(startEventElement, startEventActivity);   
+
+      activities.put(startEventActivity.getId(), startEventActivity);
     }
     
     if(scope instanceof ProcessDefinitionEntity) {
       selectInitial(startEventActivities, (ProcessDefinitionEntity) scope, parentElement);
       parseStartFormHandlers(startEventElements, (ProcessDefinitionEntity) scope);
     }
+    
   }
 
   protected void selectInitial(List<ActivityImpl> startEventActivities, ProcessDefinitionEntity processDefinition, Element parentElement) {
@@ -1130,6 +1134,7 @@ public class BpmnParse extends Parse {
     if (timerEventDefinition != null) {
       parseTimerStartEventDefinition(timerEventDefinition, startEventActivity, processDefinition);
     } else if(messageEventDefinition != null) {
+      startEventActivity.setActivityBehavior(new BpmnDataMessageStartEventBehavior());
       EventSubscriptionDeclaration messageDefinition = parseMessageEventDefinition(messageEventDefinition);
       startEventActivity.setProperty("type", "messageStartEvent");
       messageDefinition.setActivityId(startEventActivity.getId());

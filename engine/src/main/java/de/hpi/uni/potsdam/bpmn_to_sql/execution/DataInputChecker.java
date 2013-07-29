@@ -133,6 +133,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // main data object
+  // CR1; CR2
   private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId) {
     // TODO our stuff
     String query;
@@ -171,6 +172,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // dependent data object
+  // D^1:1 R1; R2; D^1:n R1; R2; D^m:n R1; R3
   private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String type) {
     // TODO our stuff
     String query;
@@ -209,6 +211,7 @@ public class DataInputChecker {
 
   // TODO: BPMN_SQL added
   // dependent data object with null foreign key
+  // D^1:1 R3; D^1:n R3; D^m:n R2; R4
   private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String caseObjectPk, String type) {
     // TODO our stuff
     String query;

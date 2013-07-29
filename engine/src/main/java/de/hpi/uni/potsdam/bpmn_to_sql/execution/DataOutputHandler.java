@@ -161,6 +161,7 @@ public class DataOutputHandler {
 
   // TODO: BPMN_SQL added
   // Creation of SQL-Queries(insert, update, delete) only for main data object
+  // CC1; CC2; CU1; CD1
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId) {
     String query = "";
 
@@ -177,6 +178,7 @@ public class DataOutputHandler {
 
   // TODO: BPMN_SQL added
   // Creation of SQL-Queries(insert, update, delete) only for main data object
+  // CU2
   private String createSqlQuery(DataObject dataObj, String dataObjState, ArrayList<String> stateList, String scopeInstanceId) {
     String query = "";
     String state = new String();
@@ -202,6 +204,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
+  // D^1:1 C1; C2; U1; D1
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type) {
     String query = "";
     QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
@@ -238,6 +241,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
+  // D^1:1 U3; D^1:n U3; D^m:n U4; D^1:1 U2
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList,
       String expression, String type) {
     String query = "";
@@ -253,7 +257,7 @@ public class DataOutputHandler {
       }
     }
 
-    if (type == "dependent") {
+    if (type == "dependent") { // D^1:1 U2
       if (dataObj.getPkType().equals("new")) {
         query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
             + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
@@ -278,7 +282,7 @@ public class DataOutputHandler {
         query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey
             + "\" and `state` = (" + state + ")";
       }
-    } else if (type == "dependent_WithoutFK") {
+    } else if (type == "dependent_WithoutFK") { // D^1:1 U3; D^1:n U3; D^m:n U4
       // TODO: has to be checked
       if (expression != null) {
         query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
@@ -299,6 +303,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
+  // D^1:n C1; C2; U1; D1; D^m:n C1; C2; U1; U2; D1; D2
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, String type, int count) {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
@@ -329,6 +334,7 @@ public class DataOutputHandler {
   }
 
   // TODO: BPMN_SQL added
+  // D^1:n U2; D^m:n U3
   private String createSqlQuery(DataObject dataObj, String dataObjState, String scopeInstanceId, String caseObject, ArrayList<String> stateList, String type,
       int count) {
     String query = "";

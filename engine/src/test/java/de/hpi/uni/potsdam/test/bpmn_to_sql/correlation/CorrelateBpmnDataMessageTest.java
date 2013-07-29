@@ -1,5 +1,8 @@
 package de.hpi.uni.potsdam.test.bpmn_to_sql.correlation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.test.AbstractProcessEngineTestCase;
@@ -20,11 +23,24 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
       " </correlation>" +
       "</message>";
   
+  private static final String BPMN_DATA_TWO_PROPERTIES_MESSAGE = 
+      "<message name=\"aMessageName\">" +
+      " <correlation>" +
+      "   <key name=\"some key\">" +
+      "     <property name=\"some-prop\">8</property>" +
+      "   </key>" +
+      "   <key name=\"another key\">" +
+      "     <property name=\"another-prop\">42</property>" +
+      "   </key>" +
+      " </correlation>" +
+      "</message>";
+  
   protected void initializeProcessEngine() {
     ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
         .createProcessEngineConfigurationFromResource("activiti.cfg.xml");
     
     config.setCorrelationHandler(new BpmnDataCorrelationHandler());
+    config.setBpmnDataAware(true);
     processEngine = config.buildProcessEngine();
   }
   
@@ -48,5 +64,40 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
         .activityId("task").singleResult();
     
     Assert.assertNotNull(waitingExecution);
+  }
+  
+  @Deployment
+  public void testCorrelationPropertyPopulationOnMessageStart() {
+    runtimeService.correlateBpmnDataMessage(BPMN_DATA_MESSAGE);
+    
+    Execution processInstance = runtimeService.createExecutionQuery().singleResult();
+    
+    Assert.assertNotNull("a process instance should have been started", processInstance);
+    
+    Object variable = runtimeService.getVariable(processInstance.getId(), "correlation-property");
+    Assert.assertNotNull("the correlation property should have been set", variable);
+    Assert.assertEquals("the correlation property should have been populated correctly", "8", variable);
+    
+  }
+  
+  @Deployment
+  public void testCorrelationPropertyPopulationOnReceiveTask() {
+    Map<String, Object> initialCorrelationProperties = new HashMap<String, Object>();
+    initialCorrelationProperties.put("correlation-property", "8");
+    
+    runtimeService.startProcessInstanceByKey("process", initialCorrelationProperties);
+    
+    runtimeService.correlateBpmnDataMessage(BPMN_DATA_TWO_PROPERTIES_MESSAGE);
+    
+    Execution processInstance = runtimeService.createExecutionQuery().singleResult();
+    
+    Assert.assertNotNull("a process instance should have been started", processInstance);
+    
+    Object variable = runtimeService.getVariable(processInstance.getId(), "correlation-property");
+    Assert.assertEquals("the initial correlation property should not have changed", "8", variable);
+    
+    variable = runtimeService.getVariable(processInstance.getId(), "another-correlation-property");
+    Assert.assertNotNull("the new correlation property should have been set", variable);
+    Assert.assertEquals("the new correlation property should have been populated correctly", "42", variable);
   }
 }

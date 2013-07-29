@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.cmd.CorrelateMessageCmd;
-import org.camunda.bpm.engine.impl.cmd.MessageEventReceivedCmd;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.runtime.Execution;
@@ -24,6 +23,7 @@ public class CorrelateBpmnDataMessageCmd extends CorrelateMessageCmd {
     Map<String, Object> correlationKeys = new HashMap<String, Object>();
     correlationKeys.put("message", messageContent);
     this.correlationKeys = correlationKeys;
+    this.processVariables = correlationKeys;
   }
 
 
@@ -33,10 +33,10 @@ public class CorrelateBpmnDataMessageCmd extends CorrelateMessageCmd {
   }
 
 
-  @Override
   protected void triggerExecution(CommandContext commandContext, Execution matchingExecution) {
     // ensure that the message payload is only set locally on the execution and not propagated upwards
     ((ExecutionEntity) matchingExecution).setVariablesLocal(correlationKeys);
-    new MessageEventReceivedCmd(messageName, matchingExecution.getId(), null).execute(commandContext);
+    super.triggerExecution(commandContext, matchingExecution);
   }
+  
 }

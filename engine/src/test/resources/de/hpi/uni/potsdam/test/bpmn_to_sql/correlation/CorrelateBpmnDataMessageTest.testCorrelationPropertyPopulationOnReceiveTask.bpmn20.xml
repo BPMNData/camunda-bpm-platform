@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions id="definitions" 
+  xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:activiti="http://activiti.org/bpmn"
+  targetNamespace="Examples"
+  xmlns:tns="Examples">
+  
+  <message id="aMessage" name="aMessageName" />
+  
+  <process id="process">
+  
+    <startEvent id="theStart"/>
+    
+    <sequenceFlow id="flow1" sourceRef="theStart" targetRef="messageReceive" />
+    
+    <receiveTask id="messageReceive" messageRef="aMessage"/>
+    
+    <sequenceFlow id="flow2" sourceRef="messageReceive" targetRef="task" />
+  
+    <userTask id="task" name="Task" />
+    
+    <sequenceFlow id="flow3" sourceRef="task" targetRef="theEnd" />
+    
+    <endEvent id="theEnd" />
+    
+  </process>
+  
+  <correlationProperty id="correlation-property">
+    <correlationPropertyRetrievalExpression messageRef="aMessage">
+      <messagePath>/message/correlation/key[@name='some key']/property[@name='some-prop']/text()</messagePath>
+    </correlationPropertyRetrievalExpression>
+  </correlationProperty>
+  <correlationProperty id="another-correlation-property">
+    <correlationPropertyRetrievalExpression messageRef="aMessage">
+      <messagePath>/message/correlation/key[@name='another key']/property[@name='another-prop']/text()</messagePath>
+    </correlationPropertyRetrievalExpression>
+  </correlationProperty>
+  
+  <collaboration id="collaboration">
+    <participant id="local" processRef="process"/>
+    <participant id="remote"/>
+    <messageFlow id="messageFlow" messageRef="aMessage" sourceRef="remote" targetRef="messageReceive"/>
+    
+    <conversation id="conversation">
+        <messageFlowRef>messageFlow</messageFlowRef>
+        <correlationKey id="correlation-key">
+            <correlationPropertyRef>correlation-property</correlationPropertyRef>
+        </correlationKey>
+        <correlationKey id="another-correlation-key">
+            <correlationPropertyRef>another-correlation-property</correlationPropertyRef>
+        </correlationKey>
+    </conversation>
+  </collaboration>
+
+</definitions>

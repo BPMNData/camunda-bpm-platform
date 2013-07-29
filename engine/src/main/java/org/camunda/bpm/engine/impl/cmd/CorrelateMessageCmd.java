@@ -33,7 +33,7 @@ public class CorrelateMessageCmd implements Command<Void> {
   protected String messageName;
   protected final String businessKey;
   protected Map<String, Object> correlationKeys;
-  protected final Map<String, Object> processVariables;
+  protected Map<String, Object> processVariables;
   
   public CorrelateMessageCmd(String messageName, String businessKey,
       Map<String, Object> correlationKeys, Map<String, Object> processVariables) {

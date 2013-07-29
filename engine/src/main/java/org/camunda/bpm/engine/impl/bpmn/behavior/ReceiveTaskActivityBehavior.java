@@ -13,8 +13,14 @@
 
 package org.camunda.bpm.engine.impl.bpmn.behavior;
 
+import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
+
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
 
 
 /**
@@ -32,7 +38,23 @@ public class ReceiveTaskActivityBehavior extends TaskActivityBehavior {
   }
   
   public void signal(ActivityExecution execution, String signalName, Object data) throws Exception {
+    if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+      String message = (String) execution.getVariable("message");
+      updateCorrelationKeys(execution, message);
+    }
+    
     leave(execution);
+  }
+  
+  protected void updateCorrelationKeys(ActivityExecution execution, String message) {
+    MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getIncomingMessageFlow();
+    
+    if (messageFlow == null) {
+      throw new ProcessEngineException("Start event " + execution.getActivity().getId() + " has no incoming message flow");
+    }
+    
+    // the keys have to be set on the parent scope, as a receive task/event always creates a new child scope
+    CorrelationHelper.populateCorrelationKeysInScope(execution.getParent(), message, messageFlow.getCorrelationKeys());
   }
   
 }

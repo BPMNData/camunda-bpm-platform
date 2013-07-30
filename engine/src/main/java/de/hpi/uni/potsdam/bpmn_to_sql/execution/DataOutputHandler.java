@@ -24,6 +24,7 @@ public class DataOutputHandler {
   
   protected BpmnDataConfiguration configuration;
   
+  // TODO remove config
   public DataOutputHandler(BpmnDataConfiguration configuration) {
     this.configuration = configuration;
   }
@@ -150,8 +151,9 @@ public class DataOutputHandler {
             }
           }
         }
-        QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
-        queryHandler.runUpdate(query);
+//        QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
+//        queryHandler.runUpdate(query);
+        System.out.println(query);
       }
     }
     // TODO: BPMN_SQL end

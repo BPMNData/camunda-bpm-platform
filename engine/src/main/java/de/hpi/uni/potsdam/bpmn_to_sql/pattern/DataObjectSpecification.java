@@ -16,6 +16,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SqlHelper;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereSubClause;
 
@@ -37,7 +38,7 @@ public class DataObjectSpecification {
   public String getName() {
     return name;
   }
-
+  
   public String getPkAttribute() {
     return pkAttribute;
   }
@@ -55,7 +56,7 @@ public class DataObjectSpecification {
 
   public String getAttributeValueStatement(String attribute) {
     if (attribute.equals(pkAttribute)) {
-      return pkValue;
+      return SqlHelper.escapeStringLiteral(pkValue);
     }
     
     AttributeValueExpression expression = attributeValues.get(attribute);
@@ -107,7 +108,8 @@ public class DataObjectSpecification {
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
     
-    SelectClause selectClause = new SelectClause(name + "." + pkAttribute);
+    String fullQualifiedPrimaryKey = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(pkAttribute);
+    SelectClause selectClause = new SelectClause(fullQualifiedPrimaryKey);
     statement.setSelectClause(selectClause);
     
     return statement;
@@ -137,7 +139,8 @@ public class DataObjectSpecification {
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
     
-    SelectClause selectClause = new SelectClause("COUNT(" + name + "." + pkAttribute + ")");
+    String fullQualifiedPrimaryKey = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(pkAttribute);
+    SelectClause selectClause = new SelectClause("COUNT(" + fullQualifiedPrimaryKey + ")");
     statement.setSelectClause(selectClause);
     
     return statement;
@@ -145,10 +148,10 @@ public class DataObjectSpecification {
   
   private FromClause buildFromClause() {
     FromClause fromClause = new FromClause();
-    fromClause.addTableName(name);
+    fromClause.addTableName(SqlHelper.escapeIdentifier(name));
     
     for (String tableName : tables) {
-      fromClause.addTableName(tableName);
+      fromClause.addTableName(SqlHelper.escapeIdentifier(tableName));
     }
     
     return fromClause;
@@ -167,29 +170,15 @@ public class DataObjectSpecification {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
     
     if (pkValue != null) {
-      String attributeName = name + "." + pkAttribute;
-      WhereSubClause pkClause = new PlainValueWhereSubClause(attributeName, pkValue);
+      String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(pkAttribute);
+      WhereSubClause pkClause = new PlainValueWhereSubClause(fullQualifiedAttributeName, SqlHelper.escapeStringLiteral(pkValue));
       subClauses.add(pkClause);
     }
     
     for (Map.Entry<String, AttributeValueExpression> attributePair : attributeValues.entrySet()) {
-      String fullQualifiedAttributeName = name + "." + attributePair.getKey();
+      String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(attributePair.getKey());
       subClauses.addAll(attributePair.getValue().toWhereSubClauses(fullQualifiedAttributeName));
     }
-    /*
-    for (Map.Entry<String, DataObjectReference> reference : referencedObjects.entrySet()) {
-      List<WhereSubClause> referenceSubClauses = new ArrayList<WhereSubClause>();
-      String foreignKey = reference.getKey();
-      
-      String fullQualifiedAttributeName = this.name + "." + foreignKey;
-      subClauses.addAll(reference.getValue().toWhereSubClauses(fullQualifiedAttributeName));
-      
-//      String attributeValue = referencedObject.getName() + "." + referencedObject.getPkAttribute();
-//      WhereSubClause clause = new PlainValueWhereSubClause(attributeName, attributeValue);
-//      subClauses.add(clause);
-//      subClauses.addAll(referencedObject.getWhereSubClauses());
-      subClauses.addAll(referenceSubClauses);
-    }*/
     
     return subClauses;
   }

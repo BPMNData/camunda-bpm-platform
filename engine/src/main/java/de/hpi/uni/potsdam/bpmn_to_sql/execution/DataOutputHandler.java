@@ -222,13 +222,13 @@ public class DataOutputHandler {
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
     
     // TODO assumption is here that the foreign key equals the CO's primary key
-    DataObjectSpecification caseObjectSpec = dataObject("`" + caseObject + "`", dataObj.getFkeys().get(0), "\"" + scopeInstanceId + "\"");
+    DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
 
     if ("dependent".equals(type)) {
       if (dataObj.getPkType().equals("new")) {
         query = insert().object(
-            dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), "\"" +  uuid.toString() + "\"")
-              .attribute("`state`", "\"" + dataObjState + "\"")
+            dataObject(dataObj.getName(), dataObj.getPkey(), uuid.toString())
+              .attribute("state", dataObjState)
               .references(dataObj.getFkeys().get(0), caseObjectSpec))
             .getStatement().toSqlString();
         
@@ -329,14 +329,14 @@ public class DataOutputHandler {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
 
-    DataObjectSpecification caseObjectSpec = dataObject("`" + caseObject + "`", dataObj.getFkeys().get(0), "\"" + scopeInstanceId + "\"");
+    DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
     
     if (type == "dependent_MI") {
       if (dataObj.getPkType().equals("new")) {
         InsertObjectSpecification insertSpec = insert();
         for (int i = 0; i < count; i++) {
-          insertSpec.object(dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), "\"" +  UUID.randomUUID().toString() + "\"")
-              .attribute("`state`", "\"" + dataObjState + "\"")
+          insertSpec.object(dataObject(dataObj.getName(), dataObj.getPkey(), UUID.randomUUID().toString())
+              .attribute("state", dataObjState)
               .references(dataObj.getFkeys().get(0), caseObjectSpec));
         }
         query = insertSpec.getStatement().toSqlString();

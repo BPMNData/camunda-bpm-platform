@@ -144,12 +144,12 @@ public class DataInputChecker {
   // CR1; CR2
   private String createSqlQuery(List<DataObject> dataObjectList, String instanceId) {
     // TODO our stuff
-    String coTableName = "`" + dataObjectList.get(0).getName() + "`";
+    String coName = dataObjectList.get(0).getName();
     String pk = dataObjectList.get(0).getPkey();
     
     String[] states = extractStates(dataObjectList);
     
-    String query = dataObject(coTableName, pk, "\"" + instanceId + "\"").attribute("state", values(states)).getSelectCountStatement().toSqlString();
+    String query = dataObject(coName, pk, instanceId).attribute("state", values(states)).getSelectCountStatement().toSqlString();
 
     return query;
   }
@@ -158,8 +158,7 @@ public class DataInputChecker {
     String[] states = new String[dataObjects.size()];
     
     for (int i = 0; i < dataObjects.size(); i++) {
-      String currentState = dataObjects.get(i).getState();
-      states[i] = "\"" + currentState + "\"";
+      states[i] = dataObjects.get(i).getState();
     }
     return states;
   }
@@ -170,12 +169,11 @@ public class DataInputChecker {
   private String createSqlQuery(List<DataObject> dataObjectList, String instanceId, String caseObject) {
     // TODO our stuff
     String[] states = extractStates(dataObjectList);
-    String dataObjectName = "`" + dataObjectList.get(0).getName() + "`";
+    String dataObjectName = dataObjectList.get(0).getName();
     String foreignKey = dataObjectList.get(0).getFkeys().get(0);
-    String caseObjectName = "`" + caseObject + "`";
     
     String query = anyDataObject(dataObjectName, dataObjectList.get(0).getPkey()).attribute("state", values(states))
-        .references(foreignKey, dataObject(caseObjectName, foreignKey, instanceId)).getSelectCountStatement().toSqlString();
+        .references(foreignKey, dataObject(caseObject, foreignKey, instanceId)).getSelectCountStatement().toSqlString();
 
     return query;
   }
@@ -187,7 +185,7 @@ public class DataInputChecker {
     // TODO our stuff
     
     String[] states = extractStates(dataObjectList);
-    String dataObjectName = "`" + dataObjectList.get(0).getName() + "`";
+    String dataObjectName = dataObjectList.get(0).getName();
     
     String query = anyDataObject(dataObjectName, dataObjectList.get(0).getPkey()).attribute("state", values(states))
        .attribute(caseObjectPk, nullValue()).getSelectCountStatement().toSqlString();
@@ -199,12 +197,11 @@ public class DataInputChecker {
   private int numberOfMultipleInstanceInTable(DataObject dataObj, String instanceId, String caseObject) {
     int numberOfMI = 0;
     
-    String dataObjectName = "`" + dataObj.getName() + "`";
+    String dataObjectName = dataObj.getName();
     String foreignKey = dataObj.getFkeys().get(0);
-    String caseObjectName = "`" + caseObject + "`";
     
     String query = anyDataObject(dataObjectName, dataObj.getPkey())
-        .references(foreignKey, dataObject(caseObjectName, foreignKey, instanceId)).getSelectCountStatement().toSqlString();
+        .references(foreignKey, dataObject(caseObject, foreignKey, instanceId)).getSelectCountStatement().toSqlString();
 
     QueryExecutionHandler handler = QueryExecutionHandler.getInstance();
     handler.runQuery(query);

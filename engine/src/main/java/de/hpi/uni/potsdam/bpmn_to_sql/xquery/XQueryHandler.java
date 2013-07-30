@@ -57,7 +57,7 @@ public class XQueryHandler {
     try {
       builder = factory.newDocumentBuilder();
       Document object = builder.newDocument();        
-      Element rootElement = object.createElement(objectName);
+      Element rootElement = object.createElement(objectName.replace(" ", "_"));
       object.appendChild(rootElement);
       String resultXML = "";
       ArrayList<Object> result = sqlHandler.getNextResult();

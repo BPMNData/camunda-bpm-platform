@@ -1450,21 +1450,21 @@ public class BpmnParse extends Parse {
   }
   
   private DataAssociation parseDataAssociation(Element dataAssociationElement){
-    String sourceRef = null;
+    String sourceRef = "";
     Element sourceElement = dataAssociationElement.element("sourceRef");
     if (sourceElement != null) {
       sourceRef = sourceElement.getText();
     }
     
-    String targetRef = null;
+    String targetRef = "";
     Element targetElement = dataAssociationElement.element("targetRef");
     if (targetElement != null) {
       targetRef = targetElement.getText();
     }
     
-    String transformation = null;
-    Element transformationElement = dataAssociationElement.element("targetRef");
-    if (targetElement != null) {
+    String transformation = "";
+    Element transformationElement = dataAssociationElement.element("transformation");
+    if (transformationElement != null) {
       transformation = transformationElement.getText();
     }
     

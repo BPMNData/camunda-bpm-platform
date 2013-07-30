@@ -143,10 +143,11 @@ public class XQueryHandler {
 	}
 	
 	public ArrayList<String> runXQuery(ArrayList<String> sourceDocs, String query){
-		String tempSource = "";
+		String tempSource = "<DataObjects>";
 		for (String sourceDoc : sourceDocs){
 		  tempSource += sourceDoc;
 		}
+		tempSource += "</DataObjects>";
 		ArrayList<String> results = runXQuery(tempSource, query);
 		return results;
 	}
@@ -154,24 +155,28 @@ public class XQueryHandler {
 	public ArrayList<String> runXQuery(String source, String query){
 		ArrayList<String> results = new ArrayList<String>();
 		Document doc = transformStringToDoc(source);
-		XQDataSource ds = new SaxonXQDataSource();
-    XQConnection conn;
-    try {
-      conn = ds.getConnection();    
-      XQPreparedExpression exp;
-      exp = conn.prepareExpression(query);    
-      exp.bindNode(XQConstants.CONTEXT_ITEM, doc, null);    
-		  XQSequence seq;    
-      seq = exp.executeQuery();    
-      while (seq.next()) {
-        XQItem item = seq.getItem();
-        String xml = item.getItemAsString(null);
-        xml = xml.replaceAll("\\n[\\s]+", ""); 
-        results.add(xml);
+		if(!query.equals("")){
+  		XQDataSource ds = new SaxonXQDataSource();
+      XQConnection conn;
+      try {
+        conn = ds.getConnection();    
+        XQPreparedExpression exp;
+        exp = conn.prepareExpression(query);    
+        exp.bindNode(XQConstants.CONTEXT_ITEM, doc, null);    
+  		  XQSequence seq;    
+        seq = exp.executeQuery();    
+        while (seq.next()) {
+          XQItem item = seq.getItem();
+          String xml = item.getItemAsString(null);
+          xml = xml.replaceAll("\\n[\\s]+", ""); 
+          results.add(xml);
+        }
+      } catch (XQException e) {
+        log.log(Level.SEVERE, e.getMessage(), e);
       }
-    } catch (XQException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
-    }
+		} else {
+		  results.add(source);
+		}
     
 		return results;		
 	}

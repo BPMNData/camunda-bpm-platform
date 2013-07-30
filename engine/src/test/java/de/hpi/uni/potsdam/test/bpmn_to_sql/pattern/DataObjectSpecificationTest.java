@@ -82,4 +82,10 @@ public class DataObjectSpecificationTest extends TestCase {
     
     Assert.assertEquals(expectedStatement, actualStatement);
   }
+  
+  public void testCC1Pattern() {
+    String expectedStatement = "INSERT INTO d1(d1_id, state) VALUES (\"some id\", \"some state\")";
+    
+    InsertStatement insertStatement = dataObject("d1").attribute("state", )
+  }
 }

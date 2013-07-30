@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.impl.bpmn.data.AbstractDataAssociation;
+import org.camunda.bpm.engine.impl.bpmn.data.IOSpecification;
 import org.camunda.bpm.engine.impl.pvm.PvmActivity;
 import org.camunda.bpm.engine.impl.pvm.PvmException;
 import org.camunda.bpm.engine.impl.pvm.PvmTransition;
@@ -49,9 +51,14 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   
   protected MessageFlow outgoingMessageFlow;
   protected MessageFlow incomingMessageFlow;
+  protected List<AbstractDataAssociation> dataInputAssociations;
+  protected List<AbstractDataAssociation> dataOutputAssociations;
+  protected IOSpecification ioSpecification;
   
   public ActivityImpl(String id, ProcessDefinitionImpl processDefinition) {
     super(id, processDefinition);
+    this.dataInputAssociations = new ArrayList<AbstractDataAssociation>();
+    this.dataOutputAssociations = new ArrayList<AbstractDataAssociation>();    
   }
 
   public TransitionImpl createOutgoingTransition() {
@@ -202,4 +209,29 @@ public class ActivityImpl extends ScopeImpl implements PvmActivity, HasDIBounds 
   public void setIncomingMessageFlow(MessageFlow incomingMessageFlow) {
     this.incomingMessageFlow = incomingMessageFlow;
   }
+
+  public List<AbstractDataAssociation> getDataInputAssociations() {
+    return dataInputAssociations;
+  }
+
+  public void addDataInputAssociation(AbstractDataAssociation dataAssociation) {
+    this.dataInputAssociations.add(dataAssociation);
+  }
+
+  public List<AbstractDataAssociation> getDataOutputAssociations() {
+    return dataOutputAssociations;
+  }
+
+  public void addDataOutputAssociation(AbstractDataAssociation dataAssociation) {
+    this.dataOutputAssociations.add(dataAssociation);
+  }
+
+  public IOSpecification getIoSpecification() {
+    return ioSpecification;
+  }
+
+  public void setIoSpecification(IOSpecification ioSpecification) {
+    this.ioSpecification = ioSpecification;
+  }  
+  
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class DataObject {
 
+  private String id;
 	private String name;
 	private String state;
 	private String pkey;
@@ -15,7 +16,14 @@ public class DataObject {
 	private String processVariable;
 	private String regExpression;
 	
-	public ArrayList<String> getFkeys() {
+	
+	public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public ArrayList<String> getFkeys() {
 		return fkeys;
 	}
 	public void setFkeys(ArrayList<String> fkeys) {

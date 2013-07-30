@@ -32,16 +32,7 @@ public class PlainAttributeValueExpression implements AttributeValueExpression {
 
   public List<WhereSubClause> toJoinWhereSubClauses(String attribute) {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
-    String[] escapedValues = new String[values.length];
-    for (int i = 0; i < values.length; i++) {
-      escapedValues[i] = SqlHelper.escapeStringLiteral(values[i]);
-    }
-    
-    if (values == null || (values.length == 1 && values[0] == null)) {
-      escapedValues = null;
-    }
-    
-    WhereSubClause clause = new PlainValueWhereSubClause(attribute, escapedValues);
+    WhereSubClause clause = toSubSelectWhereSubClause(attribute);
     subClauses.add(clause);
     return subClauses;
   }
@@ -58,8 +49,16 @@ public class PlainAttributeValueExpression implements AttributeValueExpression {
   }
 
   public WhereSubClause toSubSelectWhereSubClause(String attribute) {
-    // FIXME this allows only a single value
-    return new PlainValueWhereSubClause(attribute, toValueSelection());
+    String[] escapedValues = new String[values.length];
+    for (int i = 0; i < values.length; i++) {
+      escapedValues[i] = SqlHelper.escapeStringLiteral(values[i]);
+    }
+    
+    if (values == null || (values.length == 1 && values[0] == null)) {
+      escapedValues = null;
+    }
+    
+    return new PlainValueWhereSubClause(attribute, escapedValues);
   }
   
   

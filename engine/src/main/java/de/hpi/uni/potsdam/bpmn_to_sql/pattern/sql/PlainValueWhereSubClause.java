@@ -1,5 +1,7 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql;
 
+import org.camunda.bpm.engine.ProcessEngineException;
+
 public class PlainValueWhereSubClause implements WhereSubClause {
 
   private String attributeName;
@@ -26,6 +28,26 @@ public class PlainValueWhereSubClause implements WhereSubClause {
       return sqlClause.toString();
     }
     
+    if (attributeValues.length == 1) {
+      sqlClause.append(" = ");
+      sqlClause.append(attributeValues[0]);
+      return sqlClause.toString();
+    } else if (attributeValues.length > 1) {
+      sqlClause.append(" IN ");
+      sqlClause.append("(");
+      for (int i = 0; i < attributeValues.length; i++) {
+        sqlClause.append(attributeValues[i]);
+        
+        if (i < attributeValues.length - 1) {
+          sqlClause.append(", ");
+        }
+      }
+      sqlClause.append(")");
+      return sqlClause.toString();
+    } else {
+      throw new ProcessEngineException("Clause has to contain at least one value");
+    }
+    /*
     sqlClause.append(" = ");
     
     if (attributeValues.length > 1) {
@@ -44,6 +66,6 @@ public class PlainValueWhereSubClause implements WhereSubClause {
       sqlClause.append(")");
     }
     
-    return sqlClause.toString();
+    return sqlClause.toString();*/
   }
 }

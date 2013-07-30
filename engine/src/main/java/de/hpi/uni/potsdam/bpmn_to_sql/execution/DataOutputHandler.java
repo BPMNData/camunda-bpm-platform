@@ -1,16 +1,24 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.anyDataObject;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification.insert;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.nullValue;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.AttributeUpdate;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectReference;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification;
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification.insert;
 
 public class DataOutputHandler {
   
@@ -171,18 +179,18 @@ public class DataOutputHandler {
 
     if (dataObj.getPkType().equals("new")) {
       // TODO dead branch according to tests
-      throw new RuntimeException("This is supposedly a dead branch");
-//      query = insert().object(dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), scopeInstanceId).attribute("`state`", "\"" + dataObjState + "\""))
-//        .getStatement().toSqlString();
-      
-      //query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      throw new RuntimeException("Not tested");
     } else if (dataObj.getPkType().equals("delete")) {
       query = "DELETE FROM `" + dataObj.getName() + "` WHERE " + dataObj.getPkey() + "=\"" + scopeInstanceId + "\"";
+      
+      throw new RuntimeException("Not tested");
     } else {
       query = "UPDATE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`=\"" + scopeInstanceId + "\"";
+      throw new RuntimeException("Not tested");
     }
 
-    return query;
+//    return query;
   }
 
   // TODO: BPMN_SQL added
@@ -202,13 +210,20 @@ public class DataOutputHandler {
 
     if (dataObj.getPkType().equals("new")) {
       // TODO dead branch according to tests
-      throw new RuntimeException("This is supposedly a dead branch");
-//      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      throw new RuntimeException("Not tested");
+      
     } else if (dataObj.getPkType().equals("delete")) {
       query = "DELETE FROM `" + dataObj.getName() + "` WHERE " + dataObj.getPkey() + "=\"" + scopeInstanceId + "\"";
     } else {
-      query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`=\"" + scopeInstanceId
-          + "\" and `state` = (" + state + ")";
+      List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+      AttributeUpdate update = new AttributeUpdate("state", dataObjState);
+      updates.add(update);
+      String[] validStates = stateList.toArray(new String[0]);
+      query = dataObject(dataObj.getName(), dataObj.getPkey(), scopeInstanceId).attribute("state", values(validStates)).getUpdateStatement(updates).toSqlString();
+      
+//      String query2 = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`=\"" + scopeInstanceId
+//          + "\" and `state` = (" + state + ")";
     }
 
     return query;
@@ -236,6 +251,7 @@ public class DataOutputHandler {
 //            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
 //            + "\"),\"" + dataObjState + "\")";
       } else if (dataObj.getPkType().equals("delete")) {
+        
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ")";
@@ -243,7 +259,7 @@ public class DataOutputHandler {
         String pkey = queryHandler.getNextResult().get(0).toString();
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\" AND `state` = \"" + dataObjState + "\""; // has
                                                                                                                                                       // to
-                                                                                                                                                      // be
+        throw new RuntimeException("not tested");                                                                                                                                              // be
                                                                                                                                                       // checked
       } else {
         // join in from statement not allowed
@@ -252,6 +268,8 @@ public class DataOutputHandler {
         queryHandler.runQuery(q);
         String pkey = queryHandler.getNextResult().get(0).toString();
         query = "UPDATE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\"";
+      
+        throw new RuntimeException("not tested");  
       }
     } else {
       System.out.println("wrong type");
@@ -279,29 +297,40 @@ public class DataOutputHandler {
     if (type == "dependent") { // D^1:1 U2
       if (dataObj.getPkType().equals("new")) {
         // TODO dead branch according to tests
-        throw new RuntimeException("This is supposedly a dead branch");
-//        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
-//            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
-//            + "\"),\"" + dataObjState + "\")";
+        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
+            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
+            + "\"),\"" + dataObjState + "\")";
 
+        throw new RuntimeException("not tested");  
+        
       } else if (dataObj.getPkType().equals("delete")) {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
             + dataObj.getFkeys().get(0) + ")";
         queryHandler.runQuery(q);
         String pkey = queryHandler.getNextResult().get(0).toString();
-        query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getPkey() + "`= \"" + pkey + "\" AND `state` = \"" + dataObjState + "\""; // has
-                                                                                                                                                      // to
-                                                                                                                                                      // be
-                                                                                                                                                      // checked
+        query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getPkey() + 
+            "`= \"" + pkey + "\" AND `state` = \"" + dataObjState + "\""; // has to be checked
+        
       } else {
         // join in from statement not allowed
-        String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
-            + dataObj.getFkeys().get(0) + ") WHERE M." + dataObj.getFkeys().get(0) + "=\"" + scopeInstanceId + "\"";
-        queryHandler.runQuery(q);
-        String pkey = queryHandler.getNextResult().get(0).toString();
-        query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey
-            + "\" and `state` = (" + state + ")";
+//        String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
+//            + dataObj.getFkeys().get(0) + ") WHERE M." + dataObj.getFkeys().get(0) + "=\"" + scopeInstanceId + "\"";
+//        queryHandler.runQuery(q);
+//        String pkey = queryHandler.getNextResult().get(0).toString();
+//        String query2 = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getPkey() + "`= \"" + pkey
+//            + "\" and `state` = (" + state + ")";
+        
+        List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+        AttributeUpdate update = new AttributeUpdate("state", dataObjState);
+        updates.add(update);
+        
+        // assumption is that case object pk identifier equals foreign key identifier
+        DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
+        String[] states = stateList.toArray(new String[0]);
+        
+        query = anyDataObject(dataObj.getName(), dataObj.getPkey()).references(dataObj.getFkeys().get(0), caseObjectSpec)
+            .attribute("state", values(states)).getUpdateStatement(updates).toSqlString();
       }
     } else if (type == "dependent_WithoutFK") { // D^1:1 U3; D^1:n U3; D^m:n U4
       // TODO: has to be checked
@@ -309,10 +338,39 @@ public class DataOutputHandler {
         query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
             + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\"), `state`=\"" + dataObjState + "\" WHERE `"
             + dataObj.getFkeys().get(0) + "` IS NULL and `state` = (" + state + ") AND " + expression;
+        
+        
+        // TODO: new query cannot handle the "expression", an arbitrary snippet of sql
+        /*DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
+        List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();       
+        
+        AttributeUpdate update1 = new AttributeUpdate("state", dataObjState);
+        AttributeUpdate update2 = new AttributeUpdate(dataObj.getFkeys().get(0), new DataObjectReference(caseObjectSpec));
+        updates.add(update1);
+        updates.add(update2);
+        
+        String[] states = stateList.toArray(new String[0]);
+        
+        String newQuery = anyDataObject(dataObj.getName(), dataObj.getPkey()).attribute(dataObj.getFkeys().get(0), nullValue())
+            .attribute("state", values(states)).getUpdateStatement(updates).toSqlString();*/
+        
       } else {
-        query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
-            + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\"), `state`=\"" + dataObjState + "\" WHERE `"
-            + dataObj.getFkeys().get(0) + "` IS NULL and `state` = (" + state + ")";
+//        query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
+//            + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\"), `state`=\"" + dataObjState + "\" WHERE `"
+//            + dataObj.getFkeys().get(0) + "` IS NULL and `state` = (" + state + ")";
+        
+        DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
+        List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();       
+        
+        AttributeUpdate update1 = new AttributeUpdate("state", dataObjState);
+        AttributeUpdate update2 = new AttributeUpdate(dataObj.getFkeys().get(0), new DataObjectReference(caseObjectSpec));
+        updates.add(update1);
+        updates.add(update2);
+        
+        String[] states = stateList.toArray(new String[0]);
+        
+        query = anyDataObject(dataObj.getName(), dataObj.getPkey()).attribute(dataObj.getFkeys().get(0), nullValue())
+            .attribute("state", values(states)).getUpdateStatement(updates).toSqlString();
       }
 
       // SELECT COUNT( `rid` ) FROM `Receipt` WHERE `oid` IS NULL AND state =
@@ -355,9 +413,11 @@ public class DataOutputHandler {
       } else if (dataObj.getPkType().equals("delete")) {
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
             + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= " + scopeInstanceId + ") AND `state` = \"" + dataObjState + "\"";
+        throw new RuntimeException("not tested");
       } else {
         query = "UPDATE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `"
             + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\")";
+        throw new RuntimeException("not tested");
       }
     } else {
       System.out.println("wrong type");
@@ -384,24 +444,37 @@ public class DataOutputHandler {
     if (type == "dependent_MI") {
       if (dataObj.getPkType().equals("new")) {
         // TODO dead branch according to tests
-        throw new RuntimeException("This is supposedly a dead branch");
-//        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
-//        for (int i = 1; i < count; i++) {
-//          query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-//              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
-//          uuid = UUID.randomUUID(); // set new UUID for next collection data
-//                                    // item
-//        }
-//        query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-//            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
+        
+        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
+        for (int i = 1; i < count; i++) {
+          query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
+          uuid = UUID.randomUUID(); // set new UUID for next collection data
+                                    // item
+        }
+        query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
+        
+        throw new RuntimeException("not tested");
 
       } else if (dataObj.getPkType().equals("delete")) {
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
             + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= " + scopeInstanceId + ") AND `state` = \"" + dataObjState + "\"";
       } else {
-        query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `"
-            + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\") AND `state` = ("
-            + state + ")";
+//        query = "UPDATE IGNORE `" + dataObj.getName() + "` SET `state`=\"" + dataObjState + "\" WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `"
+//            + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId + "\") AND `state` = ("
+//            + state + ")";
+        
+        DataObjectSpecification caseObjectSpec = dataObject(caseObject, dataObj.getFkeys().get(0), scopeInstanceId);
+        List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();       
+        
+        AttributeUpdate update1 = new AttributeUpdate("state", dataObjState);
+        updates.add(update1);
+        
+        String[] states = stateList.toArray(new String[0]);
+        
+        query = anyDataObject(dataObj.getName(), dataObj.getPkey()).references(dataObj.getFkeys().get(0), caseObjectSpec)
+            .attribute("state", values(states)).getUpdateStatement(updates).toSqlString();
       }
     } else {
       System.out.println("wrong type");

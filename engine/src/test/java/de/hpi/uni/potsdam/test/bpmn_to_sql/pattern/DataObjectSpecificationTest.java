@@ -55,7 +55,7 @@ public class DataObjectSpecificationTest extends TestCase {
    */
   public void testD11R2Pattern() {
     String expectedStatement = "SELECT COUNT(`d2`.`d2_id`) FROM `d2`, `d1` WHERE `d2`.`d1_id` = `d1`.`d1_id` " +
-    		"AND `d1`.`d1_id` = \"someId\" AND `d2`.`state` = (\"s\" OR \"t\")";
+    		"AND `d1`.`d1_id` = \"someId\" AND `d2`.`state` IN (\"s\", \"t\")";
 
     SelectStatement selectCountStatement = anyDataObject("d2", "d2_id").attribute("state", values("s", "t"))
         .references("d1_id", dataObject("d1", "d1_id", "someId")).getSelectCountStatement();

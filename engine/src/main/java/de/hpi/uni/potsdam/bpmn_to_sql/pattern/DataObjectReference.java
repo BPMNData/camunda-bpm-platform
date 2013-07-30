@@ -16,12 +16,12 @@ public class DataObjectReference implements AttributeValueExpression {
     this.referencedObject = referencedObject;
   }
   
-  public List<WhereSubClause> toWhereSubClauses(String attribute) {
+  public List<WhereSubClause> toJoinWhereSubClauses(String attribute) {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
     String attributeValue = SqlHelper.escapeIdentifier(referencedObject.getName()) + "." + SqlHelper.escapeIdentifier(referencedObject.getPkAttribute());
     WhereSubClause clause = new PlainValueWhereSubClause(attribute, attributeValue);
     subClauses.add(clause);
-    subClauses.addAll(referencedObject.getWhereSubClauses());
+    subClauses.addAll(referencedObject.getJoinWhereSubClauses());
     
     return subClauses;
   }
@@ -30,6 +30,10 @@ public class DataObjectReference implements AttributeValueExpression {
     SelectStatement selectPk = referencedObject.getSelectPkStatement();
     
     return "(" + selectPk.toSqlString() + ")";
+  }
+
+  public WhereSubClause toSubSelectWhereSubClause(String attribute) {
+    return new PlainValueWhereSubClause(attribute, toValueSelection());
   }
 
 }

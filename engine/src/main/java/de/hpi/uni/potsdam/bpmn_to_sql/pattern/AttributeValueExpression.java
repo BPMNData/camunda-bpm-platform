@@ -6,7 +6,9 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereSubClause;
 
 public interface AttributeValueExpression {
 
-  List<WhereSubClause> toWhereSubClauses(String attribute);
+  List<WhereSubClause> toJoinWhereSubClauses(String attribute);
+  
+  WhereSubClause toSubSelectWhereSubClause(String attribute);
   
   String toValueSelection();
 }

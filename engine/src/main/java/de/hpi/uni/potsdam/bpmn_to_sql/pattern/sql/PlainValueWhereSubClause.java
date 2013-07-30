@@ -7,7 +7,9 @@ public class PlainValueWhereSubClause implements WhereSubClause {
   
   public PlainValueWhereSubClause(String attributeName, String attributeValue) {
     this.attributeName = attributeName;
-    this.attributeValues = new String[]{ attributeValue };
+    if (attributeValue != null) {
+      this.attributeValues = new String[]{ attributeValue };
+    }
   }
   
   public PlainValueWhereSubClause(String attributeName, String[] attributeValues) {
@@ -19,7 +21,7 @@ public class PlainValueWhereSubClause implements WhereSubClause {
     StringBuilder sqlClause = new StringBuilder();
     sqlClause.append(attributeName);
     
-    if (attributeValues == null || attributeName.length() == 0) {
+    if (attributeValues == null) {
       sqlClause.append(" IS NULL");
       return sqlClause.toString();
     }

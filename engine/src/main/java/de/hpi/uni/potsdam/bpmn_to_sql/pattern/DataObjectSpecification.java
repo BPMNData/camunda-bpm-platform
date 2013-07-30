@@ -12,11 +12,14 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.AttributeSetClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SetClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SqlHelper;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.UpdateStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereSubClause;
 
@@ -103,7 +106,7 @@ public class DataObjectSpecification {
     SelectStatement statement = new SelectStatement();
     
     FromClause fromClause = buildFromClause();
-    WhereClause whereClause = buildWhereClause();
+    WhereClause whereClause = buildJoinWhereClause();
     
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
@@ -119,7 +122,7 @@ public class DataObjectSpecification {
     SelectStatement statement = new SelectStatement();
     
     FromClause fromClause = buildFromClause();
-    WhereClause whereClause = buildWhereClause();
+    WhereClause whereClause = buildJoinWhereClause();
     
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
@@ -134,7 +137,7 @@ public class DataObjectSpecification {
     SelectStatement statement = new SelectStatement();
     
     FromClause fromClause = buildFromClause();
-    WhereClause whereClause = buildWhereClause();
+    WhereClause whereClause = buildJoinWhereClause();
     
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
@@ -142,6 +145,23 @@ public class DataObjectSpecification {
     String fullQualifiedPrimaryKey = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(pkAttribute);
     SelectClause selectClause = new SelectClause("COUNT(" + fullQualifiedPrimaryKey + ")");
     statement.setSelectClause(selectClause);
+    
+    return statement;
+  }
+
+  public UpdateStatement getUpdateStatement(List<AttributeUpdate> updates) {
+    UpdateStatement statement = new UpdateStatement(SqlHelper.escapeIdentifier(name));
+    
+    SetClause setClause = new SetClause();
+    
+    for (AttributeUpdate update : updates) {
+      AttributeSetClause setSubClause = update.toSetSubClause();
+      setClause.addAttributeClause(setSubClause);
+    }
+    statement.setSetClause(setClause);
+    
+    WhereClause whereClause = buildSubSelectWhereClause();
+    statement.setWhereClause(whereClause);
     
     return statement;
   }
@@ -157,16 +177,23 @@ public class DataObjectSpecification {
     return fromClause;
   }
   
-  private WhereClause buildWhereClause() {
+  private WhereClause buildJoinWhereClause() {
     WhereClause whereClause = new WhereClause();
     
-    whereClause.addSubClauses(getWhereSubClauses());
+    whereClause.addSubClauses(getJoinWhereSubClauses());
+    return whereClause;
+  }
+  
+  private WhereClause buildSubSelectWhereClause() {
+    WhereClause whereClause = new WhereClause();
+    
+    whereClause.addSubClauses(getSubSelectWhereSubClauses());
     return whereClause;
   }
   
   
-  
-  public List<WhereSubClause> getWhereSubClauses() {
+  // TODO remove code duplication with following method
+  public List<WhereSubClause> getJoinWhereSubClauses() {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
     
     if (pkValue != null) {
@@ -177,9 +204,27 @@ public class DataObjectSpecification {
     
     for (Map.Entry<String, AttributeValueExpression> attributePair : attributeValues.entrySet()) {
       String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(attributePair.getKey());
-      subClauses.addAll(attributePair.getValue().toWhereSubClauses(fullQualifiedAttributeName));
+      subClauses.addAll(attributePair.getValue().toJoinWhereSubClauses(fullQualifiedAttributeName));
     }
     
     return subClauses;
   }
+  
+  public List<WhereSubClause> getSubSelectWhereSubClauses() {
+    List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
+    
+    if (pkValue != null) {
+      String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(pkAttribute);
+      WhereSubClause pkClause = new PlainValueWhereSubClause(fullQualifiedAttributeName, SqlHelper.escapeStringLiteral(pkValue));
+      subClauses.add(pkClause);
+    }
+    
+    for (Map.Entry<String, AttributeValueExpression> attributePair : attributeValues.entrySet()) {
+      String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(attributePair.getKey());
+      subClauses.add(attributePair.getValue().toSubSelectWhereSubClause(fullQualifiedAttributeName));
+    }
+    
+    return subClauses;
+  }
+
 }

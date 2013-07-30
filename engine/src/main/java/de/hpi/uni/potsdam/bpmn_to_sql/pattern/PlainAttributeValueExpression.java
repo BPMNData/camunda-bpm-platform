@@ -30,7 +30,7 @@ public class PlainAttributeValueExpression implements AttributeValueExpression {
     return values;
   }
 
-  public List<WhereSubClause> toWhereSubClauses(String attribute) {
+  public List<WhereSubClause> toJoinWhereSubClauses(String attribute) {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
     String[] escapedValues = new String[values.length];
     for (int i = 0; i < values.length; i++) {
@@ -50,8 +50,16 @@ public class PlainAttributeValueExpression implements AttributeValueExpression {
     if (values.length != 1) {
       throw new ProcessEngineException("Cannot select multiple values");
     }
+    if (values[0] == null) {
+      return null;
+    }
     
     return SqlHelper.escapeStringLiteral(values[0]);
+  }
+
+  public WhereSubClause toSubSelectWhereSubClause(String attribute) {
+    // FIXME this allows only a single value
+    return new PlainValueWhereSubClause(attribute, toValueSelection());
   }
   
   

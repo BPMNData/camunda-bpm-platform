@@ -1,17 +1,24 @@
 package de.hpi.uni.potsdam.test.bpmn_to_sql.pattern;
 
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
 import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.anyDataObject;
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.nullValue;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
 import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification.insert;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.nullValue;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.junit.Assert;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.AttributeUpdate;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectReference;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.InsertStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.UpdateStatement;
 
 public class DataObjectSpecificationTest extends TestCase {
 
@@ -138,6 +145,76 @@ public class DataObjectSpecificationTest extends TestCase {
         .getStatement();
     
     String actualStatement = insertStatement.toSqlString();
+    
+    Assert.assertEquals(expectedStatement, actualStatement);
+  }
+  
+  /**
+   * same as D1nU1
+   */
+  public void testD11U1Pattern() {
+    String subSelect = "(SELECT `d3`.`d3_id` FROM `d3`, `d1` WHERE `d3`.`d1_id` = `d1`.`d1_id` AND `d1`.`d1_id` = \"case object id\")";
+    String expectedStatement = "UPDATE `d2` SET `state` = \"t\" WHERE `d2`.`d3_id` = " + subSelect;
+    
+    DataObjectSpecification caseObject = dataObject("d1", "d1_id", "case object id");
+    
+    List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+    AttributeUpdate update = new AttributeUpdate("state", "t");
+    updates.add(update);
+    
+    UpdateStatement updateStatement = 
+        anyDataObject("d2", "d2_id").references("d3_id", anyDataObject("d3", "d3_id").references("d1_id", caseObject))
+        .getUpdateStatement(updates);
+    
+    String actualStatement = updateStatement.toSqlString();
+    
+    Assert.assertEquals(expectedStatement, actualStatement);
+  }
+  
+  /**
+   * same as D1nU2
+   */
+  public void testD11U2Pattern() {
+    String subSelect = "(SELECT `d3`.`d3_id` FROM `d3`, `d1` WHERE `d3`.`d1_id` = `d1`.`d1_id` AND `d1`.`d1_id` = \"case object id\")";
+    String expectedStatement = "UPDATE `d2` SET `state` = \"t\" WHERE `d2`.`d3_id` = " + subSelect + " AND `d2`.`state` = \"t1\"";
+  
+    DataObjectSpecification caseObject = dataObject("d1", "d1_id", "case object id");
+    
+    List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+    AttributeUpdate update = new AttributeUpdate("state", "t");
+    updates.add(update);
+    
+    UpdateStatement updateStatement = 
+        anyDataObject("d2", "d2_id").attribute("state", "t1")
+          .references("d3_id", anyDataObject("d3", "d3_id").references("d1_id", caseObject))
+        .getUpdateStatement(updates);
+    
+    String actualStatement = updateStatement.toSqlString();
+    
+    Assert.assertEquals(expectedStatement, actualStatement);
+  }
+  
+  /**
+   * same as D1nU3
+   */
+  public void testD11U3Pattern() {
+    String subSelect = "(SELECT `d3`.`d3_id` FROM `d3`, `d1` WHERE `d3`.`d1_id` = `d1`.`d1_id` AND `d1`.`d1_id` = \"case object id\")";
+    String expectedStatement = "UPDATE `d2` SET `state` = \"t\", `d3_id` = " + subSelect + " WHERE `d2`.`d3_id` IS NULL AND `d2`.`state` = \"t1\"";
+  
+    DataObjectSpecification caseObject = dataObject("d1", "d1_id", "case object id");
+    
+    List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+    AttributeUpdate update1 = new AttributeUpdate("state", "t");
+    AttributeUpdate update2 = new AttributeUpdate("d3_id", new DataObjectReference(anyDataObject("d3", "d3_id").references("d1_id", caseObject)));
+    updates.add(update1);
+    updates.add(update2);
+    
+    UpdateStatement updateStatement = 
+        anyDataObject("d2", "d2_id").attribute("state", "t1")
+          .attribute("d3_id", nullValue())
+          .getUpdateStatement(updates);
+    
+    String actualStatement = updateStatement.toSqlString();
     
     Assert.assertEquals(expectedStatement, actualStatement);
   }

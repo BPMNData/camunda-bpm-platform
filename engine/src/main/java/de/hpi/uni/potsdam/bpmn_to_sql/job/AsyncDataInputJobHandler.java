@@ -24,6 +24,7 @@ public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
     if (dbInputChecker.checkDataInput(execution)) {
       TransformationHandler transformationHandler = new TransformationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
       transformationHandler.transformInputData(execution);
+      String test = (String) execution.getVariableLocal("dataInput");
       super.execute(configuration, execution, commandContext);
     } else {
       throw new DataInputUnavailableException("Data input for activity " + execution.getActivityId() + " unavailable.");

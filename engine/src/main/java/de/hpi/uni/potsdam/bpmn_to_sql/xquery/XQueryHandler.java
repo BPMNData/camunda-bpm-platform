@@ -156,6 +156,7 @@ public class XQueryHandler {
 		ArrayList<String> results = new ArrayList<String>();
 		Document doc = transformStringToDoc(source);
 		if(!query.equals("")){
+		  query = query.replaceAll("\\n[\\s]+", "");
   		XQDataSource ds = new SaxonXQDataSource();
       XQConnection conn;
       try {

@@ -3,50 +3,84 @@ package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import org.camunda.bpm.engine.impl.bpmn.data.AbstractDataAssociation;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
+
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
-public class MessageCreationHandler{
+public class TransformationHandler{
   
   private static XQueryHandler handler = new XQueryHandler();
 
   protected BpmnDataConfiguration configuration;
 
-  public MessageCreationHandler(BpmnDataConfiguration configuration) {
+  public TransformationHandler(BpmnDataConfiguration configuration) {
     this.configuration = configuration;
   }
   
-  public ArrayList<String> getXMLMessages(ExecutionEntity execution, String query){
-    final String activityId = execution.getActivity().getId();
-    final String instanceId = execution.getProcessInstanceId();
-    final String activityParentId = execution.getActivity().getParent().getId();
+  public void transformInputData(ExecutionEntity execution){
+    String inputData = getTransformedInputData(execution);
+    execution.setVariableLocal("dataInput", inputData);    
+  }
+  
+  public void transformOutputData(ExecutionEntity execution){
+    String outputData = (String) execution.getVariableLocal("dataOutput");
+    transformDataObjects(execution, outputData);
+  }
+  
+  private void transformDataObjects(ExecutionEntity execution, String outputData) {
+    ActivityImpl activity = execution.getActivity();
     final String dataObjectID = execution.getEffectiveCaseObjectID();
-    DataInputChecker dataChecker = new DataInputChecker(this.configuration);
     
-    ArrayList<String> messages = new ArrayList<String>();
+    for(AbstractDataAssociation outputDataAssociation : activity.getDataOutputAssociations()){
+      String xQuery = ((DataAssociation)outputDataAssociation).getTransformation();
+      ArrayList<String> resultObjects = handler.runXQuery(outputData, xQuery);
+      for(String resultObject : resultObjects){
+        HashMap<String, HashMap<String, String>> object = handler.extractInformation(resultObject);
+      }
+    }
     
-    if(dataChecker.checkDataInput(execution)){
-      messages = buildXMLMessages(activityId, activityParentId, dataObjectID, instanceId, query);            
-    }       
-    
-    return messages;    
   }
 
-  private ArrayList<String> buildXMLMessages(String activityId, String activityParentId, String dataObjectID, String instanceId, String query) {
-    ArrayList<String> messages = new ArrayList<String>();
+  private String getTransformedInputData(ExecutionEntity execution){
+    ActivityImpl activity = execution.getActivity();
+    final String dataObjectID = execution.getEffectiveCaseObjectID();
     
-    ArrayList<String>xmlData = getDataObjectsAsXML(activityId, activityParentId, dataObjectID, instanceId);
-    messages = handler.runXQuery(xmlData, query);
+    String xQuery = "";
+    for(AbstractDataAssociation inputDataAssociation : activity.getDataInputAssociations()){
+      if(xQuery.equals("")){
+        xQuery = ((DataAssociation)inputDataAssociation).getTransformation();
+      }
+    }
     
-    return messages;
+    ArrayList<String> xmlData = getDataObjectsAsXML(activity, dataObjectID);
+    
+    ArrayList<String> queryResults = getTransformedData(xmlData, xQuery);
+    String inputData = "";
+    if(!queryResults.isEmpty()){
+      inputData = getTransformedData(xmlData, xQuery).get(0);
+    }      
+           
+    return inputData;    
   }
 
-  private ArrayList<String> getDataObjectsAsXML(String activityId, String activityParentId, String dataObjectID, String instanceId) {
-    HashMap<String, ArrayList<DataObject>> dataObjects = getDataInputsOfActivity(activityId);
-    HashMap<String, String> queryMap = createQueryMap(dataObjects, activityId, activityParentId, dataObjectID);
+  private ArrayList<String> getTransformedData(ArrayList<String> xmlData, String query) {
+    ArrayList<String> transformedData = new ArrayList<String>();
+        
+    transformedData = handler.runXQuery(xmlData, query);
+    
+    return transformedData;
+  }
+
+  private ArrayList<String> getDataObjectsAsXML(ActivityImpl activity, String dataObjectID) {
+    HashMap<String, ArrayList<DataObject>> dataObjects = getDataInputsOfActivity(activity);
+    HashMap<String, String> queryMap = createQueryMap(dataObjects, activity.getId(), activity.getParent().getId(), dataObjectID);
     ArrayList<String> objectXMLs = new ArrayList<String>();
     
     for (Entry<String, String> sqlQuerySet : queryMap.entrySet()) {
@@ -60,22 +94,20 @@ public class MessageCreationHandler{
     return objectXMLs;
   }
   
-  private HashMap<String, ArrayList<DataObject>> getDataInputsOfActivity(String activityId){
+  private HashMap<String, ArrayList<DataObject>> getDataInputsOfActivity(ActivityImpl activity){
     HashMap<String, ArrayList<DataObject>> dataObjectMap = new HashMap<String, ArrayList<DataObject>>();
-    // true if activity reads a data object
-    if (BpmnParse.getInputData().containsKey(activityId)) { 
-      // data object with same name are part of same list .. one list for each
-      // different data object read by activity
-      for (DataObject item : BpmnParse.getInputData().get(activityId)) {
-        if (dataObjectMap.containsKey(item.getName())) {
-          ArrayList<DataObject> al = dataObjectMap.get(item.getName());
-          al.add(item);
-          dataObjectMap.put(item.getName(), al);
+    for(AbstractDataAssociation inputDataAssociation : activity.getDataInputAssociations()){
+      DataObject dataObject = ((DataAssociation)inputDataAssociation).getSourceObject();
+      if(dataObject != null){
+        if (dataObjectMap.containsKey(dataObject.getName())) {
+          ArrayList<DataObject> al = dataObjectMap.get(dataObject.getName());
+          al.add(dataObject);
+          dataObjectMap.put(dataObject.getName(), al);
         } else {
           ArrayList<DataObject> al = new ArrayList<DataObject>();
-          al.add(item);
-          dataObjectMap.put(item.getName(), al);
-        }
+          al.add(dataObject);
+          dataObjectMap.put(dataObject.getName(), al);
+        }        
       }
     }
     return dataObjectMap;

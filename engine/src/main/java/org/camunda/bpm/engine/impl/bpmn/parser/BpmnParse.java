@@ -123,6 +123,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataMessageStartEventBehavior
 import de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataSendTaskBehavior;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 
@@ -204,6 +205,7 @@ public class BpmnParse extends Parse {
   protected static Map<String, ArrayList<DataObject>> inputData = new HashMap<String, ArrayList<DataObject>>();
   protected static Map<String, ArrayList<DataObject>> outputData = new HashMap<String, ArrayList<DataObject>>();
   private Map<String, DataObject> dataObjectMap = new HashMap<String, DataObject>();
+  private Map<String, DataObject> dataObjectMapToID = new HashMap<String, DataObject>();
   protected static Map<String, String> scopeInformation = new HashMap<String, String>();
   
   protected static final String BPMN_DATA_IMPLEMENTATION_URI = "http://bpt.hpi.uni-potsdam.de/Public/BPMNData";
@@ -848,6 +850,7 @@ public class BpmnParse extends Parse {
     for (Element activityElement : parentElement.elements()) {
       if (activityElement.getTagName().equals("dataObject")) {
         DataObject dataObj = new DataObject();
+        dataObj.setId(activityElement.attribute("id"));
         dataObj.setName(activityElement.attribute("name"));
  
         if(activityElement.attribute("isCollection").equalsIgnoreCase(("true"))) {
@@ -877,6 +880,7 @@ public class BpmnParse extends Parse {
    
         dataObj.setState(activityElement.element("dataState").attribute("name"));
         dataObjectMap.put(activityElement.attribute("id"), dataObj);
+        dataObjectMapToID.put(dataObj.getId(), dataObj);
       }
     }
   }
@@ -1040,6 +1044,8 @@ public class BpmnParse extends Parse {
     if (targetRef != null && targetRef.equals("")) {
       addError("targetRef is required", dataAssociationElement);
     }
+    
+    
     
     List<Element> assignments = dataAssociationElement.elements("assignment");
     if (assignments.isEmpty()) {
@@ -1412,10 +1418,63 @@ public class BpmnParse extends Parse {
 
     // Parse stuff common to activities above
     if (activity != null) {
-      parseMultiInstanceLoopCharacteristics(activityElement, activity);      
+      parseMultiInstanceLoopCharacteristics(activityElement, activity);
+      parseDataInputOutputInformation(activityElement, activity);
     }    
   }
   
+  private void parseDataInputOutputInformation(Element activityElement, ActivityImpl activity) {
+    Element ioSpecificationElement = activityElement.element("ioSpecification");
+    if (ioSpecificationElement != null) {
+      IOSpecification ioSpecification = this.parseIOSpecification(ioSpecificationElement);
+      activity.setIoSpecification(ioSpecification);
+    }
+
+    for (Element dataAssociationElement : activityElement.elements("dataInputAssociation")) {
+      DataAssociation dataAssociation = this.parseDataAssociation(dataAssociationElement);
+      DataObject sourceObject = dataObjectMapToID.get(dataAssociation.getSource());
+      if(sourceObject != null){
+        dataAssociation.setSourceObject(sourceObject);
+      }
+      activity.addDataInputAssociation(dataAssociation);
+    }
+
+    for (Element dataAssociationElement : activityElement.elements("dataOutputAssociation")) {
+      DataAssociation dataAssociation = this.parseDataAssociation(dataAssociationElement);
+      DataObject targetObject = dataObjectMapToID.get(dataAssociation.getTarget());
+      if(targetObject != null){
+        dataAssociation.setTargetObject(targetObject);
+      }
+      activity.addDataOutputAssociation(dataAssociation);
+    }    
+  }
+  
+  private DataAssociation parseDataAssociation(Element dataAssociationElement){
+    String sourceRef = "";
+    Element sourceElement = dataAssociationElement.element("sourceRef");
+    if (sourceElement != null) {
+      sourceRef = sourceElement.getText();
+    }
+    
+    String targetRef = "";
+    Element targetElement = dataAssociationElement.element("targetRef");
+    if (targetElement != null) {
+      targetRef = targetElement.getText();
+    }
+    
+    String transformation = "";
+    Element transformationElement = dataAssociationElement.element("transformation");
+    if (transformationElement != null) {
+      transformation = transformationElement.getText();
+    }
+    
+    DataAssociation dataAssociation = new DataAssociation(sourceRef, targetRef);
+    dataAssociation.setTransformation(transformation);
+    
+    return dataAssociation;
+    
+  }
+
   public void validateActivities(List<ActivityImpl> activities) {
     for (ActivityImpl activity : activities) {
       validateActivity(activity);

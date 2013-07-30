@@ -1,9 +1,16 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.pattern;
 
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
@@ -12,22 +19,19 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereSubClause;
 
-import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
-
 public class DataObjectSpecification {
 
   private String name;
   private String pkAttribute;
   private String pkValue;
   
-  private List<DataObjectReference> referencedObjects;
-  private Map<String, PlainAttributeValueExpression> attributes;
+  private SortedMap<String, AttributeValueExpression> attributeValues;
   
-  
+  private Set<String> tables;
   
   public DataObjectSpecification() {
-    referencedObjects = new ArrayList<DataObjectReference>();
-    attributes = new HashMap<String, PlainAttributeValueExpression>();
+    attributeValues = new TreeMap<String, AttributeValueExpression>();
+    tables = new HashSet<String>();
   }
   
   public String getName() {
@@ -41,6 +45,23 @@ public class DataObjectSpecification {
   public String getPkValue() {
     return pkValue;
   }
+  
+  public SortedSet<String> getCanonicalAttributeNames() {
+    TreeSet<String> attributes = new TreeSet<String>();
+    attributes.add(pkAttribute);
+    attributes.addAll(attributeValues.keySet());
+    return attributes;
+  }
+
+  public String getAttributeValueStatement(String attribute) {
+    if (attribute.equals(pkAttribute)) {
+      return pkValue;
+    }
+    
+    AttributeValueExpression expression = attributeValues.get(attribute);
+    return expression.toValueSelection();
+  }
+
 
   /**
    * Matches any object of the given type
@@ -62,8 +83,9 @@ public class DataObjectSpecification {
   }
   
   public DataObjectSpecification references(String foreignKeyAttribute, DataObjectSpecification anotherObject) {
-    DataObjectReference reference = new DataObjectReference(foreignKeyAttribute, anotherObject);
-    referencedObjects.add(reference);
+    DataObjectReference reference = new DataObjectReference(anotherObject);
+    attributeValues.put(foreignKeyAttribute, reference);
+    tables.add(anotherObject.name);
     return this;
   }
   
@@ -72,25 +94,45 @@ public class DataObjectSpecification {
   }
   
   public DataObjectSpecification attribute(String name, PlainAttributeValueExpression valueExpression) {
-    attributes.put(name, valueExpression);
+    attributeValues.put(name, valueExpression);
     return this;
+  }
+  
+  public SelectStatement getSelectPkStatement() {
+    SelectStatement statement = new SelectStatement();
+    
+    FromClause fromClause = buildFromClause();
+    WhereClause whereClause = buildWhereClause();
+    
+    statement.setFromClause(fromClause);
+    statement.setWhereClause(whereClause);
+    
+    SelectClause selectClause = new SelectClause(name + "." + pkAttribute);
+    statement.setSelectClause(selectClause);
+    
+    return statement;
+  }
+  
+  public SelectStatement getSelectStarStatement() {
+    SelectStatement statement = new SelectStatement();
+    
+    FromClause fromClause = buildFromClause();
+    WhereClause whereClause = buildWhereClause();
+    
+    statement.setFromClause(fromClause);
+    statement.setWhereClause(whereClause);
+    
+    SelectClause selectClause = new SelectClause("*");
+    statement.setSelectClause(selectClause);
+    
+    return statement;
   }
   
   public SelectStatement getSelectCountStatement() {
     SelectStatement statement = new SelectStatement();
     
-    FromClause fromClause = new FromClause();
-    fromClause.addTableName(name);
-    
-    WhereClause whereClause = new WhereClause();
-    
-    whereClause.addSubClauses(getWhereSubClauses());
-    
-    for (DataObjectReference referencedObject : referencedObjects) {
-      fromClause.addTableName(referencedObject.resolveTableName());
-//      List<WhereSubClause> subClauses = referencedObject.getWhereSubClauses();
-//      whereClause.addSubClauses(subClauses);
-    }
+    FromClause fromClause = buildFromClause();
+    WhereClause whereClause = buildWhereClause();
     
     statement.setFromClause(fromClause);
     statement.setWhereClause(whereClause);
@@ -101,6 +143,26 @@ public class DataObjectSpecification {
     return statement;
   }
   
+  private FromClause buildFromClause() {
+    FromClause fromClause = new FromClause();
+    fromClause.addTableName(name);
+    
+    for (String tableName : tables) {
+      fromClause.addTableName(tableName);
+    }
+    
+    return fromClause;
+  }
+  
+  private WhereClause buildWhereClause() {
+    WhereClause whereClause = new WhereClause();
+    
+    whereClause.addSubClauses(getWhereSubClauses());
+    return whereClause;
+  }
+  
+  
+  
   public List<WhereSubClause> getWhereSubClauses() {
     List<WhereSubClause> subClauses = new ArrayList<WhereSubClause>();
     
@@ -110,16 +172,24 @@ public class DataObjectSpecification {
       subClauses.add(pkClause);
     }
     
-    for (Map.Entry<String, PlainAttributeValueExpression> attributePair : attributes.entrySet()) {
-      String attributeName = name + "." + attributePair.getKey();
-      String[] attributeValues = attributePair.getValue().getAttributeValues();
-      WhereSubClause clause = new PlainValueWhereSubClause(attributeName, attributeValues);
-      subClauses.add(clause);
+    for (Map.Entry<String, AttributeValueExpression> attributePair : attributeValues.entrySet()) {
+      String fullQualifiedAttributeName = name + "." + attributePair.getKey();
+      subClauses.addAll(attributePair.getValue().toWhereSubClauses(fullQualifiedAttributeName));
     }
-    
-    for (DataObjectReference referencedObject : referencedObjects) {
-      subClauses.addAll(referencedObject.resolveSelections(this));
-    }
+    /*
+    for (Map.Entry<String, DataObjectReference> reference : referencedObjects.entrySet()) {
+      List<WhereSubClause> referenceSubClauses = new ArrayList<WhereSubClause>();
+      String foreignKey = reference.getKey();
+      
+      String fullQualifiedAttributeName = this.name + "." + foreignKey;
+      subClauses.addAll(reference.getValue().toWhereSubClauses(fullQualifiedAttributeName));
+      
+//      String attributeValue = referencedObject.getName() + "." + referencedObject.getPkAttribute();
+//      WhereSubClause clause = new PlainValueWhereSubClause(attributeName, attributeValue);
+//      subClauses.add(clause);
+//      subClauses.addAll(referencedObject.getWhereSubClauses());
+      subClauses.addAll(referenceSubClauses);
+    }*/
     
     return subClauses;
   }

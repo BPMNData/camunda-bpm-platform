@@ -7,6 +7,10 @@ import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification.insert;
 
 public class DataOutputHandler {
   
@@ -166,7 +170,12 @@ public class DataOutputHandler {
     String query = "";
 
     if (dataObj.getPkType().equals("new")) {
-      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      // TODO dead branch according to tests
+      throw new RuntimeException("This is supposedly a dead branch");
+//      query = insert().object(dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), scopeInstanceId).attribute("`state`", "\"" + dataObjState + "\""))
+//        .getStatement().toSqlString();
+      
+      //query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
     } else if (dataObj.getPkType().equals("delete")) {
       query = "DELETE FROM `" + dataObj.getName() + "` WHERE " + dataObj.getPkey() + "=\"" + scopeInstanceId + "\"";
     } else {
@@ -192,7 +201,9 @@ public class DataOutputHandler {
     }
 
     if (dataObj.getPkType().equals("new")) {
-      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
+      // TODO dead branch according to tests
+      throw new RuntimeException("This is supposedly a dead branch");
+//      query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `state`) VALUES (" + scopeInstanceId + ",\"" + dataObjState + "\")";
     } else if (dataObj.getPkType().equals("delete")) {
       query = "DELETE FROM `" + dataObj.getName() + "` WHERE " + dataObj.getPkey() + "=\"" + scopeInstanceId + "\"";
     } else {
@@ -209,13 +220,21 @@ public class DataOutputHandler {
     String query = "";
     QueryExecutionHandler queryHandler = QueryExecutionHandler.getInstance();
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
+    
+    // TODO assumption is here that the foreign key equals the CO's primary key
+    DataObjectSpecification caseObjectSpec = dataObject("`" + caseObject + "`", dataObj.getFkeys().get(0), "\"" + scopeInstanceId + "\"");
 
-    if (type == "dependent") {
+    if ("dependent".equals(type)) {
       if (dataObj.getPkType().equals("new")) {
-        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
-            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
-            + "\"),\"" + dataObjState + "\")";
-
+        query = insert().object(
+            dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), "\"" +  uuid.toString() + "\"")
+              .attribute("`state`", "\"" + dataObjState + "\"")
+              .references(dataObj.getFkeys().get(0), caseObjectSpec))
+            .getStatement().toSqlString();
+        
+//        String query2 = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
+//            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
+//            + "\"),\"" + dataObjState + "\")";
       } else if (dataObj.getPkType().equals("delete")) {
         // join in from statement not allowed
         String q = "SELECT D." + dataObj.getPkey() + " FROM `" + dataObj.getName() + "` D INNER JOIN `" + caseObject + "` M USING ("
@@ -259,9 +278,11 @@ public class DataOutputHandler {
 
     if (type == "dependent") { // D^1:1 U2
       if (dataObj.getPkType().equals("new")) {
-        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
-            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
-            + "\"),\"" + dataObjState + "\")";
+        // TODO dead branch according to tests
+        throw new RuntimeException("This is supposedly a dead branch");
+//        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES (\"" + uuid + "\","
+//            + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0) + "`= \"" + scopeInstanceId
+//            + "\"),\"" + dataObjState + "\")";
 
       } else if (dataObj.getPkType().equals("delete")) {
         // join in from statement not allowed
@@ -308,17 +329,28 @@ public class DataOutputHandler {
     String query = "";
     UUID uuid = UUID.randomUUID(); // primary key for dependent data objects
 
+    DataObjectSpecification caseObjectSpec = dataObject("`" + caseObject + "`", dataObj.getFkeys().get(0), "\"" + scopeInstanceId + "\"");
+    
     if (type == "dependent_MI") {
       if (dataObj.getPkType().equals("new")) {
-        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
-        for (int i = 1; i < count; i++) {
-          query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
-          uuid = UUID.randomUUID(); // set new UUID for next collection data
-                                    // item
+        InsertObjectSpecification insertSpec = insert();
+        for (int i = 0; i < count; i++) {
+          insertSpec.object(dataObject("`" + dataObj.getName() + "`", dataObj.getPkey(), "\"" +  UUID.randomUUID().toString() + "\"")
+              .attribute("`state`", "\"" + dataObjState + "\"")
+              .references(dataObj.getFkeys().get(0), caseObjectSpec));
         }
-        query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
+        query = insertSpec.getStatement().toSqlString();
+        
+        
+//        String query2 = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
+//        for (int i = 1; i < count; i++) {
+//          query2 = query2 + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+//              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
+//          uuid = UUID.randomUUID(); // set new UUID for next collection data
+//                                    // item
+//        }
+//        query2 = query2 + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+//            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
 
       } else if (dataObj.getPkType().equals("delete")) {
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"
@@ -351,15 +383,17 @@ public class DataOutputHandler {
 
     if (type == "dependent_MI") {
       if (dataObj.getPkType().equals("new")) {
-        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
-        for (int i = 1; i < count; i++) {
-          query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
-          uuid = UUID.randomUUID(); // set new UUID for next collection data
-                                    // item
-        }
-        query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
-            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
+        // TODO dead branch according to tests
+        throw new RuntimeException("This is supposedly a dead branch");
+//        query = "INSERT INTO `" + dataObj.getName() + "`(`" + dataObj.getPkey() + "`, `" + dataObj.getFkeys().get(0) + "`, `state`) VALUES ";
+//        for (int i = 1; i < count; i++) {
+//          query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+//              + "`= \"" + scopeInstanceId + "\"),\"" + dataObjState + "\"),";
+//          uuid = UUID.randomUUID(); // set new UUID for next collection data
+//                                    // item
+//        }
+//        query = query + "(\"" + uuid + "\"," + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `" + caseObject + "` WHERE `" + dataObj.getFkeys().get(0)
+//            + "`= " + scopeInstanceId + "),\"" + dataObjState + "\")";
 
       } else if (dataObj.getPkType().equals("delete")) {
         query = "DELETE FROM `" + dataObj.getName() + "` WHERE `" + dataObj.getFkeys().get(0) + "` =" + "(SELECT `" + dataObj.getFkeys().get(0) + "` FROM `"

@@ -36,22 +36,29 @@ public class TransformationHandler{
   }
   
   public void transformOutputData(ExecutionEntity execution){
-    String outputData = (String) execution.getVariableLocal("dataOutput");
-    transformDataObjects(execution, outputData);
+    if (execution.hasVariableLocal("dataOutput")){
+      String outputData = (String) execution.getVariableLocal("dataOutput");
+      execution.setVariableLocal("dataObjects", transformDataObjects(execution, outputData));
+    }
   }
   
-  private void transformDataObjects(ExecutionEntity execution, String outputData) {
+  private HashMap<DataObject, ArrayList<HashMap<String, String>>> transformDataObjects(ExecutionEntity execution, String outputData) {
     ActivityImpl activity = execution.getActivity();
-    final String dataObjectID = execution.getEffectiveCaseObjectID();
+    HashMap<DataObject, ArrayList<HashMap<String, String>>> objectsMap = new HashMap<DataObject, ArrayList<HashMap<String, String>>>();
     
     for(AbstractDataAssociation outputDataAssociation : activity.getDataOutputAssociations()){
       String xQuery = ((DataAssociation)outputDataAssociation).getTransformation();
       ArrayList<String> resultObjects = getTransformedData(outputData, xQuery);
+      ArrayList<HashMap<String, String>> objects = new ArrayList<HashMap<String, String>>();
       for(String resultObject : resultObjects){
-        HashMap<String, HashMap<String, String>> object = handler.extractInformation(resultObject);
+        HashMap<String, HashMap<String, String>> extractedObjects = handler.extractInformation(resultObject);
+        for (HashMap<String, String> extractedObject : extractedObjects.values()){
+          objects.add(extractedObject);
+        }
       }
+      objectsMap.put(((DataAssociation)outputDataAssociation).getTargetObject(), objects);
     }
-    
+    return objectsMap;
   }
 
   private String getTransformedInputData(ExecutionEntity execution){

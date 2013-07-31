@@ -7,12 +7,16 @@ import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpressi
 import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
+import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
@@ -43,6 +47,8 @@ public class RefactoredDataOutputHandler {
   public void updateOutputs(ActivityExecution execution) {
     String caseObjectId = execution.getEffectiveCaseObjectID();
     
+    TransformationHandler transformationHandler = new TransformationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    transformationHandler.transformInputData((ExecutionEntity)execution);
 
     // has outputs
     if (BpmnParse.getOutputData().containsKey(execution.getActivity().getId())) {
@@ -97,8 +103,9 @@ public class RefactoredDataOutputHandler {
             numberOfItems = Integer.parseInt((String) execution.getVariable(outputObject.getProcessVariable()));
           }
           for (int i = 0; i < numberOfItems; i++) {
-            insertSpec.object(dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString()).attribute("state", outputObjectState)
-                .references(outputObject.getFkeys().get(0), dataObject(caseObjectName, outputObject.getFkeys().get(0), caseObjectId)));
+            DataObjectSpecification objectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString()).attribute("state", outputObjectState);
+            objectSpec = getInsertAttributes(execution, objectSpec, outputObject).references(outputObject.getFkeys().get(0), dataObject(caseObjectName, outputObject.getFkeys().get(0), caseObjectId));
+            insertSpec.object(objectSpec);
           }
           query = insertSpec.getStatement().toSqlString();
         } else if (statementType.equals("delete")) {
@@ -128,6 +135,8 @@ public class RefactoredDataOutputHandler {
             updates.add(foreignKeyUpdate);
           }
           
+          updates.addAll(getAttributeUpdates(execution,outputObject));
+          
           query = dataObjectSpec.getUpdateStatement(updates).toSqlString();
         }
 
@@ -136,6 +145,37 @@ public class RefactoredDataOutputHandler {
         queryHandler.runUpdate(query);
       }
     }
+  }
+  
+  private List<AttributeUpdate> getAttributeUpdates(ActivityExecution execution, DataObject dataObject){
+    List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+    
+    if (execution.hasVariableLocal("dataObjects")){
+      HashMap<DataObject, ArrayList<HashMap<String, String>>> inputDataObjects = (HashMap<DataObject, ArrayList<HashMap<String, String>>>) execution.getVariableLocal("dataObjects");
+      for (HashMap<String, String> objectUpdate : inputDataObjects.get(dataObject)){
+        for (Entry<String, String> attributeUpdate : objectUpdate.entrySet()){
+          if (!attributeUpdate.getValue().equals("")){
+            AttributeUpdate stateUpdate = new AttributeUpdate(attributeUpdate.getKey(), attributeUpdate.getValue());
+            updates.add(stateUpdate);            
+          }
+        }
+      }
+    }    
+    return updates;
+  }
+  
+  private DataObjectSpecification getInsertAttributes(ActivityExecution execution, DataObjectSpecification dataSpec, DataObject dataObject ){
+    if (execution.hasVariableLocal("dataObjects")){
+      HashMap<DataObject, ArrayList<HashMap<String, String>>> inputDataObjects = (HashMap<DataObject, ArrayList<HashMap<String, String>>>) execution.getVariableLocal("dataObjects");
+      for (HashMap<String, String> objectUpdate : inputDataObjects.get(dataObject)){
+        for (Entry<String, String> attributeUpdate : objectUpdate.entrySet()){
+          if (!attributeUpdate.getValue().equals("")){
+            dataSpec = dataSpec.attribute(attributeUpdate.getKey(), attributeUpdate.getValue());         
+          }
+        }
+      }
+    }
+    return dataSpec;
   }
   
 

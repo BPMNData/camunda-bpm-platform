@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.camunda.bpm.engine.impl.bpmn.data.AbstractDataAssociation;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
+import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 public class DataInputChecker {
@@ -24,104 +27,116 @@ public class DataInputChecker {
   }
   
   public boolean checkDataInput(ExecutionEntity execution) {
-    if (!BpmnParse.getInputData().containsKey(execution.getActivity().getId())) {
+    ActivityImpl activity = execution.getActivity();
+    if (activity.getDataInputAssociations().isEmpty()){
       return true;
     }
+//    if (!BpmnParse.getInputData().containsKey(execution.getActivity().getId())) {
+//      return true;
+//    }
 
-    final String activityId = execution.getActivity().getId();
-    final String instanceId = execution.getProcessInstanceId();
-    final String activityParentId = execution.getActivity().getParent().getId();
+    final String activityId = activity.getId();
+    final String activityParentId = activity.getParent().getId();
     final String dataObjectID = execution.getEffectiveCaseObjectID();
     // final AtomicOperationActivityExecute taskBehavior = this;
+    
+    HashMap<String, ArrayList<DataObject>> dataObjects = getDataInputsOfActivity(activity);
+    HashMap<String, Integer> queryMap = createQueryMap(dataObjects, activityId, activityParentId, dataObjectID);
 
-    return isInputDataAvailable(activityId, activityParentId, dataObjectID, instanceId);
+    return isInputDataAvailable(queryMap);
   }
-
-  public boolean isInputDataAvailable(String activityId, String activityParentId, String dataObjectID, String instanceId) {
-    boolean missingInputData = false;
-
-    if (BpmnParse.getInputData().containsKey(activityId)) { // true if activity
-                                                            // reads a data
-                                                            // object
-      HashMap<String, ArrayList<DataObject>> dataObjectMap = new HashMap<String, ArrayList<DataObject>>();
-      // data object with same name are part of same list .. one list for each
-      // different data object read by activity
-      for (DataObject item : BpmnParse.getInputData().get(activityId)) {
-        if (dataObjectMap.containsKey(item.getName())) {
-          ArrayList<DataObject> al = dataObjectMap.get(item.getName());
-          al.add(item);
-          dataObjectMap.put(item.getName(), al);
+  
+  private HashMap<String, ArrayList<DataObject>> getDataInputsOfActivity(ActivityImpl activity){
+    HashMap<String, ArrayList<DataObject>> dataObjectMap = new HashMap<String, ArrayList<DataObject>>();
+    for(AbstractDataAssociation inputDataAssociation : activity.getDataInputAssociations()){
+      DataObject dataObject = ((DataAssociation)inputDataAssociation).getSourceObject();
+      if(dataObject != null){
+        if (dataObjectMap.containsKey(dataObject.getName())) {
+          ArrayList<DataObject> al = dataObjectMap.get(dataObject.getName());
+          al.add(dataObject);
+          dataObjectMap.put(dataObject.getName(), al);
         } else {
           ArrayList<DataObject> al = new ArrayList<DataObject>();
-          al.add(item);
-          dataObjectMap.put(item.getName(), al);
-        }
+          al.add(dataObject);
+          dataObjectMap.put(dataObject.getName(), al);
+        }        
       }
+    }
+    return dataObjectMap;
+  }
+  
+  private HashMap<String, Integer> createQueryMap(HashMap<String, ArrayList<DataObject>> dataObjectMap, String activityId, String activityParentId, String dataObjectID ){
+ // create SQL queries based on identified pattern
+    HashMap<String, Integer> queryMap = new HashMap<String, Integer>();
 
-      // create SQL queries based on identified pattern
-      HashMap<String, Integer> queryMap = new HashMap<String, Integer>();
+    for (ArrayList<DataObject> dataObjectList : dataObjectMap.values()) {
+      String q = new String();
+      int r;
+      // create SQL query with respect to type of data object (main,
+      // dependent, dependent_MI, external_input)
+      if (DataObjectClassification.isMainDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: CR1; CR2
+        q = createSqlQuery(dataObjectList, dataObjectID);
+        r = 1;
+      } else if (DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R3; D^1:n R3; D^m:n R2; R4
 
-      for (ArrayList<DataObject> dataObjectList : dataObjectMap.values()) {
-        String q = new String();
-        int r;
-        // create SQL query with respect to type of data object (main,
-        // dependent, dependent_MI, external_input)
-        if (DataObjectClassification.isMainDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: CR1; CR2
-          q = createSqlQuery(dataObjectList, dataObjectID);
-          r = 1;
-        } else if (DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R3; D^1:n R3; D^m:n R2; R4
-
-          // get primary key of case object because of assumption that all
-          // dependent DOs relate to main data object
-          String caseObjPk = new String();
-          String caseObjName = BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]);
-          for (DataObject caseObj : BpmnParse.getInputData().get(activityId)) {
-            if (caseObj.getName().equalsIgnoreCase(caseObjName)) {
-              caseObjPk = caseObj.getPkey();
-              break;
-            }
+        // get primary key of case object because of assumption that all
+        // dependent DOs relate to main data object
+        String caseObjPk = new String();
+        String caseObjName = BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]);
+        for (DataObject caseObj : BpmnParse.getInputData().get(activityId)) {
+          if (caseObj.getName().equalsIgnoreCase(caseObjName)) {
+            caseObjPk = caseObj.getPkey();
+            break;
           }
-          if (caseObjPk.isEmpty()) {
-            for (ArrayList<DataObject> temp : BpmnParse.getInputData().values()) {
-              for (DataObject d : temp) {
-                if (d.getName().equalsIgnoreCase(caseObjName)) {
-                  caseObjPk = d.getPkey();
-                  break;
-                }
-              }
-              if (!caseObjPk.isEmpty()) {
+        }
+        if (caseObjPk.isEmpty()) {
+          for (ArrayList<DataObject> temp : BpmnParse.getInputData().values()) {
+            for (DataObject d : temp) {
+              if (d.getName().equalsIgnoreCase(caseObjName)) {
+                caseObjPk = d.getPkey();
                 break;
               }
             }
+            if (!caseObjPk.isEmpty()) {
+              break;
+            }
           }
-
-          // provide case object of the scope to enable JOINALL; case object is
-          // in a map called getScopeInformation which has as key the scope
-          // (e.g., process, sub-process) name
-          q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), caseObjPk,
-              "dependent_WithoutFK");
-          r = 1;
-        } else if (DataObjectClassification.isDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R1; R2
-          // provide case object of the scope to enable JOINALL; case object is
-          // in a map called getScopeInformation which has as key the scope
-          // (e.g., process, sub-process) name
-          q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
-          r = 1;
-        } else if (DataObjectClassification.isMIDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:n R1; R2; D^m:n R1; R3
-          q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
-          r = numberOfMultipleInstanceInTable(dataObjectList.get(0), dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0])); // has
-                                                                                                                                                         // to
-                                                                                                                                                         // be
-                                                                                                                                                         // defined
-        } else {
-          // non existent data object type identified
-          q = null;
-          r = 0;
         }
 
-        queryMap.put(q, r);
-
+        // provide case object of the scope to enable JOINALL; case object is
+        // in a map called getScopeInformation which has as key the scope
+        // (e.g., process, sub-process) name
+        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), caseObjPk,
+            "dependent_WithoutFK");
+        r = 1;
+      } else if (DataObjectClassification.isDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:1 R1; R2
+        // provide case object of the scope to enable JOINALL; case object is
+        // in a map called getScopeInformation which has as key the scope
+        // (e.g., process, sub-process) name
+        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
+        r = 1;
+      } else if (DataObjectClassification.isMIDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) { // TODO: D^1:n R1; R2; D^m:n R1; R3
+        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
+        r = numberOfMultipleInstanceInTable(dataObjectList.get(0), dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0])); // has
+                                                                                                                                                       // to
+                                                                                                                                                       // be
+                                                                                                                                                       // defined
+      } else {
+        // non existent data object type identified
+        q = null;
+        r = 0;
       }
+      queryMap.put(q, r);
+    }
+    return queryMap;    
+  }
+
+  public boolean isInputDataAvailable(HashMap<String, Integer> queryMap) {
+    boolean missingInputData = false;
+
+    if (!queryMap.isEmpty()) { // true if activity
+                                                            // reads a data
+                                                            // object
 
       // check existence of all input data objects in the correct data states ..
       // if all satisfy the check, the activity can be executed; otherwise, the

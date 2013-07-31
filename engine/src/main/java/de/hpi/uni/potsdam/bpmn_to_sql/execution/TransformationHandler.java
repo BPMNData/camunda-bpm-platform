@@ -1,7 +1,13 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.execution;
 
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.anyDataObject;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification.dataObject;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.nullValue;
+import static de.hpi.uni.potsdam.bpmn_to_sql.pattern.PlainAttributeValueExpression.values;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.camunda.bpm.engine.impl.bpmn.data.AbstractDataAssociation;
@@ -160,9 +166,9 @@ public class TransformationHandler{
         // provide case object of the scope to enable JOINALL; case object is
         // in a map called getScopeInformation which has as key the scope
         // (e.g., process, sub-process) name
-        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), "dependent");
+        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
       } else if (DataObjectClassification.isMIDependentDataObject(dataObjectList.get(0), activityParentId.split(":")[0])) {
-        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]), "dependent_MI");
+        q = createSqlQuery(dataObjectList, dataObjectID, BpmnParse.getScopeInformation().get(activityParentId.split(":")[0]));
       } else {
         // non existent data object type identified
         q = null;
@@ -172,80 +178,58 @@ public class TransformationHandler{
     return queryMap;
   }
   
-  //TODO: BPMN_SQL added
+  // TODO: BPMN_SQL added
   // main data object
-  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId) {
+  // CR1; CR2
+  private String createSqlQuery(List<DataObject> dataObjectList, String instanceId) {
     // TODO our stuff
-    String query;
-    String state = new String();
-
-    for (DataObject dataObject : dataObjectList) {
-      if (state.isEmpty()) {
-        state = "\"" + dataObject.getState() + "\"";
-      } else {
-        state = state + (" OR " + "\"" + dataObject.getState() + "\"");
-      }
-    }
-
-    query = "SELECT * " 
-            + "FROM `" + dataObjectList.get(0).getName() + "` "
-            + "WHERE `" + dataObjectList.get(0).getPkey() + "` =\"" + instanceId + "\" and `state` =(" + state + ")";
+    String coName = dataObjectList.get(0).getName();
+    String pk = dataObjectList.get(0).getPkey();
+    
+    String[] states = extractStates(dataObjectList);
+    
+    String query = dataObject(coName, pk, instanceId).attribute("state", values(states)).getSelectStarStatement().toSqlString();
 
     return query;
+  }
+  
+  private String[] extractStates(List<DataObject> dataObjects) {
+    String[] states = new String[dataObjects.size()];
+    
+    for (int i = 0; i < dataObjects.size(); i++) {
+      states[i] = dataObjects.get(i).getState();
+    }
+    return states;
   }
 
   // TODO: BPMN_SQL added
   // dependent data object
-  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String type) {
+  // D^1:1 R1; R2; D^1:n R1; R2; D^m:n R1; R3
+  private String createSqlQuery(List<DataObject> dataObjectList, String instanceId, String caseObject) {
     // TODO our stuff
-    String query;
-    String state = new String();
-  
-    for (DataObject dataObject : dataObjectList) {
-      if (state.isEmpty()) {
-        state = "\"" + dataObject.getState() + "\"";
-      } else {
-        state = state + (" OR " + "\"" + dataObject.getState() + "\"");
-      }
-    }
-  
-    if (type == "dependent") {
-      query = "SELECT D.* "
-              + "FROM `" + dataObjectList.get(0).getName() + "` D INNER JOIN `" + caseObject + "` M USING (" + dataObjectList.get(0).getFkeys().get(0) + ") "
-              + "WHERE M." + dataObjectList.get(0).getFkeys().get(0) + "= \"" + instanceId + "\" and D.state =(" + state + ")";
-      // does not work anymore as soon as several foreign keys are allowed,
-      // i.e., when we extend the data object chain to more than 2 in length
-    } else if (type == "dependent_MI") {
-      query = "SELECT D.* "
-              + "FROM `" + dataObjectList.get(0).getName() + "` D INNER JOIN `" + caseObject + "` M USING (" + dataObjectList.get(0).getFkeys().get(0) + ") "
-              + "WHERE M." + dataObjectList.get(0).getFkeys().get(0) + "=\"" + instanceId + "\" and D.state =(" + state + ")";
-    } else { // wrong type
-      query = null;
-    }
-  
+    String[] states = extractStates(dataObjectList);
+    String dataObjectName = dataObjectList.get(0).getName();
+    String foreignKey = dataObjectList.get(0).getFkeys().get(0);
+    
+    String query = anyDataObject(dataObjectName, dataObjectList.get(0).getPkey()).attribute("state", values(states))
+        .references(foreignKey, dataObject(caseObject, foreignKey, instanceId)).getSelectStarStatement().toSqlString();
+
     return query;
   }
 
   // TODO: BPMN_SQL added
   // dependent data object with null foreign key
-  private String createSqlQuery(ArrayList<DataObject> dataObjectList, String instanceId, String caseObject, String caseObjectPk, String type) {
+  // D^1:1 R3; D^1:n R3; D^m:n R2; R4
+  private String createSqlQuery(List<DataObject> dataObjectList, String instanceId, String caseObject, String caseObjectPk, String type) {
     // TODO our stuff
-    String query;
-    String state = new String();
-
-    for (DataObject dataObject : dataObjectList) {
-      if (state.isEmpty()) {
-        state = "\"" + dataObject.getState() + "\"";
-      } else {
-        state = state + (" OR " + "\"" + dataObject.getState() + "\"");
-      }
-    }
-
-    query = "SELECT * "
-            + "FROM `" + dataObjectList.get(0).getName() + "` "
-            + "WHERE `" + caseObjectPk + "` IS NULL and `state`= (" + state + ")";
+    
+    String[] states = extractStates(dataObjectList);
+    String dataObjectName = dataObjectList.get(0).getName();
+    
+    String query = anyDataObject(dataObjectName, dataObjectList.get(0).getPkey()).attribute("state", values(states))
+       .attribute(caseObjectPk, nullValue()).getSelectStarStatement().toSqlString();
 
     return query;
-  }  
+  }
   
 }

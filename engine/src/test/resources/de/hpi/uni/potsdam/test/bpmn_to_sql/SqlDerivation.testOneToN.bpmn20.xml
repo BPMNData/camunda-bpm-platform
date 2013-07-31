@@ -6,7 +6,7 @@
 			 xmlns:signavio="http://www.signavio.com"
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			 xmlns:activiti="http://activiti.org/bpmn"
-			 xmlns:bpt="http://bpt.uni-potsdam.de"
+			 xmlns:bpt="http://bpt.hpi.uni-potsdam.de"
 			 exporter="Signavio Process Editor, http://www.signavio.com"
 			 exporterVersion="6.7.0"
 			 expressionLanguage="http://www.w3.org/1999/XPath"
@@ -47,7 +47,7 @@
 			</dataOutputAssociation>
 			<dataOutputAssociation id="apid-2E48A0FC-09FD-4F1E-8596-FB3BA3AAF261">
 				<extensionElements>
-					<bpt:processVariable id="count_apid-2E48A0FC-09FD-4F1E-8596-FB3BA3AAF261">numberOfItems1</bpt:processVariable>
+					<bpt:cardinality id="count_apid-2E48A0FC-09FD-4F1E-8596-FB3BA3AAF261">numberOfItems1</bpt:cardinality>
 				</extensionElements>
 				<sourceRef>A__sid-A711B8E7-258E-4F18-B9CF-B19E3D0763AB</sourceRef>
 				<targetRef>atid-38430585-4A24-44CA-8F47-2C2FF1F02A81</targetRef>
@@ -142,7 +142,7 @@
 			</dataInputAssociation>
 			<dataOutputAssociation id="asid-FE1B4DD4-6AB8-4530-B21E-E9D37BE730C3">
 				<extensionElements>
-					<bpt:processVariable id="count_apid-2E48A0FC-09FD-4F1E-8596-FB3BA3AAF261">numberOfItems2</bpt:processVariable>
+					<bpt:cardinality id="count_apid-2E48A0FC-09FD-4F1E-8596-FB3BA3AAF261">numberOfItems2</bpt:cardinality>
 				</extensionElements>
 				<sourceRef>H__vsid-4C30A198-36BC-4D97-975F-08043A4CCB6E</sourceRef>
 				<targetRef>shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4</targetRef>
@@ -245,205 +245,205 @@
 		<sequenceFlow id="sid-482C4635-5365-46F4-92C5-DBCDE4F62E51" sourceRef="F__sid-9B5407DB-50EE-4BC7-B6E3-B47E2B25BA9E" targetRef="EE__sid-E0E1B51E-2910-4F98-8071-DC631177546A"/>
 		<dataObject id="sid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_sid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">pid</bpt:pk>
-				<bpt:fk id="fk_sid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-eb5d8840-aad2-4588-ab1a-13346c5c9021" name="intact"/>
 		</dataObject>
 		<dataObject id="sid-EE8044B1-FFB2-4911-919D-B5E19499C59A" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_sid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">pid</bpt:pk>
-				<bpt:fk id="fk_sid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-71fcdd2b-723c-468b-8082-20a149a1251e" name="sent"/>
 		</dataObject>
 		<dataObject id="sid-5660F06C-12CE-4E07-B970-C3D891E85D30" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_sid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">pid</bpt:pk>
-				<bpt:fk id="fk_sid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-0389e307-0759-48a9-96d5-f1bbda0a8381" name="destroyed"/>
 		</dataObject>
 		<dataObject id="gid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_gid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">pid</bpt:pk>
-				<bpt:fk id="fk_gid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_gid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_gid-ED00E696-CBC7-4DEC-A760-9EEBD63B10CF" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="gid-eb5d8840-aad2-4588-ab1a-13346c5c9021" name="sent"/>
 		</dataObject>
 		<dataObject id="gid-EE8044B1-FFB2-4911-919D-B5E19499C59A" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_gid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">pid</bpt:pk>
-				<bpt:fk id="fk_gid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_gid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_gid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="gid-71fcdd2b-723c-468b-8082-20a149a1251e" name="delivered"/>
 		</dataObject>
 		<dataObject id="gid-5660F06C-12CE-4E07-B970-C3D891E85D30" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_gid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="delete">pid</bpt:pk>
-				<bpt:fk id="fk_gid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_gid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="delete">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_gid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="gid-0389e307-0759-48a9-96d5-f1bbda0a8381" name="delivered"/>
 		</dataObject>
 		<dataObject id="sid-357A2035-A7E8-425D-9010-42C3425BF6E8" isCollection="false" name="Order">
 			<extensionElements>
-				<bpt:pk id="pk_sid-357A2035-A7E8-425D-9010-42C3425BF6E8" type="">oid</bpt:pk>
-				<bpt:fk id="fk_sid-357A2035-A7E8-425D-9010-42C3425BF6E8" type=""></bpt:fk>
+				<bpt:primaryKey id="pk_sid-357A2035-A7E8-425D-9010-42C3425BF6E8" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-357A2035-A7E8-425D-9010-42C3425BF6E8" type=""></bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-497c8775-57fa-4c2b-917b-abb035c3cde6" name="received"/>
 		</dataObject>
 		<dataObject id="sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" isCollection="false" name="Order">
 			<extensionElements>
-				<bpt:pk id="pk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">oid</bpt:pk>
-				<bpt:fk id="fk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type=""></bpt:fk>
+				<bpt:primaryKey id="pk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type=""></bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-dd0910cb-3b91-40e1-b172-8d364e6a3d6e" name="created"/>
 		</dataObject>
 		<dataObject id="sid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" isCollection="false" name="Order">
 			<extensionElements>
-				<bpt:pk id="pk_sid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">oid</bpt:pk>
-				<bpt:fk id="fk_sid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type=""></bpt:fk>
+				<bpt:primaryKey id="pk_sid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type=""></bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-bded6b6f-7551-4b82-8dd9-e2f64f81f693" name="confirmed"/>
 		</dataObject>
 		<dataObject id="sid-E747DAD8-E55D-47E7-9382-057D566C6EF4" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_sid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="new">pid</bpt:pk>
-				<bpt:fk id="fk_sid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="new">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-d78e9ab4-c63e-4f94-b63c-6d30766ee9d4" name="inStock"/>
 		</dataObject>
 		<dataObject id="pid-E747DAD8-E55D-47E7-9382-057D566C6EF4" isCollection="false" name="Product">
 			<extensionElements>
-				<bpt:pk id="pk_pid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">pid</bpt:pk>
-				<bpt:fk id="fk_pid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_pid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">pid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_pid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="pid-d78e9ab4-c63e-4f94-b63c-6d30766ee9d4" name="inStock"/>
 		</dataObject>
 		<dataObject id="sid-F65686CF-2A56-464A-B2FE-B14BED20295F" isCollection="false" name="Order">
 			<extensionElements>
-				<bpt:pk id="pk_sid-F65686CF-2A56-464A-B2FE-B14BED20295F" type="">oid</bpt:pk>
-				<bpt:fk id="fk_sid-F65686CF-2A56-464A-B2FE-B14BED20295F" type=""></bpt:fk>
+				<bpt:primaryKey id="pk_sid-F65686CF-2A56-464A-B2FE-B14BED20295F" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-F65686CF-2A56-464A-B2FE-B14BED20295F" type=""></bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-1d343282-0386-4f60-ac41-8e5ba675167b" name="confirmed"/>
 		</dataObject>
 		<dataObject id="tid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="false" name="Invoice">
 			<extensionElements>
-				<bpt:pk id="pk_tid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="new">iid</bpt:pk>
-				<bpt:fk id="fk_tid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_tid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="new">iid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_tid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="tid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="created"/>
 		</dataObject>
 		<dataObject id="qid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="false" name="Invoice">
 			<extensionElements>
-				<bpt:pk id="pk_qid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:pk>
-				<bpt:fk id="fk_qid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_qid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_qid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="qid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="created"/>
 		</dataObject>
 		<dataObject id="sid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="false" name="Invoice">
 			<extensionElements>
-				<bpt:pk id="pk_sid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:pk>
-				<bpt:fk id="fk_sid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="sent"/>
 		</dataObject>
 		<dataObject id="pid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="false" name="Invoice">
 			<extensionElements>
-				<bpt:pk id="pk_pid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:pk>
-				<bpt:fk id="fk_pid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_pid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">iid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_pid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="pid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="sent"/>
 		</dataObject>
 		<dataObject id="sid-D5E57F14-6F75-49FB-8830-B1272CF16173" isCollection="false" name="Invoice">
 			<extensionElements>
-				<bpt:pk id="pk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="delete">iid</bpt:pk>
-				<bpt:fk id="fk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="delete">iid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-f6f036a5-3b3d-4065-9396-bea2293128a7" name="sent"/>
 		</dataObject>
 		<dataObject id="sid-C255C0A7-FFBF-4451-8BA0-2CD447EA36FB" isCollection="false" name="Order">
 			<extensionElements>
-				<bpt:pk id="pk_sid-C255C0A7-FFBF-4451-8BA0-2CD447EA36FB" type="">oid</bpt:pk>
-				<bpt:fk id="fk_sid-C255C0A7-FFBF-4451-8BA0-2CD447EA36FB" type=""></bpt:fk>
+				<bpt:primaryKey id="pk_sid-C255C0A7-FFBF-4451-8BA0-2CD447EA36FB" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_sid-C255C0A7-FFBF-4451-8BA0-2CD447EA36FB" type=""></bpt:foreignKey>
 			</extensionElements>
 			<dataState id="sid-fb1dc059-8a99-496f-b4ed-d9b97c2d5b14" name="archived"/>
 		</dataObject>
 		<dataObject id="atid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="true" name="Bill">
 			<extensionElements>
-				<bpt:pk id="pk_atid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="new">bid</bpt:pk>
-				<bpt:fk id="fk_atid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_atid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="new">bid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_atid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="atid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="created"/>
 		</dataObject>
 		<dataObject id="aqid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="true" name="Bill">
 			<extensionElements>
-				<bpt:pk id="pk_aqid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">bid</bpt:pk>
-				<bpt:fk id="fk_aqid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_aqid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">bid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_aqid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="aqid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="created"/>
 		</dataObject>
 		<dataObject id="asid-38430585-4A24-44CA-8F47-2C2FF1F02A81" isCollection="true" name="Bill">
 			<extensionElements>
-				<bpt:pk id="pk_asid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">bid</bpt:pk>
-				<bpt:fk id="fk_asid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_asid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">bid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_asid-38430585-4A24-44CA-8F47-2C2FF1F02A81" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="asid-30e03d5c-afe1-49c4-ab87-a2fb93dd6e9a" name="sent"/>
 		</dataObject>
 		<dataObject id="asid-D5E57F14-6F75-49FB-8830-B1272CF16173" isCollection="true" name="Bill">
 			<extensionElements>
-				<bpt:pk id="apk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="delete">bid</bpt:pk>
-				<bpt:fk id="fk_asid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="">oid</bpt:fk>
+				<bpt:primaryKey id="apk_sid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="delete">bid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_asid-D5E57F14-6F75-49FB-8830-B1272CF16173" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="asid-f6f036a5-3b3d-4065-9396-bea2293128a7" name="sent"/>
 		</dataObject>
 		
 		<dataObject id="bsid-23898D1E-9147-4CF0-AEEC-77FB31303C67" isCollection="false" name="Receipt">
 			<extensionElements>
-				<bpt:pk id="pk_bsid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">rid</bpt:pk>
-				<bpt:fk id="fk_bsid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">null</bpt:fk>
+				<bpt:primaryKey id="pk_bsid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">rid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_bsid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type="">null</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="bsid-dd0910cb-3b91-40e1-b172-8d364e6a3d6e" name="approved"/>
 		</dataObject>
 		<dataObject id="bsid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" isCollection="false" name="Receipt">
 			<extensionElements>
-				<bpt:pk id="pk_bsid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">rid</bpt:pk>
-				<bpt:fk id="fk_bsid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_bsid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">rid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_bsid-CA9A7C7F-D17B-4EDB-AFAD-30FB7937B768" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="bsid-bded6b6f-7551-4b82-8dd9-e2f64f81f693" name="$receiptState"/>
 		</dataObject>
 		<dataObject id="shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" isCollection="true" name="Shipment">
 			<extensionElements>
-				<bpt:pk id="pk_shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="new">sid</bpt:pk>
-				<bpt:fk id="fk_shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="new">sid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_shpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="shpid-d78e9ab4-c63e-4f94-b63c-6d30766ee9d4" name="packed"/>
 		</dataObject>
 		<dataObject id="gcshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" isCollection="true" name="Shipment">
 			<extensionElements>
-				<bpt:pk id="pk_gcshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">sid</bpt:pk>
-				<bpt:fk id="fk_gcshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_gcshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">sid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_gcshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="gcshpid-d78e9ab4-c63e-4f94-b63c-6d30766ee9d4" name="packed"/>
 		</dataObject>
 		<dataObject id="shgid-EE8044B1-FFB2-4911-919D-B5E19499C59A" isCollection="false" name="Shipment">
 			<extensionElements>
-				<bpt:pk id="pk_shgid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">sid</bpt:pk>
-				<bpt:fk id="fk_shgid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_shgid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">sid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_shgid-EE8044B1-FFB2-4911-919D-B5E19499C59A" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="shgid-71fcdd2b-723c-468b-8082-20a149a1251e" name="packed"/>
 		</dataObject>
 		<dataObject id="shgid-5660F06C-12CE-4E07-B970-C3D891E85D30" isCollection="false" name="Shipment">
 			<extensionElements>
-				<bpt:pk id="pk_shgid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">sid</bpt:pk>
-				<bpt:fk id="fk_shgid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_shgid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">sid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_shgid-5660F06C-12CE-4E07-B970-C3D891E85D30" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="shgid-0389e307-0759-48a9-96d5-f1bbda0a8381" name="shipped"/>
 		</dataObject>
 		<dataObject id="ahshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" isCollection="true" name="Shipment">
 			<extensionElements>
-				<bpt:pk id="pk_ahshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">sid</bpt:pk>
-				<bpt:fk id="fk_ahshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:fk>
+				<bpt:primaryKey id="pk_ahshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">sid</bpt:primaryKey>
+				<bpt:foreignKey id="fk_ahshpid-E747DAD8-E55D-47E7-9382-057D566C6EF4" type="">oid</bpt:foreignKey>
 			</extensionElements>
 			<dataState id="ahshpid-d78e9ab4-c63e-4f94-b63c-6d30766ee9d4" name="shipped"/>
 		</dataObject>

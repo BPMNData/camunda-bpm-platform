@@ -858,12 +858,12 @@ public class BpmnParse extends Parse {
         }
  
         Element extension = activityElement.element("extensionElements");
-        dataObj.setPkey(extension.element("pk").getText());
-        dataObj.setPkType(extension.element("pk").attribute("type"));
+        dataObj.setPkey(extension.element("primaryKey").getText());
+        dataObj.setPkType(extension.element("primaryKey").attribute("type"));
  
         ArrayList<String> fkList = new ArrayList<String>(); 
         for (Element fk : extension.elements()) {
-          if(fk.getTagName().equals("fk")) {
+          if(fk.getTagName().equals("foreignKey")) {
             if(fk.getText().startsWith("*") && fk.getText().endsWith("*")) { //fk starting and ending with * are not in the scope of action
               //such fks are not needed for the SQL-queries
             } else if(fk.getText().equalsIgnoreCase("null")) { //means that the specific fk is not yet set, e.g. because it was provided by another organisation
@@ -1353,15 +1353,15 @@ public class BpmnParse extends Parse {
       if (ae.getTagName().equals("dataOutputAssociation")) {    
         DataObject d =  dataObjectMap.get(ae.element("targetRef").getText()); //get the respective data object of this dataOutAssociation
          
-      // check whether any arc expressions exist
-      for (Element doAssElement : ae.elements()) {      
-        if (doAssElement.getTagName().equals("extensionElements")) { 
-          if (doAssElement.element("processVariable") != null) {
-            d.setProcessVariable(doAssElement.element("processVariable").getText());  //update data object with content of arc expression
-  
-            }
-          }
-           
+        // check whether any arc expressions exist
+        for (Element doAssElement : ae.elements()) {      
+          if (doAssElement.getTagName().equals("extensionElements")) { 
+            if (doAssElement.element("condition") != null) {
+              d.setProcessVariable(doAssElement.element("condition").getText());  //update data object with content of arc expression
+            } else if (doAssElement.element("cardinality") != null) {
+              d.setProcessVariable(doAssElement.element("cardinality").getText());
+            }    
+          }        
         }
         doList.add(d);
       }

@@ -25,7 +25,7 @@
 				<sourceRef>sid-3528A49F-BA6B-4E3C-9EB9-41D358343E64</sourceRef>
 				<targetRef>A__sid-66885BC6-9B96-45C4-B658-5A7E8EB3E0DA</targetRef>
 				<transformation>
-                 	let $locBTO := ./DataObjects/BTO for $d in $locBTO/Object return &lt;message name=&quot;TestMessage&quot;>&lt;correlation>&lt;key name=&quot;Test Correlation Key&quot;>&lt;property name=&quot;BTO_id&quot;>{$d/btoid}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;bto>&lt;bto_id>{$d/btoid}&lt;/bto_id>&lt;status>{$d/state}&lt;/status>&lt;/bto>&lt;/payload>&lt;/message>
+                 	let $locBTO := ./DataObjects/BTO return &lt;message name=&quot;TestMessage&quot;>&lt;correlation>&lt;key name=&quot;Test Correlation Key&quot;>&lt;property name=&quot;BTO_id&quot;>{$locBTO/btoid}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;bto>&lt;bto_id>{$locBTO/btoid}&lt;/bto_id>&lt;status>{$locBTO/state}&lt;/status>&lt;/bto>&lt;/payload>&lt;/message>
         		</transformation>
 			</dataInputAssociation>
 			<dataInputAssociation id="sid-B553767C-B41A-4E03-841D-4E89373CE28A">

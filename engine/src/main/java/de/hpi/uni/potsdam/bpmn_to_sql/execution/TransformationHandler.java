@@ -46,7 +46,7 @@ public class TransformationHandler{
     
     for(AbstractDataAssociation outputDataAssociation : activity.getDataOutputAssociations()){
       String xQuery = ((DataAssociation)outputDataAssociation).getTransformation();
-      ArrayList<String> resultObjects = handler.runXQuery(outputData, xQuery);
+      ArrayList<String> resultObjects = getTransformedData(outputData, xQuery);
       for(String resultObject : resultObjects){
         HashMap<String, HashMap<String, String>> object = handler.extractInformation(resultObject);
       }
@@ -65,26 +65,24 @@ public class TransformationHandler{
       }
     }
     
-    ArrayList<String> xmlData = getDataObjectsAsXML(activity, dataObjectID);
+    String dataXML = getDataObjectsAsXML(activity, dataObjectID);
     
-    ArrayList<String> queryResults = getTransformedData(xmlData, xQuery);
+    
+    
+    ArrayList<String> queryResults = getTransformedData(dataXML, xQuery);
     String inputData = "";
     if(!queryResults.isEmpty()){
-      inputData = getTransformedData(xmlData, xQuery).get(0);
+      inputData = queryResults.get(0);
     }      
            
     return inputData;    
   }
 
-  private ArrayList<String> getTransformedData(ArrayList<String> xmlData, String query) {
-    ArrayList<String> transformedData = new ArrayList<String>();
-        
-    transformedData = handler.runXQuery(xmlData, query);
-    
-    return transformedData;
+  private ArrayList<String> getTransformedData(String xmlData, String query) {    
+    return handler.runXQuery(xmlData, query);
   }
 
-  private ArrayList<String> getDataObjectsAsXML(ActivityImpl activity, String dataObjectID) {
+  private String getDataObjectsAsXML(ActivityImpl activity, String dataObjectID) {
     HashMap<String, ArrayList<DataObject>> dataObjects = getDataInputsOfActivity(activity);
     HashMap<String, String> queryMap = createQueryMap(dataObjects, activity.getId(), activity.getParent().getId(), dataObjectID);
     ArrayList<String> objectXMLs = new ArrayList<String>();
@@ -94,10 +92,17 @@ public class TransformationHandler{
       String query = sqlQuerySet.getValue();
       System.out.println("Getting input for object: " + dataObject);
       QueryExecutionHandler.getInstance().runQuery(query);
-      ArrayList<String> objectXML = handler.buildObjectXML(dataObject);
-      objectXMLs.addAll(objectXML);
+      ArrayList<String> objectXMLList = handler.buildObjectXML(dataObject);
+      objectXMLs.addAll(objectXMLList);
     }
-    return objectXMLs;
+    
+    String xml = "<DataObjects>";
+    for (String objectXML : objectXMLs){
+      xml += objectXML;
+    }
+    xml += "</DataObjects>";
+    
+    return xml;
   }
   
   private HashMap<String, ArrayList<DataObject>> getDataInputsOfActivity(ActivityImpl activity){

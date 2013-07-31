@@ -56,13 +56,10 @@ public class XQueryHandler {
 		
     try {
       builder = factory.newDocumentBuilder();
-      Document object = builder.newDocument();        
-      Element rootElement = object.createElement(objectName.replace(" ", "_"));
-      object.appendChild(rootElement);
-      String resultXML = "";
       ArrayList<Object> result = sqlHandler.getNextResult();
   		while (result != null){
-  		  Element objectElement = object.createElement("Object");
+  		  Document object = builder.newDocument();        
+        Element objectElement = object.createElement(objectName.replace(" ", "_"));        
   			for (int i = 0; i < columnCount; i++){
   				Element column = object.createElement(resultMetaData.get(i));
   				if(result.get(i) == null){
@@ -73,12 +70,12 @@ public class XQueryHandler {
   				}  				
   				objectElement.appendChild(column);
   			}  			
-  			rootElement.appendChild(objectElement);
+  			object.appendChild(objectElement);
   			result = sqlHandler.getNextResult();
+  			object.getDocumentElement().normalize();
+        String resultXML = transformDocToString(object);
+        results.add(resultXML);
   		}
-  		object.getDocumentElement().normalize();
-  		resultXML = transformDocToString(object);
-  		results.add(resultXML);
     } catch (ParserConfigurationException e) {
       log.log(Level.SEVERE, e.getMessage(), e);
     }
@@ -143,11 +140,10 @@ public class XQueryHandler {
 	}
 	
 	public ArrayList<String> runXQuery(ArrayList<String> sourceDocs, String query){
-		String tempSource = "<DataObjects>";
+		String tempSource = "";
 		for (String sourceDoc : sourceDocs){
 		  tempSource += sourceDoc;
 		}
-		tempSource += "</DataObjects>";
 		ArrayList<String> results = runXQuery(tempSource, query);
 		return results;
 	}

@@ -218,4 +218,30 @@ public class DataObjectSpecificationTest extends TestCase {
     
     Assert.assertEquals(expectedStatement, actualStatement);
   }
+  
+  
+  // deletes
+  public void testCD1Pattern() {
+    String expectedStatement = "DELETE FROM `d1` WHERE `d1`.`d1_id` = \"case object id\" AND `d1`.`state` = \"s\"";
+    
+    String sql = dataObject("d1", "d1_id", "case object id").attribute("state", "s").getDeleteStatement().toSqlString();
+    
+    Assert.assertEquals(expectedStatement, sql);
+  }
+  
+  /**
+   * same as D1nD1 and DmnD1
+   */
+  public void testD11D1Pattern() {
+    String subSelect = "(SELECT `d3`.`d3_id` FROM `d3`, `d1` WHERE `d3`.`d1_id` = `d1`.`d1_id` AND `d1`.`d1_id` = \"case object id\")";
+    String expectedStatement = "DELETE FROM `d2` WHERE `d2`.`d3_id` = " + subSelect + " AND `d2`.`state` = \"t\"";
+    
+    DataObjectSpecification caseObject = dataObject("d1", "d1_id", "case object id");
+    
+    String sql = anyDataObject("d2", "d2_id").attribute("state", "t")
+        .references("d3_id", anyDataObject("d3", "d3_id").references("d1_id", caseObject))
+        .getDeleteStatement().toSqlString();
+    
+    Assert.assertEquals(expectedStatement, sql);
+  }
 }

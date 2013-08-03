@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.AttributeSetClause;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.DeleteStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectClause;
@@ -227,4 +228,10 @@ public class DataObjectSpecification {
     return subClauses;
   }
 
+  public DeleteStatement getDeleteStatement() {
+    DeleteStatement deleteStatement = new DeleteStatement(SqlHelper.escapeIdentifier(name));
+    WhereClause where = buildSubSelectWhereClause();
+    deleteStatement.setWhereClause(where);
+    return deleteStatement;
+  }
 }

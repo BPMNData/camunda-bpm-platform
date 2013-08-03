@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.AttributeSetClause;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.DeleteStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.InsertStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
@@ -70,6 +71,23 @@ public class SqlStatementTest extends TestCase {
     WhereClause where = new WhereClause();
     WhereSubClause sub = new PlainValueWhereSubClause("f", "\"g\"");
     where.addSubClause(sub);
+    statement.setWhereClause(where);
+    
+    String sql = statement.toSqlString();
+    
+    Assert.assertEquals(expectedSql, sql);
+  }
+  
+  public void testDeleteStatementCreation() {
+    String expectedSql = "DELETE FROM a WHERE b = \"c\" AND d = \"e\"";
+    
+    DeleteStatement statement = new DeleteStatement("a");
+    WhereClause where = new WhereClause();
+    WhereSubClause subClause = new PlainValueWhereSubClause("b", "\"c\"");
+    WhereSubClause subClause2 = new PlainValueWhereSubClause("d", "\"e\"");
+    where.addSubClause(subClause);
+    where.addSubClause(subClause2);
+    
     statement.setWhereClause(where);
     
     String sql = statement.toSqlString();

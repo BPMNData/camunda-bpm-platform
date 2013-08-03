@@ -134,23 +134,19 @@ public class DataInputChecker {
   public boolean isInputDataAvailable(HashMap<String, Integer> queryMap) {
     boolean missingInputData = false;
 
-    if (!queryMap.isEmpty()) { // true if activity
-                                                            // reads a data
-                                                            // object
-
-      // check existence of all input data objects in the correct data states ..
-      // if all satisfy the check, the activity can be executed; otherwise, the
-      // check is restarted until all satisfy the check
-      for (String query : queryMap.keySet()) {
-        System.out.println("Running input check query: " + query);
-        QueryExecutionHandler handler = QueryExecutionHandler.getInstance();
-        handler.runQuery(query);
-        if (Integer.parseInt(handler.getNextResult().get(0).toString()) < queryMap.get(query)) {
-          missingInputData = true;
-          System.out.println("waiting for " + query);
-        }
+    // check existence of all input data objects in the correct data states ..
+    // if all satisfy the check, the activity can be executed; otherwise, the
+    // check is restarted until all satisfy the check
+    for (String query : queryMap.keySet()) {
+      System.out.println("Running input check query: " + query);
+      QueryExecutionHandler handler = QueryExecutionHandler.getInstance();
+      handler.runQuery(query);
+      if (Integer.parseInt(handler.getNextResult().get(0).toString()) < queryMap.get(query)) {
+        missingInputData = true;
+        System.out.println("waiting for " + query);
       }
     }
+    
     return missingInputData == false;
   }
 

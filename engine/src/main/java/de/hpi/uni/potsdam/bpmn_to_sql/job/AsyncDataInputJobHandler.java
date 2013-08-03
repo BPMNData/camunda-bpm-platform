@@ -7,6 +7,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputChecker;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputUnavailableException;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataInputChecker;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.TransformationHandler;
 
 public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
@@ -20,7 +21,7 @@ public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
 
   @Override
   public void execute(String configuration, ExecutionEntity execution, CommandContext commandContext) {
-    DataInputChecker dbInputChecker = new DataInputChecker(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    RefactoredDataInputChecker dbInputChecker = new RefactoredDataInputChecker(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
     if (dbInputChecker.checkDataInput(execution)) {
       TransformationHandler transformationHandler = new TransformationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
       transformationHandler.transformInputData(execution);

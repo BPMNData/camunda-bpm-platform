@@ -58,104 +58,76 @@ public class RefactoredDataOutputHandler {
         
         String query = new String();
 
-        Set<String> inputStates = new HashSet<String>();
-
-        String outputObjectState = outputObject.getState();
-
-        // check whether the state of the object is a process variable
-        if (outputObjectState.startsWith("$")) {
-          outputObjectState = (String) execution.getVariableLocal(outputObject.getState().substring(1));
-        }
+        
 
         List<DataObject> correspondingInputObjects = getMatchingInputDataObjects(outputObject, execution.getActivity().getId());
-        for (DataObject inputObject : correspondingInputObjects) {
-          inputStates.add(inputObject.getState());
-        }
-        String[] inputStatesArray = inputStates.toArray(new String[0]);
 
-        // create SQL query with respect to type of data object (main,
-        // dependent, dependent_MI, dependent_WithoutFK)
-        String scope = execution.getActivity().getParent().getId().split(":")[0];
-        
-        // TODO make all these extractions part of some context object
-        boolean isCaseObject = DataObjectClassification.isMainDataObject(outputObject, scope);
-        boolean isDependentObject = !isCaseObject;
-        boolean isSingleDependentDataObject = DataObjectClassification.isDependentDataObject(outputObject, scope);
-        boolean isDependentWithoutForeignKey = false;
-        if (!correspondingInputObjects.isEmpty()) {
-          isDependentWithoutForeignKey = DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(correspondingInputObjects.get(0), scope);
+        // context information
+        OutputObjectContext context = OutputObjectContext.fromDataObject(execution, outputObject, correspondingInputObjects);
+
+        DataObjectSpecification caseObject = null;
+        if (context.isCaseObject()) {
+          caseObject = dataObject(context.getCaseObjectName(), outputObject.getPkey(), caseObjectId);
+        } else {
+          caseObject = dataObject(context.getCaseObjectName(), outputObject.getFkeys().get(0), caseObjectId);
         }
-            
-        boolean isCollectionDependentDataObject = DataObjectClassification.isMIDependentDataObject(outputObject, scope);
-        
-        String caseObjectName = BpmnParse.getScopeInformation().get(scope);
-        
-        String expression = null;
-        if (outputObject.getProcessVariable() != null) {
-          expression = (String) execution.getVariable(outputObject.getProcessVariable());
-        }
-        
         
         String statementType = outputObject.getPkType();
+        
+        // statement creation
         if (statementType.equals("new")) {
           InsertObjectSpecification insertSpec = insert();
           int numberOfItems = 1;
-          if (isCollectionDependentDataObject) {
+          if (context.isCollectionDependentDataObject()) {
             numberOfItems = Integer.parseInt((String) execution.getVariable(outputObject.getProcessVariable()));
           }
           for (int i = 0; i < numberOfItems; i++) {
-            DataObjectSpecification objectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString()).attribute("state", outputObjectState);
-            objectSpec = getInsertAttributes(execution, objectSpec, outputObject).references(outputObject.getFkeys().get(0), dataObject(caseObjectName, outputObject.getFkeys().get(0), caseObjectId));
-            insertSpec.object(objectSpec);
+            DataObjectSpecification outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
+                .attribute("state", context.getOutputObjectState())
+                .references(outputObject.getFkeys().get(0), caseObject);
+            
+            addInsertPayload(execution, outputObjectSpec, outputObject);
+            insertSpec.object(outputObjectSpec);
           }
           query = insertSpec.getStatement().toSqlString();
-        } else if (statementType.equals("delete")) {
-          DataObjectSpecification dataObjectSpec = null;
-          if (isCaseObject) {
-            dataObjectSpec = dataObject(caseObjectName, outputObject.getPkey(), caseObjectId);
-          } else {
-            dataObjectSpec = anyDataObject(outputObject.getName(), outputObject.getPkey());
-            String caseObjectForeignKey = outputObject.getFkeys().get(0);
-            if (isDependentWithoutForeignKey) {
-              dataObjectSpec.attribute(caseObjectForeignKey, nullValue());
-            }
-          }
-          
-          dataObjectSpec.attribute("state", values(inputStatesArray));
-          
-          query = dataObjectSpec.getDeleteStatement().toSqlString();
         } else {
-          // else is update
-          DataObjectSpecification dataObjectSpec = null;
-          if (isCaseObject) {
-            dataObjectSpec = dataObject(caseObjectName, outputObject.getPkey(), caseObjectId);
+          DataObjectSpecification outputObjectSpec = null;
+          if (context.isCaseObject()) {
+            outputObjectSpec = caseObject;
           } else {
-            dataObjectSpec = anyDataObject(outputObject.getName(), outputObject.getPkey());
+            outputObjectSpec = anyDataObject(outputObject.getName(), outputObject.getPkey());
             String caseObjectForeignKey = outputObject.getFkeys().get(0);
-            if (isDependentWithoutForeignKey) {
-              dataObjectSpec.attribute(caseObjectForeignKey, nullValue());
+            if (context.isDependentWithoutForeignKey()) {
+              outputObjectSpec.attribute(caseObjectForeignKey, nullValue());
             }
           }
           
           // TODO if empty check needed?
-          dataObjectSpec.attribute("state", values(inputStatesArray));
+          outputObjectSpec.attribute("state", values(context.getInputObjectStates()));
           
-          if (expression != null) {
-            dataObjectSpec.plainSqlSelection(expression);
+          if (statementType.equals("delete")) {
+            query = outputObjectSpec.getDeleteStatement().toSqlString();
+          } else {
+            // update
+            if (outputObject.getProcessVariable() != null) {
+              String expression = (String) execution.getVariable(outputObject.getProcessVariable());
+              outputObjectSpec.plainSqlSelection(expression);
+            }
+            
+            List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
+            AttributeUpdate stateUpdate = new AttributeUpdate("state", context.getOutputObjectState());
+            updates.add(stateUpdate);
+            if (context.isDependentObject()) {
+              String caseObjectForeignKey = outputObject.getFkeys().get(0);
+              AttributeUpdate foreignKeyUpdate = new AttributeUpdate(caseObjectForeignKey, new DataObjectReference(caseObject));
+              updates.add(foreignKeyUpdate);
+            }
+            
+            updates.addAll(getAttributeUpdates(execution, outputObject));
+            
+            query = outputObjectSpec.getUpdateStatement(updates).toSqlString();
           }
           
-          List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
-          AttributeUpdate stateUpdate = new AttributeUpdate("state", outputObjectState);
-          updates.add(stateUpdate);
-          if (isDependentObject) {
-            String caseObjectForeignKey = outputObject.getFkeys().get(0);
-            AttributeUpdate foreignKeyUpdate = new AttributeUpdate(caseObjectForeignKey, new DataObjectReference(dataObject(caseObjectName, caseObjectForeignKey, caseObjectId)));
-            updates.add(foreignKeyUpdate);
-          }
-          
-          updates.addAll(getAttributeUpdates(execution,outputObject));
-          
-          query = dataObjectSpec.getUpdateStatement(updates).toSqlString();
         }
 
         System.out.println(query);
@@ -182,7 +154,7 @@ public class RefactoredDataOutputHandler {
     return updates;
   }
   
-  private DataObjectSpecification getInsertAttributes(ActivityExecution execution, DataObjectSpecification dataSpec, DataObject dataObject ){
+  private DataObjectSpecification addInsertPayload(ActivityExecution execution, DataObjectSpecification dataSpec, DataObject dataObject ){
     if (execution.hasVariableLocal("dataObjects")){
       HashMap<DataObject, ArrayList<HashMap<String, String>>> inputDataObjects = (HashMap<DataObject, ArrayList<HashMap<String, String>>>) execution.getVariableLocal("dataObjects");
       for (HashMap<String, String> objectUpdate : inputDataObjects.get(dataObject)){
@@ -194,6 +166,89 @@ public class RefactoredDataOutputHandler {
       }
     }
     return dataSpec;
+  }
+  
+  private static class OutputObjectContext {
+    private boolean isCaseObject;
+    private boolean isDependentObject;
+    private boolean isSingleDependentDataObject;
+    private boolean isDependentWithoutForeignKey;
+    private boolean isCollectionDependentDataObject;
+    private String caseObjectName;
+   
+    private List<DataObject> correspondingInputObjects;
+    private DataObject outputObject;
+    private String outputObjectState;
+    
+    public static OutputObjectContext fromDataObject(ActivityExecution execution, DataObject outputObject, List<DataObject> correspondingInputObjects) {
+      OutputObjectContext context = new OutputObjectContext();
+      context.outputObject = outputObject;
+      context.correspondingInputObjects = correspondingInputObjects;
+
+      context.outputObjectState = outputObject.getState();
+
+      // check whether the state of the object is a process variable
+      if (context.outputObjectState.startsWith("$")) {
+        context.outputObjectState = (String) execution.getVariableLocal(outputObject.getState().substring(1));
+      }
+      
+      String scope = execution.getActivity().getParent().getId().split(":")[0];
+      context.isCaseObject = DataObjectClassification.isMainDataObject(outputObject, scope);
+      context.isDependentObject = !context.isCaseObject;
+      context.isSingleDependentDataObject = DataObjectClassification.isDependentDataObject(outputObject, scope);
+      context.isDependentWithoutForeignKey = false;
+
+      if (!correspondingInputObjects.isEmpty()) {
+        context.isDependentWithoutForeignKey = DataObjectClassification.isDependentDataObjectWithUnspecifiedFK(correspondingInputObjects.get(0), scope);
+      }
+      context.isCollectionDependentDataObject = DataObjectClassification.isMIDependentDataObject(outputObject, scope);
+      
+      context.caseObjectName = BpmnParse.getScopeInformation().get(scope);
+      
+      return context;
+    }
+
+    public boolean isCaseObject() {
+      return isCaseObject;
+    }
+
+    public boolean isDependentObject() {
+      return isDependentObject;
+    }
+
+    public boolean isSingleDependentDataObject() {
+      return isSingleDependentDataObject;
+    }
+
+    public boolean isDependentWithoutForeignKey() {
+      return isDependentWithoutForeignKey;
+    }
+
+    public DataObject getOutputObject() {
+      return outputObject;
+    }
+    
+    public String getOutputObjectState() {
+      return outputObjectState;
+    }
+
+    public boolean isCollectionDependentDataObject() {
+      return isCollectionDependentDataObject;
+    }
+
+    public String getCaseObjectName() {
+      return caseObjectName;
+    }
+    
+    public String[] getInputObjectStates() {
+      Set<String> inputStates = new HashSet<String>();
+      for (DataObject inputObject : correspondingInputObjects) {
+        inputStates.add(inputObject.getState());
+      }
+      return inputStates.toArray(new String[0]);
+    }
+    
+    
   }
   
 

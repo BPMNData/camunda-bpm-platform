@@ -89,8 +89,6 @@ public class BpmnActivityBehavior {
     }
     
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
-      DataOutputHandler outputHandler = new DataOutputHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
-      outputHandler.updateOutputs(execution);
       RefactoredDataOutputHandler refactoredHandler = new RefactoredDataOutputHandler();
       refactoredHandler.updateOutputs(execution);
     }

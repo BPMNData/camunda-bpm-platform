@@ -55,11 +55,6 @@ public class RefactoredDataOutputHandler {
       
       List<DataObject> outputObjects = BpmnParse.getOutputData().get(execution.getActivity().getId());
       for (DataObject outputObject : outputObjects) {
-        String expression;
-        if (outputObject.getProcessVariable() != null) {
-          expression = (String) execution.getVariable(outputObject.getProcessVariable());
-          throw new RuntimeException("not yet implemented");
-        }
         
         String query = new String();
 
@@ -82,6 +77,7 @@ public class RefactoredDataOutputHandler {
         // dependent, dependent_MI, dependent_WithoutFK)
         String scope = execution.getActivity().getParent().getId().split(":")[0];
         
+        // TODO make all these extractions part of some context object
         boolean isCaseObject = DataObjectClassification.isMainDataObject(outputObject, scope);
         boolean isDependentObject = !isCaseObject;
         boolean isSingleDependentDataObject = DataObjectClassification.isDependentDataObject(outputObject, scope);
@@ -93,6 +89,11 @@ public class RefactoredDataOutputHandler {
         boolean isCollectionDependentDataObject = DataObjectClassification.isMIDependentDataObject(outputObject, scope);
         
         String caseObjectName = BpmnParse.getScopeInformation().get(scope);
+        
+        String expression = null;
+        if (outputObject.getProcessVariable() != null) {
+          expression = (String) execution.getVariable(outputObject.getProcessVariable());
+        }
         
         
         String statementType = outputObject.getPkType();
@@ -109,7 +110,20 @@ public class RefactoredDataOutputHandler {
           }
           query = insertSpec.getStatement().toSqlString();
         } else if (statementType.equals("delete")) {
-          throw new RuntimeException("not yet implemented");
+          DataObjectSpecification dataObjectSpec = null;
+          if (isCaseObject) {
+            dataObjectSpec = dataObject(caseObjectName, outputObject.getPkey(), caseObjectId);
+          } else {
+            dataObjectSpec = anyDataObject(outputObject.getName(), outputObject.getPkey());
+            String caseObjectForeignKey = outputObject.getFkeys().get(0);
+            if (isDependentWithoutForeignKey) {
+              dataObjectSpec.attribute(caseObjectForeignKey, nullValue());
+            }
+          }
+          
+          dataObjectSpec.attribute("state", values(inputStatesArray));
+          
+          query = dataObjectSpec.getDeleteStatement().toSqlString();
         } else {
           // else is update
           DataObjectSpecification dataObjectSpec = null;
@@ -125,6 +139,10 @@ public class RefactoredDataOutputHandler {
           
           // TODO if empty check needed?
           dataObjectSpec.attribute("state", values(inputStatesArray));
+          
+          if (expression != null) {
+            dataObjectSpec.plainSqlSelection(expression);
+          }
           
           List<AttributeUpdate> updates = new ArrayList<AttributeUpdate>();
           AttributeUpdate stateUpdate = new AttributeUpdate("state", outputObjectState);

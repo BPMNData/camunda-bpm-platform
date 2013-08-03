@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.AttributeSetClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.DeleteStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainSqlWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
@@ -31,11 +32,13 @@ public class DataObjectSpecification {
   private String pkValue;
   
   private SortedMap<String, AttributeValueExpression> attributeValues;
+  private Set<String> plainSqlSelections;
   
   private Set<String> tables;
   
   public DataObjectSpecification() {
     attributeValues = new TreeMap<String, AttributeValueExpression>();
+    plainSqlSelections = new HashSet<String>();
     tables = new HashSet<String>();
   }
   
@@ -100,6 +103,16 @@ public class DataObjectSpecification {
   
   public DataObjectSpecification attribute(String name, PlainAttributeValueExpression valueExpression) {
     attributeValues.put(name, valueExpression);
+    return this;
+  }
+  
+  /**
+   * This method allows setting a where sub clause from plain sql, however breaks the idea of declaratively
+   * building sql statements and only exists for legacy requirements.
+   */
+  @Deprecated
+  public DataObjectSpecification plainSqlSelection(String sql) {
+    plainSqlSelections.add(sql);
     return this;
   }
   
@@ -208,6 +221,10 @@ public class DataObjectSpecification {
       subClauses.addAll(attributePair.getValue().toJoinWhereSubClauses(fullQualifiedAttributeName));
     }
     
+    for (String sqlWhere : plainSqlSelections) {
+      subClauses.add(new PlainSqlWhereSubClause(sqlWhere));
+    }
+    
     return subClauses;
   }
   
@@ -223,6 +240,10 @@ public class DataObjectSpecification {
     for (Map.Entry<String, AttributeValueExpression> attributePair : attributeValues.entrySet()) {
       String fullQualifiedAttributeName = SqlHelper.escapeIdentifier(name) + "." + SqlHelper.escapeIdentifier(attributePair.getKey());
       subClauses.add(attributePair.getValue().toSubSelectWhereSubClause(fullQualifiedAttributeName));
+    }
+    
+    for (String sqlWhere : plainSqlSelections) {
+      subClauses.add(new PlainSqlWhereSubClause(sqlWhere));
     }
     
     return subClauses;

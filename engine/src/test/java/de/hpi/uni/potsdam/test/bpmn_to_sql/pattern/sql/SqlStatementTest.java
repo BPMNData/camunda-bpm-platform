@@ -8,6 +8,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.AttributeSetClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.DeleteStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.FromClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.InsertStatement;
+import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainSqlWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.PlainValueWhereSubClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.SelectStatement;
@@ -89,6 +90,28 @@ public class SqlStatementTest extends TestCase {
     where.addSubClause(subClause2);
     
     statement.setWhereClause(where);
+    
+    String sql = statement.toSqlString();
+    
+    Assert.assertEquals(expectedSql, sql);
+  }
+  
+  @SuppressWarnings("deprecation")
+  public void testPlainSqlWhereSubClause() {
+    String expectedSql = "SELECT a FROM b WHERE c = \"d\"";
+    
+    SelectStatement statement = new SelectStatement();
+    FromClause from = new FromClause();
+    from.addTableName("b");
+    statement.setFromClause(from);
+    
+    WhereClause where = new WhereClause();
+    WhereSubClause subClause = new PlainSqlWhereSubClause("c = \"d\"");
+    where.addSubClause(subClause);
+    statement.setWhereClause(where);
+    
+    SelectClause select = new SelectClause("a");
+    statement.setSelectClause(select);
     
     String sql = statement.toSqlString();
     

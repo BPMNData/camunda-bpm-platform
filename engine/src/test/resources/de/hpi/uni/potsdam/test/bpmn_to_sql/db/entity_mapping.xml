@@ -129,5 +129,41 @@
         </if>
     </where>
   </select>
+  
+  <select id="selectSingleRequest" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select request_id, item, state from request
+    <where>
+        <if test="request_id != null">
+            request_id = #{request_id}
+        </if>
+        <if test="item != null">
+            and item = #{item}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleResponse" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select response_id, request_id, item, price, state from response
+    <where>
+        <if test="response_id != null">
+            response_id = #{response_id}
+        </if>
+        <if test="request_id != null">
+            request_id = #{request_id}
+        </if>
+        <if test="item != null">
+            and item = #{item}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
 </mapper>
 

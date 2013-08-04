@@ -82,9 +82,15 @@ public class RefactoredDataOutputHandler {
             numberOfItems = Integer.parseInt((String) execution.getVariable(outputObject.getProcessVariable()));
           }
           for (int i = 0; i < numberOfItems; i++) {
-            DataObjectSpecification outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
-                .attribute("state", context.getOutputObjectState())
+            DataObjectSpecification outputObjectSpec = null;
+            if (context.isCaseObject()) {
+              outputObjectSpec = caseObject;
+            } else {
+              outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
                 .references(outputObject.getFkeys().get(0), caseObject);
+            }
+            
+            outputObjectSpec.attribute("state", context.getOutputObjectState());
             
             addInsertPayload(execution, outputObjectSpec, outputObject);
             insertSpec.object(outputObjectSpec);

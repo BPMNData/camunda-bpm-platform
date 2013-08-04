@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camundabpm="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:myData="http://www.example.org/DataDefinitions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_tEY-0PQ2EeKXzfEHMsI0Zg" targetNamespace="http://activiti.org/bpmn">
+  <!-- <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="DataDefinitions.xsd" namespace="http://www.example.org/DataDefinitions"/> -->
+  <bpmn2:itemDefinition id="global-request-id" structureRef="myData:request"/>
+  <bpmn2:itemDefinition id="global-response-id" structureRef="myData:response"/>
+  <bpmn2:message id="Message_1" name="RequestMessage">
+    <bpmn2:extensionElements>
+      <bpt:messageContentDef xsi:type="xsd:anyType">
+        <bpt:payloadDef xsi:type="xsd:anyType" ref="global-request-id"/>
+        <bpt:correlationDef xsi:type="xsd:anyType" ref="request_ID_Key"/>
+      </bpt:messageContentDef>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:message id="Message_2" name="ResponseMessage">
+    <bpmn2:extensionElements>
+      <bpt:messageContentDef xsi:type="xsd:anyType">
+        <bpt:payloadDef xsi:type="xsd:anyType" ref="global-response-id"/>
+        <bpt:correlationDef xsi:type="xsd:anyType" ref="request_ID_Key"/>
+      </bpt:messageContentDef>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  
+  <bpmn2:endPoint id="sellerEndPoint">
+     <bpmn2:extensionElements>
+        <camundabpm:address>http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+     </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  
+  <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
+    <!-- <bpmn2:correlationPropertyRetrievalExpression messageRef="Message_1">
+      <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
+        /message/correlation/key[@name='Request Response Correlation Key']/property[@name='request_id']/text()
+      </bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression> -->
+    <bpmn2:correlationPropertyRetrievalExpression messageRef="Message_2">
+      <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
+        /message/correlation/key[@name='Request Response Correlation Key']/property[@name='request_id']/text()
+      </bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+  </bpmn2:correlationProperty>
+  
+  <bpmn2:collaboration id="Collaboration_1">
+    <bpmn2:participant id="Participant_1" name="A" processRef="Process_1"/>
+    <bpmn2:participant id="Participant_2" name="B">
+      <bpmn2:endPointRef>sellerEndPoint</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="Message_1" name="" sourceRef="SendTask_1" targetRef="Participant_2"/>
+    <bpmn2:messageFlow id="MessageFlow_2" messageRef="Message_2" name="" sourceRef="Participant_2" targetRef="ReceiveTask_1"/>
+    <bpmn2:conversation id="requestResponseConversation">
+      <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
+      <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
+      <bpmn2:correlationKey id="request_ID_Key" name="Request Response Correlation Key">
+        <bpmn2:correlationPropertyRef>propRequest_ID</bpmn2:correlationPropertyRef>
+      </bpmn2:correlationKey>
+    </bpmn2:conversation>
+  </bpmn2:collaboration>
+  <!-- Sender -->
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpt:scopeInformation id="si-f4a3a897-a107-4909-8cf4-219dbd5be8f7" caseObject="Request"/>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_1" name="Start Event">
+      <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="EndEvent_1" name="End Event">
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:sendTask id="SendTask_1" name="Send Request" messageRef="Message_1" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
+      <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_1">
+        <bpmn2:sourceRef>RequestObj_created</bpmn2:sourceRef>
+        <bpmn2:targetRef>SendTask_1</bpmn2:targetRef>
+        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
+          let $locRequest := getDataObject(&quot;request&quot;)
+          return
+            &lt;message name=&quot;RequestMessage&quot;>
+              &lt;correlation>
+                &lt;key name=&quot;Request Response Correlation Key&quot;>
+                  &lt;property name=&quot;request_id&quot;>$locRequest/request_id&lt;/property>
+                &lt;/key>
+              &lt;/correlation>
+              &lt;payload>
+                &lt;request>
+                  &lt;request_id>$locRequest/request_id&lt;/request_id>
+                  &lt;item>$locRequest/item&lt;/item>
+                &lt;/request>
+              &lt;/payload>
+            &lt;/message>
+        </bpmn2:transformation>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
+        <bpmn2:targetRef>RequestObj_sent</bpmn2:targetRef>
+        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
+          let $locRequest := getDataObject(&quot;request&quot;)
+          return
+            &lt;request>
+              &lt;item>$locRequest/item&lt;/item>
+              &lt;status&lt;sent&lt;/status>
+            &lt;/request>
+         </bpmn2:transformation>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:sendTask>
+    <bpmn2:receiveTask id="ReceiveTask_1" name="Receive Response" messageRef="Message_2">
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:targetRef>ResponseObj_received</bpmn2:targetRef>
+        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
+          let $responseMsg := getDataOutput(&quot;ResponseMessage&quot;)
+          return
+            &lt;response>
+              &lt;request_id>$responseMsg/payload/response/item&lt;/request_id>
+              &lt;item>$responseMsg/payload/response/price&lt;/item>
+              &lt;status>received&lt;/status>
+            &lt;/response>
+         </bpmn2:transformation>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:receiveTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="SendTask_1" targetRef="ReceiveTask_1"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="ReceiveTask_1" targetRef="EndEvent_1"/>
+    <bpmn2:dataObject id="RequestObj_created" name="Request">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-901d4028-7829-430a-b69b-e8969b76b170" type="new">request_ID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C67" type=""></bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
+    </bpmn2:dataObject>
+    <bpmn2:dataObject id="RequestObj_sent" name="Request">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-b4d6d557-28ea-4a37-95ae-f810263944b3">request_ID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_sid-23898D1E-9147-4CF0-AEEC-77FB31303C68" type=""></bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="sent"/>
+    </bpmn2:dataObject>
+    <bpmn2:dataObject id="ResponseObj_received" name="Response">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-f5328738-5619-4f06-9255-22dc32b590c9">response_ID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-a096c4f8-1cde-4732-a27c-35cb40c6e06c">request_ID</bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="received"/>
+    </bpmn2:dataObject>
+    <bpmn2:manualTask id="ManualTask_1" name="Create Request">
+      <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_5">
+        <bpmn2:targetRef>RequestObj_created</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:manualTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_7" sourceRef="StartEvent_1" targetRef="ManualTask_1"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="ManualTask_1" targetRef="SendTask_1"/>
+  </bpmn2:process>
+</bpmn2:definitions>

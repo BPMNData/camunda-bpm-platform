@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/DataDefinitions/" targetNamespace="http://www.example.org/DataDefinitions/">
+    
+
+    <element name="request">
+    	<complexType>
+    		<sequence>
+    			<element name="request_id" type="string"></element>
+    			<element name="item" type="string"></element>
+    		</sequence>
+    	</complexType></element>
+
+    <element name="response">
+    	<complexType>
+    		<sequence>
+    			<element name="item" type="string"></element>
+    			<element name="price" type="double"></element>
+    			<element name="request_id" type="string"></element>
+    		</sequence>
+    	</complexType></element>
+</schema>

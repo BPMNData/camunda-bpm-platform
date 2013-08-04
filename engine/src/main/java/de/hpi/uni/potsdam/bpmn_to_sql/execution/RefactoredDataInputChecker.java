@@ -14,18 +14,11 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
 
 public class RefactoredDataInputChecker {
-
-  protected BpmnDataConfiguration configuration;
-  
-  public RefactoredDataInputChecker(BpmnDataConfiguration configuration) {
-    this.configuration = configuration;
-  }
   
   public boolean checkDataInput(ExecutionEntity execution) {
     ActivityImpl activity = execution.getActivity();

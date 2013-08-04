@@ -41,6 +41,7 @@ public class ReceiveTaskActivityBehavior extends TaskActivityBehavior {
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
       String message = (String) execution.getVariable("message");
       updateCorrelationKeys(execution, message);
+      execution.setVariableLocal("dataOutput", message);
     }
     
     leave(execution);

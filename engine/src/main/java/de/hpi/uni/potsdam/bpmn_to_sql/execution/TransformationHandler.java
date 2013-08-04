@@ -15,7 +15,6 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
@@ -24,20 +23,14 @@ public class TransformationHandler{
   
   private static XQueryHandler handler = new XQueryHandler();
 
-  protected BpmnDataConfiguration configuration;
-
-  public TransformationHandler(BpmnDataConfiguration configuration) {
-    this.configuration = configuration;
-  }
-  
   public void transformInputData(ExecutionEntity execution){
     String inputData = getTransformedInputData(execution);
     execution.setVariableLocal("dataInput", inputData);    
   }
   
   public void transformOutputData(ExecutionEntity execution){
-    if (execution.hasVariableLocal("dataOutput")){
-      String outputData = (String) execution.getVariableLocal("dataOutput");
+    if (execution.hasVariable("dataOutput")){
+      String outputData = (String) execution.getVariable("dataOutput");
       execution.setVariableLocal("dataObjects", transformDataObjects(execution, outputData));
     }
   }
@@ -75,8 +68,9 @@ public class TransformationHandler{
     String dataXML = getDataObjectsAsXML(activity, dataObjectID);
     
     
-    
+    System.out.println(dataXML);
     ArrayList<String> queryResults = getTransformedData(dataXML, xQuery);
+    System.out.println(queryResults);
     String inputData = "";
     if(!queryResults.isEmpty()){
       inputData = queryResults.get(0);

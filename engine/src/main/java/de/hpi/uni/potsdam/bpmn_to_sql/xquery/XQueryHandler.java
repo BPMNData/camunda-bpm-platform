@@ -95,9 +95,9 @@ public class XQueryHandler {
 	    transformer.transform(new DOMSource(doc), new StreamResult(writer));
 	    output = writer.getBuffer().toString();
     } catch (TransformerConfigurationException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new RuntimeException(e);
     } catch (TransformerException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new RuntimeException(e);
     }
 	  
     return output;
@@ -113,14 +113,12 @@ public class XQueryHandler {
       doc = builder.parse(new InputSource(new StringReader(xml)));
       return doc;
     } catch (ParserConfigurationException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new RuntimeException(e);
     } catch (SAXException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new RuntimeException(e);
     } catch (IOException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new RuntimeException(e);
     }
-    
-		return null;		
 	}
 	
 	public String runXPath(String xml, String xPathExpression) {
@@ -133,7 +131,7 @@ public class XQueryHandler {
 	    XPathExpression expression = xpath.compile(xPathExpression);
 	    result =  expression.evaluate(doc);
 	  } catch (XPathExpressionException e) {
-	    log.log(Level.SEVERE, e.getMessage(), e);
+	    throw new RuntimeException(e);
 	  }
 	  
 	  return result;
@@ -152,12 +150,13 @@ public class XQueryHandler {
 		ArrayList<String> results = new ArrayList<String>();
 		Document doc = transformStringToDoc(source);
 		if(!query.equals("")){
-		  query = query.replaceAll("\\n[\\s]+", "");
+		  query = query.replaceAll("\\n", "");
   		XQDataSource ds = new SaxonXQDataSource();
       XQConnection conn;
       try {
         conn = ds.getConnection();    
         XQPreparedExpression exp;
+        System.out.println(query);
         exp = conn.prepareExpression(query);    
         exp.bindNode(XQConstants.CONTEXT_ITEM, doc, null);    
   		  XQSequence seq;    
@@ -165,11 +164,11 @@ public class XQueryHandler {
         while (seq.next()) {
           XQItem item = seq.getItem();
           String xml = item.getItemAsString(null);
-          xml = xml.replaceAll("\\n[\\s]+", ""); 
+          xml = xml.replaceAll("\\n", ""); 
           results.add(xml);
         }
       } catch (XQException e) {
-        log.log(Level.SEVERE, e.getMessage(), e);
+        throw new RuntimeException(e);
       }
 		} else {
 		  results.add(source);

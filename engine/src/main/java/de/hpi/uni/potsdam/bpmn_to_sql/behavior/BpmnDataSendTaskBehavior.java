@@ -20,7 +20,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
-  private static final String MESSAGE_INPUT_VARIABLE_NAME = "messageInput";
+  private static final String MESSAGE_INPUT_VARIABLE_NAME = "dataInput";
 //  private static final String SUB_PROCESS_TYPE = "subProcess";
   
   @Override

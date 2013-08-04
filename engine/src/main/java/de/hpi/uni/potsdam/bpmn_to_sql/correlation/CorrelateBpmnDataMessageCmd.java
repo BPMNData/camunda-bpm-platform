@@ -6,6 +6,7 @@ import java.util.Map;
 import org.camunda.bpm.engine.impl.cmd.CorrelateMessageCmd;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.Execution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
@@ -23,7 +24,6 @@ public class CorrelateBpmnDataMessageCmd extends CorrelateMessageCmd {
     Map<String, Object> correlationKeys = new HashMap<String, Object>();
     correlationKeys.put("message", messageContent);
     this.correlationKeys = correlationKeys;
-    this.processVariables = correlationKeys;
   }
 
 
@@ -39,4 +39,9 @@ public class CorrelateBpmnDataMessageCmd extends CorrelateMessageCmd {
     super.triggerExecution(commandContext, matchingExecution);
   }
   
+  protected void instantiateProcess(CommandContext commandContext, ProcessDefinition matchingDefinition) {
+    this.processVariables = new HashMap<String, Object>();
+    this.processVariables.put("startMessage", messageContent);
+    super.instantiateProcess(commandContext, matchingDefinition);
+  }
 }

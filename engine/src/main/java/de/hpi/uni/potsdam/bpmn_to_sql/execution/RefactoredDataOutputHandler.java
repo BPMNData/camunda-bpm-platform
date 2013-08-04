@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
-import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
@@ -47,8 +45,9 @@ public class RefactoredDataOutputHandler {
   public void updateOutputs(ActivityExecution execution) {
     String caseObjectId = execution.getEffectiveCaseObjectID();
     
-    TransformationHandler transformationHandler = new TransformationHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
-    transformationHandler.transformInputData((ExecutionEntity)execution);
+    // is this the right location for this code? selection should happen before execution
+//    TransformationHandler transformationHandler = new TransformationHandler();
+//    transformationHandler.transformInputData((ExecutionEntity)execution);
 
     // has outputs
     if (BpmnParse.getOutputData().containsKey(execution.getActivity().getId())) {
@@ -82,9 +81,15 @@ public class RefactoredDataOutputHandler {
             numberOfItems = Integer.parseInt((String) execution.getVariable(outputObject.getProcessVariable()));
           }
           for (int i = 0; i < numberOfItems; i++) {
-            DataObjectSpecification outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
-                .attribute("state", context.getOutputObjectState())
+            DataObjectSpecification outputObjectSpec = null;
+            if (context.isCaseObject()) {
+              outputObjectSpec = caseObject;
+            } else {
+              outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
                 .references(outputObject.getFkeys().get(0), caseObject);
+            }
+            
+            outputObjectSpec.attribute("state", context.getOutputObjectState());
             
             addInsertPayload(execution, outputObjectSpec, outputObject);
             insertSpec.object(outputObjectSpec);
@@ -102,8 +107,9 @@ public class RefactoredDataOutputHandler {
             }
           }
           
-          // TODO if empty check needed?
-          outputObjectSpec.attribute("state", values(context.getInputObjectStates()));
+          if (context.getInputObjectStates().length > 0) {
+            outputObjectSpec.attribute("state", values(context.getInputObjectStates()));
+          }
           
           if (statementType.equals("delete")) {
             query = outputObjectSpec.getDeleteStatement().toSqlString();

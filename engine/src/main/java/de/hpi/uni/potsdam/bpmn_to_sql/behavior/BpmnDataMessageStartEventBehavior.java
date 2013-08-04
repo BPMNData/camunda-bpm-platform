@@ -15,7 +15,7 @@ public class BpmnDataMessageStartEventBehavior extends FlowNodeActivityBehavior 
   public void execute(ActivityExecution execution) throws Exception {
 
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
-      String message = (String) execution.getVariable("message");
+      String message = (String) execution.getVariable("startMessage");
       updateCorrelationKeys(execution, message);
     }
     

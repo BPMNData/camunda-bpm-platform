@@ -7,19 +7,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperationActivityExecute;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 
 public class QueryExecutionHandler {
   
   private static QueryExecutionHandler instance = new QueryExecutionHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
-  
-  private static Logger log = Logger.getLogger(AtomicOperationActivityExecute.class.getName());
   
   private static Connection con;
   private static Statement st;
@@ -33,7 +29,7 @@ public class QueryExecutionHandler {
     setupConnection();
   }
   
-  protected void finalize( ){
+  protected void finalize(){
     try {
       if (st != null) {
         st.close();
@@ -42,7 +38,7 @@ public class QueryExecutionHandler {
         con.close();
       }
     } catch (SQLException ex) {
-      log.log(Level.WARNING, ex.getMessage(), ex);
+      throw new ProcessEngineException("Cannot close bpmn data connection", ex);
     }
     
   }
@@ -61,7 +57,7 @@ public class QueryExecutionHandler {
       con = DriverManager.getConnection(url, user, password);
       st = con.createStatement();
     } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
+      throw new ProcessEngineException("Cannot create bpmn data connection", ex);
     }
   }
   
@@ -70,7 +66,7 @@ public class QueryExecutionHandler {
       rs = st.executeQuery(query);
       rsMetadata = rs.getMetaData();
     } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
+      throw new ProcessEngineException("Cannot execute bpmn data query:" + query, ex);
     }
   }
 
@@ -78,7 +74,7 @@ public class QueryExecutionHandler {
     try {
       st.executeUpdate(query);
     } catch (SQLException ex) {
-      log.log(Level.SEVERE, ex.getMessage(), ex);
+      throw new ProcessEngineException("Cannot execute bpmn data query:" + query, ex);
     }
   }
   
@@ -95,9 +91,8 @@ public class QueryExecutionHandler {
       }
       return result;
     } catch (SQLException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new ProcessEngineException("Cannot execute bpmn data query", e);
     }
-    return null;
   }
   
   public ArrayList<String> getColumnNames(){
@@ -108,9 +103,8 @@ public class QueryExecutionHandler {
       }
       return columnNames;
     } catch (SQLException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new ProcessEngineException("Cannot execute bpmn data query", e);
     }
-    return null;
   }
   
   public int getColumnCount(){
@@ -118,7 +112,7 @@ public class QueryExecutionHandler {
     try {
       count = rsMetadata.getColumnCount();
     } catch (SQLException e) {
-      log.log(Level.SEVERE, e.getMessage(), e);
+      throw new ProcessEngineException("Cannot execute bpmn data query", e);
     }
     return count;
   }

@@ -50,7 +50,7 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
   @Deployment(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/correlation/simpleBpmnDataSendTask.bpmn20.xml")
   public void testSendTaskBehavior() {
     Map<String, Object> variables = new HashMap<String, Object>();
-    variables.put("messageInput", "<message></message>");
+    variables.put("dataInput", "<message></message>");
     runtimeService.startProcessInstanceByKey("sellerProcess", variables);
     
     Execution waitingExecution = runtimeService.createExecutionQuery().activityId("task").singleResult();
@@ -72,7 +72,7 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
   @Deployment(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/correlation/simpleBpmnDataSendTask.bpmn20.xml")
   public void testCorrelationPropertyPopulation() {
     Map<String, Object> variables = new HashMap<String, Object>();
-    variables.put("messageInput", BPMN_DATA_MESSAGE);
+    variables.put("dataInput", BPMN_DATA_MESSAGE);
     runtimeService.startProcessInstanceByKey("sellerProcess", variables);
     
     Execution waitingExecution = runtimeService.createExecutionQuery().singleResult();
@@ -93,7 +93,7 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
   @Deployment
   public void testSubprocessCorrelationPropertyPopulation() {
     Map<String, Object> variables = new HashMap<String, Object>();
-    variables.put("messageInput", BPMN_DATA_MESSAGE);
+    variables.put("dataInput", BPMN_DATA_MESSAGE);
     ProcessInstance instance = runtimeService.startProcessInstanceByKey("sellerWithSubprocess", variables);
     
     // in the single instance subprocess case, the subprocess execution should be the one on the user task
@@ -118,7 +118,7 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
   @Deployment
   public void testMultiInstanceSubprocessCorrelationPropertyPopulation() {
     Map<String, Object> variables = new HashMap<String, Object>();
-    variables.put("messageInput", BPMN_DATA_MESSAGE);
+    variables.put("dataInput", BPMN_DATA_MESSAGE);
     ProcessInstance instance = runtimeService.startProcessInstanceByKey("sellerWithSubprocess", variables);
     
     List<Execution> subprocessScopeExecutions = runtimeService.createExecutionQuery().activityId("task").list();
@@ -141,7 +141,7 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
   @Deployment
   public void testParallelSubprocessCorrelationPropertyPopulation() {
     Map<String, Object> variables = new HashMap<String, Object>();
-    variables.put("messageInput", BPMN_DATA_MESSAGE);
+    variables.put("dataInput", BPMN_DATA_MESSAGE);
     ProcessInstance instance = runtimeService.startProcessInstanceByKey("sellerWithSubprocess", variables);
     
     Execution subprocessScopeExecution = runtimeService.createExecutionQuery().activityId("subProcessFork").singleResult();

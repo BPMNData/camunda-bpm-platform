@@ -23,12 +23,13 @@ import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.Condition;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.runtime.InterpretableExecution;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataOutputHandler;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataOutputHandler;
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.TransformationHandler;
 
 /**
  * Helper class for implementing BPMN 2.0 activities, offering convenience
@@ -89,6 +90,8 @@ public class BpmnActivityBehavior {
     }
     
     if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+      TransformationHandler transformationHandler = new TransformationHandler();
+      transformationHandler.transformOutputData((ExecutionEntity) execution);
       RefactoredDataOutputHandler refactoredHandler = new RefactoredDataOutputHandler();
       refactoredHandler.updateOutputs(execution);
     }

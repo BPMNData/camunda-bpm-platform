@@ -2438,7 +2438,7 @@ public class BpmnParse extends Parse {
     if (receiveTaskElement.attribute("messageRef") != null) {
       EventSubscriptionDeclaration messageDefinition = parseMessageEventDefinition(receiveTaskElement);
       if ("true".equals(receiveTaskElement.attribute("instantiate"))) {
-        activity.setProperty("instantiate", "true");
+        activity.setActivityBehavior(new BpmnDataMessageStartEventBehavior());
 //        startEventActivity.setProperty("type", "messageStartEvent");
         messageDefinition.setActivityId(activity.getId());
         // create message event subscription:      

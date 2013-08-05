@@ -36,11 +36,6 @@ public class ReceiveTaskActivityBehavior extends TaskActivityBehavior {
   public void execute(ActivityExecution execution) throws Exception {
     // Do nothing: waitstate behavior
     
-    
-    // if this is an instantiating receive task, do not enter wait state
-    if ("true".equals(execution.getActivity().getProperty("instantiate"))) {
-      leave(execution);
-    }
   }
   
   public void signal(ActivityExecution execution, String signalName, Object data) throws Exception {

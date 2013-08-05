@@ -31,6 +31,7 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
       " </correlation>" +
       " <payload>"+
       "  <Global_Request>" +
+      "   <request_id>42</request_id>" +
       "   <departure>Berlin</departure>" +
       "   <destination>London</destination>" +
       "   <start_date>1.1.2000</start_date>" +

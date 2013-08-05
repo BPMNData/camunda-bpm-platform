@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.cmd.CorrelateMessageCmd;
+import org.camunda.bpm.engine.impl.cmd.StartProcessInstanceByMessageCmd;
+import org.camunda.bpm.engine.impl.cmd.StartProcessInstanceCmd;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
@@ -42,6 +44,6 @@ public class CorrelateBpmnDataMessageCmd extends CorrelateMessageCmd {
   protected void instantiateProcess(CommandContext commandContext, ProcessDefinition matchingDefinition) {
     this.processVariables = new HashMap<String, Object>();
     this.processVariables.put("startMessage", messageContent);
-    super.instantiateProcess(commandContext, matchingDefinition);
+    new StartProcessInstanceByMessageCmd(messageName, null, processVariables).execute(commandContext);
   }
 }

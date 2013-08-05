@@ -8,6 +8,5 @@
 	</settings>
 	<mappers>
     <mapper resource="de/hpi/uni/potsdam/test/bpmn_to_sql/db/entity_mapping.xml" />
-    <mapper resource="de/hpi/uni/potsdam/test/bpmn_to_sql/db/demo_mapping.xml" />
 	</mappers>
 </configuration>

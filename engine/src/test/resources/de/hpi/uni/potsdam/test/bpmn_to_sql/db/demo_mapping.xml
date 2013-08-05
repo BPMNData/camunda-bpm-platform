@@ -13,7 +13,7 @@
             and state = #{state}
         </if>
         <if test="departure != null">
-            departure = #{departure}
+            and departure = #{departure}
         </if>
         <if test="destination != null">
             and destination = #{destination}
@@ -25,7 +25,7 @@
             and return_date = #{return_date}
         </if>
         <if test="hotel != null">
-            hotel = #{hotel}
+            and hotel = #{hotel}
         </if>
         <if test="price != null">
             and price = #{price}
@@ -43,19 +43,70 @@
             and travelID = #{travelID}
         </if>
         <if test="airline != null">
-            airline = #{airline}
+            and airline = #{airline}
         </if>
         <if test="inboundFlightNumber != null">
             and inboundFlightNumber = #{inboundFlightNumber}
         </if>
         <if test="outboundFlightNumber != null">
-            outboundFlightNumber = #{outboundFlightNumber}
+            and outboundFlightNumber = #{outboundFlightNumber}
         </if>
         <if test="price != null">
             and price = #{price}
         </if>
         <if test="state != null">
-            state = #{state}
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleRequest" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select requestID, messageRequestID, departure, destination, start_date, return_date, state from Request 
+    <where>
+        <if test="requestID != null">
+            requestID = #{requestID}
+        </if>
+        <if test="messageRequestID != null">
+            and messageRequestID = #{messageRequestID}
+        </if>
+        <if test="departure != null">
+            and departure = #{departure}
+        </if>
+        <if test="destination != null">
+            and destination = #{destination}
+        </if>
+        <if test="start_date != null">
+            and start_date = #{start_date}
+        </if>
+        <if test="return_date != null">
+            and return_date = #{return_date}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleOffer" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select offerID, requestID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
+    <where>
+        <if test="offerID != null">
+            offerID = #{offerID}
+        </if>
+        <if test="requestID != null">
+            and requestID = #{requestID}
+        </if>
+        <if test="inboundFlightNumber != null">
+            and inboundFlightNumber = #{inboundFlightNumber}
+        </if>
+        <if test="outboundFlightNumber != null">
+            and outboundFlightNumber = #{outboundFlightNumber}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="state != null">
+            and state = #{state}
         </if>
     </where>
   </select>

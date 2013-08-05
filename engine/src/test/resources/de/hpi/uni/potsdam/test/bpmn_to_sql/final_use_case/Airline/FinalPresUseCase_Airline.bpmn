@@ -51,7 +51,7 @@
     <bpmn2:messageFlow id="MessageFlow_2" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" targetRef="Participant_1"/>
     <bpmn2:messageFlow id="MessageFlow_3" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="" sourceRef="Participant_2" targetRef="Participant_1"/>
     <bpmn2:messageFlow id="MessageFlow_4" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" name="" sourceRef="Participant_1" targetRef="Participant_2"/>
-    <bpmn2:conversation id="Travel Conversation">
+    <bpmn2:conversation id="TravelConversation">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_3</bpmn2:messageFlowRef>
@@ -79,12 +79,14 @@
       <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
       <bpmn2:dataInputAssociation id="DataInputAssociation_5">
         <bpmn2:sourceRef>AirlineOfferRequestObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_6">
+        <bpmn2:sourceRef>sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264</bpmn2:sourceRef>
         <bpmn2:targetRef>AirlineOfferObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:task>
-    <bpmn2:receiveTask id="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05" name="Receive Request" implementation="webService" instantiate="true">
+    <bpmn2:receiveTask id="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05" name="Receive Request" implementation="webService" instantiate="true" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6">
       <bpmn2:outgoing>sid-D7340171-FB8E-44F0-BC01-F238B1445F8D</bpmn2:outgoing>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_5">
         <bpmn2:targetRef>AirlineOfferRequestObj</bpmn2:targetRef>
@@ -117,11 +119,12 @@
     <bpmn2:endEvent id="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D">
       <bpmn2:incoming>sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sendTask id="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" name="Send Offer" implementation="webService">
+    <bpmn2:sendTask id="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" name="Send Offer" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
       <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
       <bpmn2:outgoing>sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C</bpmn2:outgoing>
       <bpmn2:dataInputAssociation id="DataInputAssociation_6">
         <bpmn2:sourceRef>AirlineOfferObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954</bpmn2:targetRef>
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
           let $agencyOffer := ./DataObjects/Offer
           let $agencyRequest := ./DataObjects/Request
@@ -146,7 +149,7 @@
     </bpmn2:sendTask>
     <bpmn2:sequenceFlow id="sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C" sourceRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" targetRef="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D"/>
     <bpmn2:sequenceFlow id="SequenceFlow_1" sourceRef="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264" targetRef="ServiceTask_1"/>
-    <bpmn2:serviceTask id="ServiceTask_1" name="Resolve Travel Agency Address">
+    <bpmn2:serviceTask id="ServiceTask_1" name="Resolve Travel Agency Address" camundabpm:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.airline.ResolveTravelAgencyDelegate">
       <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
     </bpmn2:serviceTask>

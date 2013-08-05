@@ -57,7 +57,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
       
       InputStream inputStream = null;
       try {
-        inputStream = ReflectUtil.getResourceAsStream(BPMN_DATA_MAPPING_FILE);
+        inputStream = ReflectUtil.getResourceAsStream(getCustomDbMappingsFilePath());
         Reader reader = new InputStreamReader(inputStream);
         
         Properties properties = new Properties();
@@ -72,6 +72,10 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
       }
       
     }
+  }
+  
+  protected String getCustomDbMappingsFilePath() {
+    return BPMN_DATA_MAPPING_FILE;
   }
   
   protected void initPersistentObjectManager() {

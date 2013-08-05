@@ -129,7 +129,7 @@
         </if>
     </where>
   </select>
-  
+
   <select id="selectSingleRequest" parameterType="java.util.Map" resultType="java.util.HashMap">
     select request_id, item, state from request
     <where>

@@ -2436,9 +2436,18 @@ public class BpmnParse extends Parse {
     activity.setExclusive(isExclusive(receiveTaskElement));
     
     if (receiveTaskElement.attribute("messageRef") != null) {
-      EventSubscriptionDeclaration messageDefinition =  parseMessageEventDefinition(receiveTaskElement);
-      activity.setScope(true);
-      addEventSubscriptionDeclaration(messageDefinition, activity, receiveTaskElement);
+      EventSubscriptionDeclaration messageDefinition = parseMessageEventDefinition(receiveTaskElement);
+      if ("true".equals(receiveTaskElement.attribute("instantiate"))) {
+        activity.setProperty("instantiate", "true");
+//        startEventActivity.setProperty("type", "messageStartEvent");
+        messageDefinition.setActivityId(activity.getId());
+        // create message event subscription:      
+        messageDefinition.setStartEvent(true);
+        addEventSubscriptionDeclaration(messageDefinition, (ProcessDefinitionImpl) scope, receiveTaskElement);
+      } else {
+        activity.setScope(true);
+        addEventSubscriptionDeclaration(messageDefinition, activity, receiveTaskElement);
+      }
     }
 
     parseExecutionListenersOnScope(receiveTaskElement, activity);

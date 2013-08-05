@@ -103,8 +103,8 @@
       </dataObject>
       <dataObject id="TravelAgencyOfferObj" name="AirlineRequest">
         <extensionElements>
-          <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">offerID</bpt:primaryKey>
-          <bpt:foreignKey id="fk_uuid-c8906b3b-40cf-4bfb-827d-3bde7acbe2e8">requestID</bpt:foreignKey>
+          <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">requestID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-e6d2e176-feac-41f2-b426-cef4466c2ddc">travelID</bpt:foreignKey>
         </extensionElements>
       </dataObject>
       <sendTask id="sid-62E12787-4027-4843-8276-B721BA2D2FE2" name="Send Request" implementation="webService">
@@ -194,14 +194,14 @@
     </dataObject>
     <dataObject id="TravelAgencyOfferObj2" name="AirlineRequest" isCollection="true">
       <extensionElements>
-        <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">offerID</bpt:primaryKey>
-        <bpt:foreignKey id="fk_uuid-7c787e31-dfe4-4151-bbd4-4efd88192f4f">requestID</bpt:foreignKey>
+        <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">requestID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-d3588c19-c823-43d0-bc0c-c31140e5e428">travelID</bpt:foreignKey>
       </extensionElements>
     </dataObject>
     <dataObject id="TravelAgencyAirlineReferenceObj" name="Offer">
       <extensionElements>
-        <bpt:foreignKey id="fk_uuid-11069e6f-b197-417e-8a62-6bbd14f1ed24">offerID</bpt:foreignKey>
-        <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">airlineID</bpt:primaryKey>
+        <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">offerID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-34dc74cb-e877-4e29-8ba1-ca9ee1e52060">travelID</bpt:foreignKey>
       </extensionElements>
     </dataObject>
   </process>

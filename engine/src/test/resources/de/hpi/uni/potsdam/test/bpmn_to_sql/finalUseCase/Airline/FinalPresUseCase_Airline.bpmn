@@ -61,7 +61,7 @@
       </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="sid-499A179B-745D-4F64-A035-8E05E5B7DCA6" name="Airline" isExecutable="false">
+  <bpmn2:process id="sid-499A179B-745D-4F64-A035-8E05E5B7DCA6" name="Airline" isExecutable="true">
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-d5a9eda5-60a5-4c43-9a2d-8bb66f3b6fd3" caseObject="Request"/>
     </bpmn2:extensionElements>

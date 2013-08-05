@@ -57,7 +57,7 @@
       </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="sid-F3AB6388-19E7-4054-82A3-4365AB424E69" name="Travel Agency" isExecutable="false">
+  <bpmn2:process id="sid-F3AB6388-19E7-4054-82A3-4365AB424E69" name="Travel Agency" isExecutable="true">
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-55183162-1464-421a-8391-e38606e49f7b" caseObject="TravelDetails"/>
     </bpmn2:extensionElements>
@@ -112,8 +112,8 @@
       </bpmn2:dataObject>
       <bpmn2:dataObject id="TravelAgencyOfferObj" name="AirlineRequest">
         <bpmn2:extensionElements>
-          <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">offerID</bpt:primaryKey>
-          <bpt:foreignKey id="fk_uuid-a4785186-481d-487b-897c-40cc82361e57">requestID</bpt:foreignKey>
+          <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">requestID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-07cfd0c7-9392-482d-96f7-a510900a9e9d">travelID</bpt:foreignKey>
         </bpmn2:extensionElements>
       </bpmn2:dataObject>
       <bpmn2:sequenceFlow id="SequenceFlow_1" sourceRef="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017" targetRef="ServiceTask_1"/>
@@ -238,14 +238,14 @@
     </bpmn2:dataObject>
     <bpmn2:dataObject id="TravelAgencyOfferObj2" name="AirlineRequest" isCollection="true">
       <bpmn2:extensionElements>
-        <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">offerID</bpt:primaryKey>
-        <bpt:foreignKey id="fk_uuid-38162c44-1220-4e71-ba0b-43a722d8755f">requestID</bpt:foreignKey>
+        <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">requestID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-39421f0e-4809-4fc0-b422-c4073def856f">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
     <bpmn2:dataObject id="TravelAgencyAirlineReferenceObj" name="Offer">
       <bpmn2:extensionElements>
-        <bpt:foreignKey id="fk_uuid-11069e6f-b197-417e-8a62-6bbd14f1ed24">offerID</bpt:foreignKey>
-        <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">airlineID</bpt:primaryKey>
+        <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">offerID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-56dabb66-0b62-47e5-ba48-8a2c3a37e25d">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
   </bpmn2:process>

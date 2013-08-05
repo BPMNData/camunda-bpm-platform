@@ -57,7 +57,7 @@
       </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D" name="Customer" isExecutable="false">
+  <bpmn2:process id="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D" name="Customer" isExecutable="true">
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-4ed8eb7d-267c-482c-a914-ac83e31a3c6a" caseObject="TravelDetails"/>
     </bpmn2:extensionElements>

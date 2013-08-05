@@ -3,6 +3,7 @@ package de.hpi.uni.potsdam.bpmn_to_sql.bpmn;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.camunda.bpm.engine.delegate.Expression;
 import org.camunda.bpm.engine.impl.bpmn.webservice.MessageDefinition;
 
 public class MessageFlow {
@@ -10,7 +11,7 @@ public class MessageFlow {
   protected String id;
   protected List<CorrelationKey> correlationKeys = new ArrayList<CorrelationKey>();
   protected MessageDefinition message;
-  protected String endpointAddress;
+  protected Expression endpointAddressExpression;
   
   public String getId() {
     return id;
@@ -32,10 +33,10 @@ public class MessageFlow {
   public void setMessage(MessageDefinition message) {
     this.message = message;
   }
-  public String getEndpointAddress() {
-    return endpointAddress;
+  public Expression getEndpointAddressExpression() {
+    return endpointAddressExpression;
   }
-  public void setEndpointAddress(String endpointAddress) {
-    this.endpointAddress = endpointAddress;
+  public void setEndpointAddressExpression(Expression endpointAddressExpression) {
+    this.endpointAddressExpression = endpointAddressExpression;
   }
 }

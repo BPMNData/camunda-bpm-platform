@@ -617,7 +617,7 @@ public class BpmnParse extends Parse {
    * during DI parsing.
    */
   public void parseCollaboration() {
-    Map<String, String> participantEndpointMapping = new HashMap<String, String>();
+    Map<String, Expression> participantEndpointMapping = new HashMap<String, Expression>();
     Element collaboration = rootElement.element("collaboration");
     if (collaboration != null) {
       for (Element participant : collaboration.elements("participant")) {
@@ -638,7 +638,8 @@ public class BpmnParse extends Parse {
         Element endpointRef = participant.element("endPointRef");
         if (endpointRef != null) {
           String endpointAddress = endpointAddresses.get(endpointRef.getText());
-          participantEndpointMapping.put(participant.attribute("id"), endpointAddress);
+          Expression endpointAddressExpression = expressionManager.createExpression(endpointAddress);
+          participantEndpointMapping.put(participant.attribute("id"), endpointAddressExpression);
         }
       }
     }
@@ -663,7 +664,7 @@ public class BpmnParse extends Parse {
         
 
         if (participantEndpointMapping.containsKey(targetRef)) {
-          flow.setEndpointAddress(participantEndpointMapping.get(targetRef));
+          flow.setEndpointAddressExpression(participantEndpointMapping.get(targetRef));
         }
         
         messageFlows.put(flow.getId(), flow);

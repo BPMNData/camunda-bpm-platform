@@ -6,22 +6,17 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.delegate.Expression;
 import org.camunda.bpm.engine.impl.bpmn.behavior.AbstractBpmnActivityBehavior;
-import org.camunda.bpm.engine.impl.bpmn.helper.ScopeUtil;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
-import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationKey;
-import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
-import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
   private static final String MESSAGE_INPUT_VARIABLE_NAME = "dataInput";
-//  private static final String SUB_PROCESS_TYPE = "subProcess";
   
   @Override
   public void execute(ActivityExecution execution) throws Exception {
@@ -32,7 +27,7 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
     }
     
     MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getOutgoingMessageFlow();
-    String endPointAddress = messageFlow.getEndpointAddress();
+    String endPointAddress = (String) messageFlow.getEndpointAddressExpression().getValue(execution);
     
     DefaultHttpClient client = new DefaultHttpClient();
     HttpPost post =  new HttpPost(endPointAddress);

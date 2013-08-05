@@ -161,4 +161,14 @@ public class BpmnDataSendTaskTest extends PluggableProcessEngineTestCase {
     Assert.assertNull("The correlation property should be not accessible in " +
         "the outer process instance scope", instanceVariable);
   }
+  
+  @Deployment
+  public void testDynamicEndpointAddressResolution() {
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("dataInput", BPMN_DATA_MESSAGE);
+    
+    runtimeService.startProcessInstanceByKey("sellerWithSubprocess", variables);
+    Assert.assertEquals(2, runtimeService.createExecutionQuery().activityId("task").count());
+    
+  }
 }

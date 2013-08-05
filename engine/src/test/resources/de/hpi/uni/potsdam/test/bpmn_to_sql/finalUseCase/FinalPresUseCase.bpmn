@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sid-cc3783b8-f4ea-42b0-82bd-facc20b60455" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.2.0" targetNamespace="http://www.signavio.com/bpmn20">
+  <message id="sid-98865D20-5528-4085-9369-926F5D3405FD" name="Airline Reference"/>
+  <message id="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="Travel Details"/>
+  <message id="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="Request"/>
+  <message id="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="Offer"/>
+  <collaboration id="sid-7ef533cf-097b-4518-a7bc-8fba6514f82f">
+    <participant id="sid-1E870CD9-D37D-4975-BA2B-5C1E224F9F28" name="Airline" processRef="sid-499A179B-745D-4F64-A035-8E05E5B7DCA6">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <participantMultiplicity id="sid-6f565368-e6cd-4355-8550-28fba9f3ee75" maximum="2" minimum="2"/>
+    </participant>
+    <participant id="sid-93F82E05-3BD5-4073-9C9E-9578938C20A4" name="Customer" processRef="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+    </participant>
+    <participant id="sid-16C66F66-5794-426D-90E6-79B740EAB44C" name="Travel Agency" processRef="sid-F3AB6388-19E7-4054-82A3-4365AB424E69">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+    </participant>
+    <messageFlow id="sid-9FA3852E-798D-424B-9219-9513D9DF860F" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" sourceRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="messageposition" metaValue="{&quot;y&quot;:576.9224150070067,&quot;x&quot;:1547.9700641889667}"/>
+      </extensionElements>
+    </messageFlow>
+    <messageFlow id="sid-B5601C00-ED87-400A-A66B-457E917E6954" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="messageposition" metaValue="{&quot;y&quot;:576.9224150070067,&quot;x&quot;:1168.6350431615467}"/>
+      </extensionElements>
+    </messageFlow>
+    <messageFlow id="sid-5BC6A80D-8170-4076-AC0E-A2E4E9F2D075" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="messageposition" metaValue="{&quot;y&quot;:868.7450475883718,&quot;x&quot;:2067.1300907499185}"/>
+      </extensionElements>
+    </messageFlow>
+    <messageFlow id="sid-AFF06AC6-1E36-415D-B4A7-40CD2C62B5BB" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" sourceRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" targetRef="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="messageposition" metaValue="{&quot;y&quot;:576.9224150070067,&quot;x&quot;:670.8700199207137}"/>
+      </extensionElements>
+    </messageFlow>
+  </collaboration>
+  <process id="sid-F3AB6388-19E7-4054-82A3-4365AB424E69" name="Travel Agency" isExecutable="false">
+    <extensionElements>
+      <bpt:scopeInformation id="si-c1d9739d-5337-4e97-981b-036e5dc2eab9" caseObject="TravelDetails"/>
+    </extensionElements>
+    <laneSet id="sid-8c6bc3da-e655-48fd-a09b-c4c8e6bb35cd">
+      <lane id="sid-DEB04140-1274-4B78-ABDD-D3F9F159B574">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue=""/>
+        </extensionElements>
+        <flowNodeRef>sid-034EC80D-1970-4BF0-B055-69D0D86DFC99</flowNodeRef>
+        <flowNodeRef>sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8</flowNodeRef>
+        <flowNodeRef>sid-A60D6C72-63FD-4DD5-B01B-713F28661077</flowNodeRef>
+        <flowNodeRef>sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E</flowNodeRef>
+        <flowNodeRef>sid-45A7F1E4-8B24-4545-AC15-3D50752C3949</flowNodeRef>
+        <flowNodeRef>sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081</flowNodeRef>
+      </lane>
+    </laneSet>
+    <subProcess id="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99" name="Collect Offers">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <incoming>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</incoming>
+      <outgoing>sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF</outgoing>
+      <dataInputAssociation id="DataInputAssociation_2">
+        <sourceRef>TravelAgencyRequestObj</sourceRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_3">
+        <targetRef>TravelAgencyOfferObj2</targetRef>
+      </dataOutputAssociation>
+      <multiInstanceLoopCharacteristics id="sid-79e498d9-7de4-4866-b623-f3219cf4b001"/>
+      <receiveTask id="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A" name="Receive Offer" implementation="webService">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+        </extensionElements>
+        <incoming>sid-B32A3579-2494-4FE5-BA81-CA3184A130D6</incoming>
+        <outgoing>sid-A384BCB6-4562-45E1-BDFD-E89F239D7994</outgoing>
+        <dataOutputAssociation id="DataOutputAssociation_9">
+          <targetRef>TravelAgencyOfferObj</targetRef>
+        </dataOutputAssociation>
+      </receiveTask>
+      <endEvent id="sid-7DDF5363-B213-4ABA-B550-E00E0B00E1B4">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+        </extensionElements>
+        <incoming>sid-A384BCB6-4562-45E1-BDFD-E89F239D7994</incoming>
+      </endEvent>
+      <startEvent id="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+        </extensionElements>
+        <outgoing>SequenceFlow_1</outgoing>
+      </startEvent>
+      <sequenceFlow id="sid-A384BCB6-4562-45E1-BDFD-E89F239D7994" sourceRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A" targetRef="sid-7DDF5363-B213-4ABA-B550-E00E0B00E1B4"/>
+      <dataObject id="TravelAgencyRequestObj2" name="AirlineRequest">
+        <extensionElements>
+          <bpt:primaryKey id="pk_uuid-319a08d5-bd86-4082-9f24-78a3ac2fb250">requestID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-76febd3a-d42a-4511-8389-dc8f004f24c0">travelID</bpt:foreignKey>
+        </extensionElements>
+      </dataObject>
+      <dataObject id="TravelAgencyOfferObj" name="AirlineRequest">
+        <extensionElements>
+          <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">offerID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-c8906b3b-40cf-4bfb-827d-3bde7acbe2e8">requestID</bpt:foreignKey>
+        </extensionElements>
+      </dataObject>
+      <sendTask id="sid-62E12787-4027-4843-8276-B721BA2D2FE2" name="Send Request" implementation="webService">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+        </extensionElements>
+        <incoming>SequenceFlow_2</incoming>
+        <outgoing>sid-B32A3579-2494-4FE5-BA81-CA3184A130D6</outgoing>
+        <dataInputAssociation id="DataInputAssociation_3">
+          <sourceRef>TravelAgencyRequestObj2</sourceRef>
+        </dataInputAssociation>
+      </sendTask>
+      <sequenceFlow id="sid-B32A3579-2494-4FE5-BA81-CA3184A130D6" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A"/>
+      <serviceTask id="ServiceTask_1" name="Resolve Airline Address">
+        <incoming>SequenceFlow_1</incoming>
+        <outgoing>SequenceFlow_2</outgoing>
+      </serviceTask>
+      <sequenceFlow id="SequenceFlow_1" sourceRef="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017" targetRef="ServiceTask_1"/>
+      <sequenceFlow id="SequenceFlow_2" name="" sourceRef="ServiceTask_1" targetRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2"/>
+    </subProcess>
+    <sendTask id="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" name="Refer Customer to Airline" implementation="webService">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D</incoming>
+      <outgoing>sid-0584298C-78B4-4260-B86F-D858354BD3DB</outgoing>
+      <dataInputAssociation id="DataInputAssociation_4">
+        <sourceRef>TravelAgencyAirlineReferenceObj</sourceRef>
+      </dataInputAssociation>
+    </sendTask>
+    <endEvent id="sid-A60D6C72-63FD-4DD5-B01B-713F28661077">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <incoming>sid-0584298C-78B4-4260-B86F-D858354BD3DB</incoming>
+    </endEvent>
+    <receiveTask id="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E" name="Receive Travel Details" implementation="webService" instantiate="true">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <outgoing>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_1">
+        <targetRef>TravelAgencyTravelDetailsObj</targetRef>
+      </dataOutputAssociation>
+    </receiveTask>
+    <task id="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" name="Pick Best Offer">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF</incoming>
+      <outgoing>sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D</outgoing>
+      <dataInputAssociation id="DataInputAssociation_8">
+        <sourceRef>TravelAgencyOfferObj2</sourceRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_4">
+        <targetRef>TravelAgencyAirlineReferenceObj</targetRef>
+      </dataOutputAssociation>
+    </task>
+    <task id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" name="Create Request">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</incoming>
+      <outgoing>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</outgoing>
+      <dataInputAssociation id="DataInputAssociation_1">
+        <sourceRef>TravelAgencyTravelDetailsObj</sourceRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_2">
+        <targetRef>TravelAgencyRequestObj</targetRef>
+      </dataOutputAssociation>
+    </task>
+    <sequenceFlow id="sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D" sourceRef="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" targetRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8"/>
+    <sequenceFlow id="sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37" sourceRef="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E" targetRef="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081"/>
+    <sequenceFlow id="sid-0584298C-78B4-4260-B86F-D858354BD3DB" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="sid-A60D6C72-63FD-4DD5-B01B-713F28661077"/>
+    <sequenceFlow id="sid-C3F699A3-D311-44C5-A41B-5B692C905DBE" sourceRef="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" targetRef="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99"/>
+    <sequenceFlow id="sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF" sourceRef="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99" targetRef="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949"/>
+    <dataObject id="TravelAgencyTravelDetailsObj" name="TravelDetails">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-93796c40-9f0b-47c0-a8e9-8e6740682325" type="new">travelID</bpt:primaryKey>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="TravelAgencyRequestObj" name="AirlineRequest" isCollection="true">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-ed7c7bf8-f766-4fc4-adf6-f9bafb904dd2" type="new">requestID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-4b96009b-9c3d-4a24-affc-d707655c6389">travelID</bpt:foreignKey>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="TravelAgencyOfferObj2" name="AirlineRequest" isCollection="true">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">offerID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-7c787e31-dfe4-4151-bbd4-4efd88192f4f">requestID</bpt:foreignKey>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="TravelAgencyAirlineReferenceObj" name="Offer">
+      <extensionElements>
+        <bpt:foreignKey id="fk_uuid-11069e6f-b197-417e-8a62-6bbd14f1ed24">offerID</bpt:foreignKey>
+        <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">airlineID</bpt:primaryKey>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <process id="sid-499A179B-745D-4F64-A035-8E05E5B7DCA6" name="Airline" isExecutable="false">
+    <extensionElements>
+      <bpt:scopeInformation id="si-4c7884ab-796c-4aa5-bf4d-f90a84ad381f" caseObject="Request"/>
+    </extensionElements>
+    <laneSet id="sid-fd0cbbb5-aa3f-4ac0-a017-67784057b58d">
+      <lane id="sid-6DE28872-9AD2-4B87-A3EE-6A94A6EC7080">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue=""/>
+        </extensionElements>
+        <flowNodeRef>sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264</flowNodeRef>
+        <flowNodeRef>sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05</flowNodeRef>
+        <flowNodeRef>sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D</flowNodeRef>
+        <flowNodeRef>sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954</flowNodeRef>
+        <flowNodeRef>ServiceTask_2</flowNodeRef>
+      </lane>
+    </laneSet>
+    <task id="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264" name="Create Offer">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-D7340171-FB8E-44F0-BC01-F238B1445F8D</incoming>
+      <outgoing>SequenceFlow_3</outgoing>
+      <dataInputAssociation id="DataInputAssociation_5">
+        <sourceRef>AirlineOfferRequestObj</sourceRef>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DataOutputAssociation_6">
+        <targetRef>AirlineOfferObj</targetRef>
+      </dataOutputAssociation>
+    </task>
+    <receiveTask id="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05" name="Receive Request" implementation="webService" instantiate="true">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <outgoing>sid-D7340171-FB8E-44F0-BC01-F238B1445F8D</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_5">
+        <targetRef>AirlineOfferRequestObj</targetRef>
+      </dataOutputAssociation>
+    </receiveTask>
+    <sequenceFlow id="sid-D7340171-FB8E-44F0-BC01-F238B1445F8D" sourceRef="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05" targetRef="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264"/>
+    <dataObject id="AirlineOfferRequestObj" name="Request">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-bc6905f4-28da-4404-bcc9-81d548793de1" type="new">requestID</bpt:primaryKey>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="AirlineOfferObj" name="Offer">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-9ebc442d-814b-4cbb-afae-008c56f29ea8" type="new">offerID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-699265f5-c474-4f1a-9498-75607db82f52">requestID</bpt:foreignKey>
+      </extensionElements>
+    </dataObject>
+    <endEvent id="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <incoming>sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C</incoming>
+    </endEvent>
+    <sendTask id="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" name="Send Offer" implementation="webService">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>SequenceFlow_4</incoming>
+      <outgoing>sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C</outgoing>
+      <dataInputAssociation id="DataInputAssociation_6">
+        <sourceRef>AirlineOfferObj</sourceRef>
+      </dataInputAssociation>
+    </sendTask>
+    <sequenceFlow id="sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C" sourceRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" targetRef="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D"/>
+    <sequenceFlow id="SequenceFlow_3" sourceRef="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264" targetRef="ServiceTask_2"/>
+    <serviceTask id="ServiceTask_2" name="Resolve Travel Agency Address">
+      <incoming>SequenceFlow_3</incoming>
+      <outgoing>SequenceFlow_4</outgoing>
+    </serviceTask>
+    <sequenceFlow id="SequenceFlow_4" name="" sourceRef="ServiceTask_2" targetRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954"/>
+  </process>
+  <process id="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D" name="Customer" isExecutable="false">
+    <extensionElements>
+      <bpt:scopeInformation id="si-33ac41dd-487e-4070-9f39-2e6382bbd75d" caseObject="TravelDetails"/>
+    </extensionElements>
+    <laneSet id="sid-75653d40-c83a-4fc3-80bf-82c631467014">
+      <lane id="sid-9AB4A224-BAE2-4F7E-8F12-F245582E30A8">
+        <extensionElements>
+          <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue=""/>
+        </extensionElements>
+        <flowNodeRef>sid-A7836AF4-158D-4126-988A-C20643D72F8A</flowNodeRef>
+        <flowNodeRef>sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB</flowNodeRef>
+        <flowNodeRef>sid-DCCABAF9-7DB7-4172-AF27-7165547156AE</flowNodeRef>
+        <flowNodeRef>sid-CE9C4457-F1DB-4218-B472-BC901EC88676</flowNodeRef>
+        <flowNodeRef>sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7</flowNodeRef>
+      </lane>
+    </laneSet>
+    <receiveTask id="sid-A7836AF4-158D-4126-988A-C20643D72F8A" name="Receive Airline Reference" implementation="webService">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</incoming>
+      <outgoing>sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_8">
+        <targetRef>CustomerAirlineReferenceObj</targetRef>
+      </dataOutputAssociation>
+    </receiveTask>
+    <endEvent id="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <incoming>sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630</incoming>
+    </endEvent>
+    <sendTask id="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" name="Send Travel Details" implementation="webService">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-7A08B184-D37E-41CD-B75D-02810390B335</incoming>
+      <outgoing>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</outgoing>
+      <dataInputAssociation id="DataInputAssociation_7">
+        <sourceRef>CustomerTravelDetailsObj</sourceRef>
+      </dataInputAssociation>
+    </sendTask>
+    <startEvent id="sid-CE9C4457-F1DB-4218-B472-BC901EC88676">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+      <outgoing>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</outgoing>
+    </startEvent>
+    <task id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" name="Work Out Travel Details">
+      <extensionElements>
+        <signavio:signavioMetaData xsi:type="xsd:anyType" metaKey="bgcolor" metaValue="#ffffcc"/>
+      </extensionElements>
+      <incoming>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</incoming>
+      <outgoing>sid-7A08B184-D37E-41CD-B75D-02810390B335</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_7">
+        <targetRef>CustomerTravelDetailsObj</targetRef>
+      </dataOutputAssociation>
+    </task>
+    <sequenceFlow id="sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630" sourceRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A" targetRef="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB"/>
+    <sequenceFlow id="sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE" sourceRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" targetRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A"/>
+    <sequenceFlow id="sid-AB926619-2A70-4341-929D-141CB0B4E9E0" sourceRef="sid-CE9C4457-F1DB-4218-B472-BC901EC88676" targetRef="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7"/>
+    <sequenceFlow id="sid-7A08B184-D37E-41CD-B75D-02810390B335" sourceRef="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" targetRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE"/>
+    <dataObject id="CustomerTravelDetailsObj" name="TravelDetails">
+      <extensionElements>
+        <bpt:primaryKey id="pk_uuid-d0aff44a-bc7c-4eef-a135-53b6e0ad5445" type="new">travelID</bpt:primaryKey>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="CustomerAirlineReferenceObj" name="Flights">
+      <extensionElements>
+        <bpt:foreignKey id="fk_uuid-2881fb12-bcdb-48af-8c64-d568cdd021fd">travelID</bpt:foreignKey>
+        <bpt:primaryKey id="pk_uuid-9759e38c-caa1-4a72-8efc-129c7d54d5b5" type="new">flightID</bpt:primaryKey>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="sid-028e129b-7619-401a-a429-f6420b47a029">
+    <bpmndi:BPMNPlane id="sid-f291a882-5797-44e9-85e7-a213ef300924" bpmnElement="sid-7ef533cf-097b-4518-a7bc-8fba6514f82f">
+      <bpmndi:BPMNShape id="sid-1E870CD9-D37D-4975-BA2B-5C1E224F9F28_gui" bpmnElement="sid-1E870CD9-D37D-4975-BA2B-5C1E224F9F28" isHorizontal="true">
+        <omgdc:Bounds height="255.0" width="2005.1821" x="332.0" y="598.95"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-93F82E05-3BD5-4073-9C9E-9578938C20A4_gui" bpmnElement="sid-93F82E05-3BD5-4073-9C9E-9578938C20A4" isHorizontal="true">
+        <omgdc:Bounds height="326.874" width="2005.1821" x="335.0" y="898.53"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-16C66F66-5794-426D-90E6-79B740EAB44C_gui" bpmnElement="sid-16C66F66-5794-426D-90E6-79B740EAB44C" isHorizontal="true">
+        <omgdc:Bounds height="396.99503" width="2002.1821" x="335.0" y="134.34299"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-DEB04140-1274-4B78-ABDD-D3F9F159B574_gui" bpmnElement="sid-DEB04140-1274-4B78-ABDD-D3F9F159B574" isHorizontal="true">
+        <omgdc:Bounds height="396.99503" width="1972.1821" x="365.0" y="134.34299"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99_gui" bpmnElement="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99" isExpanded="true">
+        <omgdc:Bounds height="322.36102" width="714.06" x="1001.69" y="186.97699"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-62E12787-4027-4843-8276-B721BA2D2FE2_gui" bpmnElement="sid-62E12787-4027-4843-8276-B721BA2D2FE2">
+        <omgdc:Bounds height="80.0" width="100.0" x="1236.0" y="396.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A_gui" bpmnElement="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A">
+        <omgdc:Bounds height="80.0" width="100.0" x="1497.9701" y="395.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-7DDF5363-B213-4ABA-B550-E00E0B00E1B4_gui" bpmnElement="sid-7DDF5363-B213-4ABA-B550-E00E0B00E1B4">
+        <omgdc:Bounds height="28.0" width="28.0" x="1668.3251" y="421.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017_gui" bpmnElement="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017">
+        <omgdc:Bounds height="30.0" width="30.0" x="1019.335" y="420.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8_gui" bpmnElement="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8">
+        <omgdc:Bounds height="80.0" width="100.0" x="2017.1301" y="395.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-A60D6C72-63FD-4DD5-B01B-713F28661077_gui" bpmnElement="sid-A60D6C72-63FD-4DD5-B01B-713F28661077">
+        <omgdc:Bounds height="28.0" width="28.0" x="2216.885" y="421.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E_gui" bpmnElement="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E">
+        <omgdc:Bounds height="80.0" width="100.0" x="621.05505" y="395.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949_gui" bpmnElement="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949">
+        <omgdc:Bounds height="80.0" width="100.0" x="1836.7802" y="395.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081_gui" bpmnElement="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081">
+        <omgdc:Bounds height="80.0" width="100.0" x="806.05505" y="395.338"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-6DE28872-9AD2-4B87-A3EE-6A94A6EC7080_gui" bpmnElement="sid-6DE28872-9AD2-4B87-A3EE-6A94A6EC7080" isHorizontal="true">
+        <omgdc:Bounds height="255.0" width="1975.1821" x="362.0" y="598.95"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264_gui" bpmnElement="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264">
+        <omgdc:Bounds height="80.0" width="100.0" x="1303.0" y="618.91504"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954_gui" bpmnElement="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954">
+        <omgdc:Bounds height="80.0" width="100.0" x="1632.0" y="618.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D_gui" bpmnElement="sid-AF47B21C-4E11-4D71-9071-F7E922BCB01D">
+        <omgdc:Bounds height="28.0" width="28.0" x="1788.0" y="644.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1802.0" y="677.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05_gui" bpmnElement="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05">
+        <omgdc:Bounds height="80.0" width="100.0" x="1118.635" y="618.91504"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-9AB4A224-BAE2-4F7E-8F12-F245582E30A8_gui" bpmnElement="sid-9AB4A224-BAE2-4F7E-8F12-F245582E30A8" isHorizontal="true">
+        <omgdc:Bounds height="326.874" width="1975.1821" x="365.0" y="898.53"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-A7836AF4-158D-4126-988A-C20643D72F8A_gui" bpmnElement="sid-A7836AF4-158D-4126-988A-C20643D72F8A">
+        <omgdc:Bounds height="80.0" width="100.0" x="2017.1301" y="973.25006"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB_gui" bpmnElement="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB">
+        <omgdc:Bounds height="28.0" width="28.0" x="2216.885" y="999.25006"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE_gui" bpmnElement="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE">
+        <omgdc:Bounds height="80.0" width="100.0" x="620.685" y="973.25006"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-CE9C4457-F1DB-4218-B472-BC901EC88676_gui" bpmnElement="sid-CE9C4457-F1DB-4218-B472-BC901EC88676">
+        <omgdc:Bounds height="30.0" width="30.0" x="379.33502" y="998.25006"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7_gui" bpmnElement="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7">
+        <omgdc:Bounds height="80.0" width="100.0" x="454.33502" y="973.25006"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="sid-9FA3852E-798D-424B-9219-9513D9DF860F_gui" bpmnElement="sid-9FA3852E-798D-424B-9219-9513D9DF860F">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1682.0" y="618.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1682.0" y="547.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1547.0" y="547.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1547.0" y="475.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1682.0" y="547.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-B5601C00-ED87-400A-A66B-457E917E6954_gui" bpmnElement="sid-B5601C00-ED87-400A-A66B-457E917E6954">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1286.0" y="476.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1286.0" y="547.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1168.0" y="547.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1168.0" y="618.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1285.0" y="547.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-A384BCB6-4562-45E1-BDFD-E89F239D7994_gui" bpmnElement="sid-A384BCB6-4562-45E1-BDFD-E89F239D7994">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1597.9701" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1668.3251" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C_gui" bpmnElement="sid-E160E14C-9FE0-4F26-950E-DAFFD49B897C">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1732.0" y="658.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1788.0" y="658.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1736.0" y="658.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-5BC6A80D-8170-4076-AC0E-A2E4E9F2D075_gui" bpmnElement="sid-5BC6A80D-8170-4076-AC0E-A2E4E9F2D075">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2067.1301" y="475.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2067.1301" y="973.25006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-B32A3579-2494-4FE5-BA81-CA3184A130D6_gui" bpmnElement="sid-B32A3579-2494-4FE5-BA81-CA3184A130D6">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1336.0" y="436.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1497.0" y="435.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1476.0" y="435.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE_gui" bpmnElement="sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="720.685" y="1013.25006"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2017.1301" y="1013.25006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-C3F699A3-D311-44C5-A41B-5B692C905DBE_gui" bpmnElement="sid-C3F699A3-D311-44C5-A41B-5B692C905DBE">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="906.05505" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1001.69" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-AFF06AC6-1E36-415D-B4A7-40CD2C62B5BB_gui" bpmnElement="sid-AFF06AC6-1E36-415D-B4A7-40CD2C62B5BB">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="670.87" y="973.25006"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="670.87" y="475.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-D7340171-FB8E-44F0-BC01-F238B1445F8D_gui" bpmnElement="sid-D7340171-FB8E-44F0-BC01-F238B1445F8D">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1218.635" y="658.91504"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1303.0" y="658.91504"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37_gui" bpmnElement="sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="721.05505" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="806.05505" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630_gui" bpmnElement="sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2117.1301" y="1013.25006"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2216.885" y="1013.25006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D_gui" bpmnElement="sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1936.7802" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2017.1301" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF_gui" bpmnElement="sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1715.75" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1836.7802" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-0584298C-78B4-4260-B86F-D858354BD3DB_gui" bpmnElement="sid-0584298C-78B4-4260-B86F-D858354BD3DB">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2117.1301" y="435.338"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2216.885" y="435.338"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-AB926619-2A70-4341-929D-141CB0B4E9E0_gui" bpmnElement="sid-AB926619-2A70-4341-929D-141CB0B4E9E0">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="409.33502" y="1013.25006"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="454.33502" y="1013.25006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sid-7A08B184-D37E-41CD-B75D-02810390B335_gui" bpmnElement="sid-7A08B184-D37E-41CD-B75D-02810390B335">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="554.335" y="1013.25006"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="620.685" y="1013.25006"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_4" bpmnElement="TravelAgencyTravelDetailsObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="636.0" y="228.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="22.0" width="87.0" x="643.0" y="353.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E_gui" targetElement="_BPMNShape_DataObject_4">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="675.0" y="395.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="680.0" y="348.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_4" targetElement="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="736.0" y="331.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="810.0" y="395.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_5" bpmnElement="TravelAgencyRequestObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="806.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="22.0" width="55.0" x="829.0" y="365.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081_gui" targetElement="_BPMNShape_DataObject_5">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="856.0" y="395.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="856.0" y="360.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_2" bpmnElement="DataInputAssociation_2" sourceElement="_BPMNShape_DataObject_5" targetElement="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="906.0" y="305.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1001.0" y="314.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_6" bpmnElement="TravelAgencyRequestObj2">
+        <omgdc:Bounds height="120.0" width="100.0" x="1152.0" y="228.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="22.0" width="55.0" x="1175.0" y="353.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_3" bpmnElement="DataInputAssociation_3" sourceElement="_BPMNShape_DataObject_6" targetElement="sid-62E12787-4027-4843-8276-B721BA2D2FE2_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1236.0" y="348.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1263.0" y="396.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_8" bpmnElement="TravelAgencyOfferObj2">
+        <omgdc:Bounds height="120.0" width="100.0" x="1738.0" y="241.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_10" bpmnElement="TravelAgencyAirlineReferenceObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="1906.0" y="233.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_4" bpmnElement="DataOutputAssociation_4" sourceElement="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949_gui" targetElement="_BPMNShape_DataObject_10">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1906.0" y="395.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1926.0" y="353.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_4" bpmnElement="DataInputAssociation_4" sourceElement="_BPMNShape_DataObject_10" targetElement="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2003.0" y="353.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2036.0" y="395.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_11" bpmnElement="AirlineOfferRequestObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="1195.0" y="710.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_5" bpmnElement="DataOutputAssociation_5" sourceElement="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05_gui" targetElement="_BPMNShape_DataObject_11">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1196.0" y="698.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1204.0" y="710.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_5" bpmnElement="DataInputAssociation_5" sourceElement="_BPMNShape_DataObject_11" targetElement="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1295.0" y="718.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1314.0" y="698.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_12" bpmnElement="AirlineOfferObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="1512.0" y="708.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="22.0" width="35.0" x="1545.0" y="833.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_6" bpmnElement="DataOutputAssociation_6" sourceElement="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264_gui" targetElement="_BPMNShape_DataObject_12">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1403.0" y="684.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1512.0" y="742.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_6" bpmnElement="DataInputAssociation_6" sourceElement="_BPMNShape_DataObject_12" targetElement="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1612.0" y="722.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1638.0" y="698.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_13" bpmnElement="CustomerTravelDetailsObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="531.0" y="1078.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_7" bpmnElement="DataOutputAssociation_7" sourceElement="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7_gui" targetElement="_BPMNShape_DataObject_13">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="529.0" y="1053.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="544.0" y="1078.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_7" bpmnElement="DataInputAssociation_7" sourceElement="_BPMNShape_DataObject_13" targetElement="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="624.0" y="1078.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="642.0" y="1053.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_14" bpmnElement="CustomerAirlineReferenceObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="2138.0" y="1086.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_8" bpmnElement="DataOutputAssociation_8" sourceElement="sid-A7836AF4-158D-4126-988A-C20643D72F8A_gui" targetElement="_BPMNShape_DataObject_14">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2103.0" y="1053.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="2138.0" y="1091.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_8" bpmnElement="DataInputAssociation_8" sourceElement="_BPMNShape_DataObject_8" targetElement="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1832.0" y="361.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1857.0" y="395.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_15" bpmnElement="TravelAgencyOfferObj">
+        <omgdc:Bounds height="120.0" width="100.0" x="1536.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="22.0" width="35.0" x="1569.0" y="365.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_9" bpmnElement="DataOutputAssociation_9" sourceElement="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A_gui" targetElement="_BPMNShape_DataObject_15">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1559.0" y="395.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1569.0" y="360.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="ServiceTask_1">
+        <omgdc:Bounds height="80.0" width="100.0" x="1099.0" y="395.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017_gui" targetElement="_BPMNShape_ServiceTask_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1049.0" y="435.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1099.0" y="435.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="sid-62E12787-4027-4843-8276-B721BA2D2FE2_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1199.0" y="435.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1217.0" y="435.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1217.0" y="436.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1236.0" y="436.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_3" bpmnElement="ServiceTask_2">
+        <omgdc:Bounds height="80.0" width="100.0" x="1464.0" y="618.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264_gui" targetElement="_BPMNShape_ServiceTask_3">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1403.0" y="658.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1464.0" y="658.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="1428.0" y="658.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_3" targetElement="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954_gui">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1564.0" y="658.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1632.0" y="658.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="6.0" width="6.0" x="1601.0" y="658.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99_gui" targetElement="_BPMNShape_DataObject_8">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1715.0" y="309.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1738.0" y="306.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bpt.hpi.uni-potsdam.de/data" elementFormDefault="qualified" targetNamespace="http://bpt.hpi.uni-potsdam.de/data" xmlns:bpmndata="http://bpt.hpi.uni-potsdam.de/bpmn-data/">    
+
+    <element name="TravelDetails">
+    	<complexType>
+    		<sequence>
+    			<element name="travelID" type="string"/>
+				<element name="departure" type="string"/>
+				<element name="destination" type="string"/>
+				<element name="start_date" type="string"/>
+				<element name="return_date" type="string"/>
+				<element name="hotel" type="string"/>
+				<element name="price" type="double"/>
+    		</sequence>
+    	</complexType>
+	</element>
+
+    <element name="Flights">
+    	<complexType>
+    		<sequence>
+				<element name="flightID" type="string"/>
+				<element name="travleID" type="string"/>
+				<element name="airline" type="string"/>
+				<element name="inboundFlightNumber" type="string"/>
+				<element name="outboundFlightNumber" type="string"/>				
+    			<element name="price" type="double"/>
+    		</sequence>
+    	</complexType>
+	</element>
+</schema>

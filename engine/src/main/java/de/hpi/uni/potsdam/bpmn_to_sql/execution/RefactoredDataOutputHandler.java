@@ -194,7 +194,7 @@ public class RefactoredDataOutputHandler {
       context.outputObjectState = outputObject.getState();
 
       // check whether the state of the object is a process variable
-      if (context.outputObjectState.startsWith("$")) {
+      if (context.outputObjectState != null && context.outputObjectState.startsWith("$")) {
         context.outputObjectState = (String) execution.getVariableLocal(outputObject.getState().substring(1));
       }
       

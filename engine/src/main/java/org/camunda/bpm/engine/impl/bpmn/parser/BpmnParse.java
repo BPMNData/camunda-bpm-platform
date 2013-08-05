@@ -879,7 +879,12 @@ public class BpmnParse extends Parse {
           dataObj.setFkeys(fkList);
         }
    
-        dataObj.setState(activityElement.element("dataState").attribute("name"));
+        if (activityElement.element("dataState") != null) {
+          dataObj.setState(activityElement.element("dataState").attribute("name"));
+        } else {
+          dataObj.setState(null);
+        }
+        
         dataObjectMap.put(activityElement.attribute("id"), dataObj);
         dataObjectMapToID.put(dataObj.getId(), dataObj);
       }

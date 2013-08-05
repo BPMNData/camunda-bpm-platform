@@ -32,6 +32,13 @@
       </bpt:messageContentDef>
     </bpmn2:extensionElements>
   </bpmn2:message>
+  
+  <bpmn2:endPoint id="agencyEndpoint">
+     <bpmn2:extensionElements>
+        <camundabpm:address>http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+     </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  
   <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
     <bpmn2:correlationPropertyRetrievalExpression messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD">
       <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -42,12 +49,14 @@
   <bpmn2:collaboration id="sid-7ef533cf-097b-4518-a7bc-8fba6514f82f">
     <bpmn2:participant id="sid-93F82E05-3BD5-4073-9C9E-9578938C20A4" name="Customer" processRef="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D"/>
     <bpmn2:participant id="Participant_3" name="Airline"/>
-    <bpmn2:participant id="Participant_4" name="Travel Agency"/>
+    <bpmn2:participant id="Participant_4" name="Travel Agency">
+      <bpmn2:endPointRef>agencyEndpoint</bpmn2:endPointRef>
+    </bpmn2:participant>
     <bpmn2:messageFlow id="MessageFlow_2" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="" sourceRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" targetRef="Participant_4"/>
     <bpmn2:messageFlow id="MessageFlow_4" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" name="" sourceRef="Participant_4" targetRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A"/>
     <bpmn2:messageFlow id="MessageFlow_5" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="Participant_4" targetRef="Participant_3"/>
     <bpmn2:messageFlow id="MessageFlow_6" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="Participant_3" targetRef="Participant_4"/>
-    <bpmn2:conversation id="Travel Conversation">
+    <bpmn2:conversation id="TravelConversation">
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_4</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_5</bpmn2:messageFlowRef>
@@ -70,7 +79,7 @@
         <bpmn2:flowNodeRef>sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7</bpmn2:flowNodeRef>
       </bpmn2:lane>
     </bpmn2:laneSet>
-    <bpmn2:receiveTask id="sid-A7836AF4-158D-4126-988A-C20643D72F8A" name="Receive Airline Reference" implementation="webService">
+    <bpmn2:receiveTask id="sid-A7836AF4-158D-4126-988A-C20643D72F8A" name="Receive Airline Reference" implementation="webService" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E">
       <bpmn2:incoming>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</bpmn2:incoming>
       <bpmn2:outgoing>sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630</bpmn2:outgoing>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_8">
@@ -79,7 +88,7 @@
          let $offerMsg := ./message/payload/Global_Offer
           return
             &lt;Flights>
-              &lt;airline>{$offerMsg/airline/text()}&lt;/item>
+              &lt;airline>{$offerMsg/airline/text()}&lt;/airline>
               &lt;inboundFlightNumber>{$offerMsg/inboundFlightNumber/text()}&lt;/inboundFlightNumber>
               &lt;outboundFlightNumber>{$offerMsg/outboundFlightNumber/text()}&lt;/outboundFlightNumber>
               &lt;price>{$offerMsg/price/text()}&lt;/price>
@@ -90,13 +99,14 @@
     <bpmn2:endEvent id="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB">
       <bpmn2:incoming>sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sendTask id="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" name="Send Travel Details" implementation="webService">
+    <bpmn2:sendTask id="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" name="Send Travel Details" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
       <bpmn2:incoming>sid-7A08B184-D37E-41CD-B75D-02810390B335</bpmn2:incoming>
       <bpmn2:outgoing>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</bpmn2:outgoing>
       <bpmn2:dataInputAssociation id="DataInputAssociation_7">
         <bpmn2:sourceRef>CustomerTravelDetailsObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>sid-DCCABAF9-7DB7-4172-AF27-7165547156AE</bpmn2:targetRef>
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
-          let $travelDetails in ./DataObjects/TravelDetails
+          let $travelDetails := ./DataObjects/TravelDetails
           return &lt;message name=&quot;TravelDetailsMessage&quot;>
               &lt;correlation>
                 &lt;key name=&quot;Global_Request&quot;>

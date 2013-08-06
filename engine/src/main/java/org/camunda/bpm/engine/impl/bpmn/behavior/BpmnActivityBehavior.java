@@ -94,6 +94,9 @@ public class BpmnActivityBehavior {
       transformationHandler.transformOutputData((ExecutionEntity) execution);
       RefactoredDataOutputHandler refactoredHandler = new RefactoredDataOutputHandler();
       refactoredHandler.updateOutputs(execution);
+      execution.removeVariableLocal("dataOutput");
+      execution.removeVariableLocal("dataObjects");
+      execution.removeVariableLocal("dataInput");
     }
 
     String defaultSequenceFlow = (String) execution.getActivity().getProperty("default");

@@ -68,17 +68,17 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
       .where("destination", "London")
       .where("start_date", "1.1.2000")
       .where("return_date", "7.1.2000")
-//    .shouldHave("state", "created")
+	  .shouldHave("state", "created")
     .doAssert();
     
     assertAndRunDataInputJobForActivity("sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264", 1, 1);
     
     dataObjects("Offer", 1)
-//    .shouldHave("requestID", "42")
-//    .shouldHave("state", "received")
-//    .shouldHave("inboundFlightNumber", "1234")
-//    .shouldHave("outboundFlightNumber", "12345")
-//    .shouldHave("price", 1000.0d)
+//	  .shouldHave("requestID", "42")
+//	  .shouldHave("state", "received")
+//	  .shouldHave("inboundFlightNumber", "1234")
+//	  .shouldHave("outboundFlightNumber", "12345")
+//	  .shouldHave("price", 1000.0d)
     .doAssert();
     
     assertAndRunDataInputJobForActivity("sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954", 1, 1);

@@ -75,7 +75,7 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
     
     dataObjects("Flights", 1)
       .shouldHave("travelID", "42")
-//      .shouldHave("state", "received")
+      .shouldHave("state", "received")
       .shouldHave("airline", "Lufthansa")
       .shouldHave("inboundFlightNumber", "123")
       .shouldHave("outboundFlightNumber", "345")

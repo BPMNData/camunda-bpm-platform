@@ -2,10 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.camunda.bpm.example</groupId>
-  <artifactId>demo_customer</artifactId>
+  <artifactId>demo_airline</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
-  <name>BPMN Data - demo - Customer</name>
+  <name>BPMN Data - demo - Airline</name>
 
   <dependencies>
 

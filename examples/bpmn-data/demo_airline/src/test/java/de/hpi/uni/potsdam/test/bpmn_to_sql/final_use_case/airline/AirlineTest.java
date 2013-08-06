@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
 
-import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
 
@@ -19,22 +18,24 @@ import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
 
 public class AirlineTest extends AbstractBpmnDataTestCase {
 
+
   private static final String DEMO_DATA_MAPPING_FILE = "de/hpi/uni/potsdam/test/bpmn_to_sql/db/demo_mappings.xml";
   
-  private static final String OFFER_MESSAGE = 
-      "<message name=\"Offer\">" +
+  private static final String REQUEST_MESSAGE = 
+      "<message name=\"Request\">" +
       " <correlation>" +
       "   <key name=\"Global_Request\">" +
       "     <property name=\"request_id\">42</property>" +
       "   </key>" +
       " </correlation>" +
       " <payload>"+
-      "  <Global_Offer>" +
-      "   <airline>Lufthansa</airline>" +
-      "   <inboundFlightNumber>123</inboundFlightNumber>" +
-      "   <outboundFlightNumber>345</outboundFlightNumber>" +
-      "   <price>1000</price>" +
-      "  </Global_Offer>" +
+      "  <Global_Request>" +
+      "   <request_id>42</request_id>" +
+      "   <departure>Berlin</departure>" +
+      "   <destination>London</destination>" +
+      "   <start_date>1.1.2000</start_date>" +
+      "   <return_date>7.1.2000</return_date>" +
+      "  </Global_Request>" +
       " </payload>" +
       "</message>";
   
@@ -57,29 +58,31 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
   @DatabaseSetup(resources = "setup_airline_db.sql")
   @Deployment(resources = "FinalPresUseCase_Airline.bpmn")
   public void testCustomer() {
-    String caseObjectId = "42";
+    runtimeService.correlateBpmnDataMessage(REQUEST_MESSAGE);
     
-    ProcessInstance instance = 
-        runtimeService.startBpmnDataAwareProcessInstanceByKey("sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D", caseObjectId);
-    
-    dataObjects("TravelDetails", 1).where("travelID", caseObjectId)
-//    .shouldHave("state", "created")
+    dataObjects("Request", 1)
+      .where("messageRequestID", "42")
+      .where("departure", "Berlin")
+      .where("destination", "London")
+      .where("start_date", "1.1.2000")
+      .where("return_date", "7.1.2000")
+	  .shouldHave("state", "created")
     .doAssert();
     
-    assertAndRunDataInputJobForActivity("sid-DCCABAF9-7DB7-4172-AF27-7165547156AE", 1, 1);
+    assertAndRunDataInputJobForActivity("sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264", 1, 1);
     
-    runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
+    dataObjects("Offer", 1)
+//	  .shouldHave("requestID", "42")
+//	  .shouldHave("state", "received")
+//	  .shouldHave("inboundFlightNumber", "1234")
+//	  .shouldHave("outboundFlightNumber", "12345")
+//	  .shouldHave("price", 1000.0d)
+    .doAssert();
+    
+    assertAndRunDataInputJobForActivity("sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954", 1, 1);
     
     // instance should have finished
-    Assert.assertNull(runtimeService.createProcessInstanceQuery().processInstanceId(instance.getId()).singleResult());
+    Assert.assertNull(runtimeService.createProcessInstanceQuery().singleResult());
     
-    dataObjects("Flights", 1)
-      .shouldHave("travelID", "42")
-      .shouldHave("state", "received")
-      .shouldHave("airline", "Lufthansa")
-      .shouldHave("inboundFlightNumber", "123")
-      .shouldHave("outboundFlightNumber", "345")
-      .shouldHave("price", 1000.0d)
-      .doAssert();
   }
 }

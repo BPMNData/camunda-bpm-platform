@@ -20,5 +20,5 @@ CREATE TABLE IF NOT EXISTS `Offer` (
   `price` DOUBLE,
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`offerID`),
-  FOREIGN KEY (`requestID`) REFERENCES Request(`requestID`)
+  FOREIGN KEY (`requestID`) REFERENCES Request(`requestID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

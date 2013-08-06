@@ -34,29 +34,8 @@
     </where>
   </select>
   
-  <select id="selectSingleAirline" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select airlineID, name, country, address, state from Airline 
-    <where>
-        <if test="airlineID != null">
-            airlineID = #{airlineID}
-        </if>
-        <if test="name != null">
-            and name = #{name}
-        </if>
-        <if test="country != null">
-            and country = #{country}
-        </if>
-        <if test="address != null">
-            and address = #{address}
-        </if>
-        <if test="state != null">
-            and state = #{state}
-        </if>
-    </where>
-  </select>
-  
   <select id="selectSingleAirlinerequest" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select requestID, travelID, airlineID, departure, destination, start_date, return_date, inboundFlightNumber, outboundFlightNumber, price, state from AirlineRequest 
+    select requestID, travelID, airline, departure, destination, start_date, return_date, inboundFlightNumber, outboundFlightNumber, price, state from AirlineRequest 
     <where>
         <if test="requestID != null">
             requestID = #{requestID}
@@ -64,8 +43,8 @@
         <if test="travelID != null">
             and travelID = #{travelID}
         </if>
-        <if test="airlineID != null">
-            and airlineID = #{airlineID}
+        <if test="airline != null">
+            and airline = #{airline}
         </if>
         <if test="departure != null">
             and departure = #{departure}
@@ -96,7 +75,7 @@
   
   
   <select id="selectSingleOffer" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select offerID, travelID, airlineID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
+    select offerID, travelID, airline, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
     <where>
         <if test="offerID != null">
             offerID = #{offerID}
@@ -104,8 +83,8 @@
         <if test="travelID != null">
             and travelID = #{travelID}
         </if>
-        <if test="airlineID != null">
-            and airlineID = #{airlineID}
+        <if test="airline != null">
+            and airline = #{airline}
         </if>
         <if test="inboundFlightNumber != null">
             and inboundFlightNumber = #{inboundFlightNumber}

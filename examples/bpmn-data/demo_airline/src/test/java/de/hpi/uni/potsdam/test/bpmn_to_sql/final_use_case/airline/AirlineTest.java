@@ -55,8 +55,8 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
         .willReturn(aResponse().withStatus(204)));
   }
   
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/airline/setup_airline_db.sql")
-  @Deployment(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/airline/FinalPresUseCase_Airline.bpmn")
+  @DatabaseSetup(resources = "setup_airline_db.sql")
+  @Deployment(resources = "FinalPresUseCase_Airline.bpmn")
   public void testCustomer() {
     runtimeService.correlateBpmnDataMessage(REQUEST_MESSAGE);
     

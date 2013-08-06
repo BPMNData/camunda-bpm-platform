@@ -7,7 +7,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
 
@@ -62,8 +66,16 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
     ProcessInstance instance = 
         runtimeService.startBpmnDataAwareProcessInstanceByKey("sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D", caseObjectId);
     
+    Task enterDetailsTask = taskService.createTaskQuery().singleResult();
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("departure", "Berlin");
+    variables.put("price", 1000.0d);
+    taskService.complete(enterDetailsTask.getId(), variables);
+    
     dataObjects("TravelDetails", 1).where("travelID", caseObjectId)
-//    .shouldHave("state", "created")
+    .shouldHave("state", "created")
+    .shouldHave("departure", "Berlin")
+    .shouldHave("price", 1000.0d)
     .doAssert();
     
     assertAndRunDataInputJobForActivity("sid-DCCABAF9-7DB7-4172-AF27-7165547156AE", 1, 1);

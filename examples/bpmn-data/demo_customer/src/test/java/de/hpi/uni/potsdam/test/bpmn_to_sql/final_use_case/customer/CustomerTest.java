@@ -54,8 +54,8 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
         .willReturn(aResponse().withStatus(204)));
   }
   
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/customer/setup_customer_db.sql")
-  @Deployment(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/customer/FinalPresUseCase_Customer.bpmn")
+  @DatabaseSetup(resources = "setup_customer_db.sql")
+  @Deployment(resources = "FinalPresUseCase_Customer.bpmn")
   public void testCustomer() {
     String caseObjectId = "42";
     

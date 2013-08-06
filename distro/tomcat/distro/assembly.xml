@@ -90,6 +90,13 @@
         </includes>
         <outputDirectory>server/apache-tomcat-${tomcat.version}/webapps/</outputDirectory>
     </dependencySet>
+    
+    <dependencySet>
+        <includes>
+            <include>de.hpi.uni.potsdam.bpmn_to_sql:bpmn-data-endpoint:war:*</include>
+        </includes>
+        <outputDirectory>server/apache-tomcat-${tomcat.version}/webapps/</outputDirectory>
+    </dependencySet>
 
   </dependencySets>
 

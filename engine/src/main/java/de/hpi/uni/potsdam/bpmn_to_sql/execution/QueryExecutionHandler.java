@@ -15,7 +15,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 
 public class QueryExecutionHandler {
   
-  private static QueryExecutionHandler instance = new QueryExecutionHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+  private static QueryExecutionHandler instance;
   
   private static Connection con;
   private static Statement st;
@@ -44,6 +44,9 @@ public class QueryExecutionHandler {
   }
   
   public static QueryExecutionHandler getInstance() {
+    if (instance == null) {
+      instance = new QueryExecutionHandler(Context.getProcessEngineConfiguration().getBpmnDataConfiguration());
+    }
     return instance;
   }
 

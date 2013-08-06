@@ -15,6 +15,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.BpmnDataConfiguration;
 
 public class QueryExecutionHandler {
   
+  private static final String MYSQL_DRIVER_NAME = "com.mysql.jdbc.Driver";
   private static QueryExecutionHandler instance;
   
   private static Connection con;
@@ -51,7 +52,12 @@ public class QueryExecutionHandler {
   }
 
   private void setupConnection() {
-
+    try {
+      // assure driver is loaded
+      Class.forName(MYSQL_DRIVER_NAME);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
     String url = configuration.getJdbcUrl();
     String user = configuration.getJdbcUsername();
     String password = configuration.getJdbcPassword();

@@ -151,7 +151,7 @@ return&#xD;
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" id="_FormalExpression_14" language="XQuery">let $agencyOffer := ./DataObjects/Offer&#xD;
 let $agencyRequest := ./DataObjects/Request&#xD;
 return &#xD;
-	&lt;message name=&quot;AgencyOfferMessage&quot;>&#xD;
+	&lt;message name=&quot;Offer&quot;>&#xD;
 		&lt;correlation>&#xD;
               	&lt;key name=&quot;Global_Request&quot;>&#xD;
                   		&lt;property name=&quot;request_id&quot;>{$agencyRequest/messageRequestID/text()}&lt;/property>&#xD;

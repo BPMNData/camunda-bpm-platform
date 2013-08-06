@@ -150,7 +150,7 @@
           <bpmn2:targetRef>DataInput_5</bpmn2:targetRef>
           <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
           let $airlineRequest := ./DataObjects/AirlineRequest
-          return &lt;message name=&quot;AirlineRequestMessage&quot;>
+          return &lt;message name=&quot;Request&quot;>
               &lt;correlation>
                 &lt;key name=&quot;Global_Request&quot;>
                   &lt;property name=&quot;request_id&quot;>{$airlineRequest/requestID/text()}&lt;/property>
@@ -195,7 +195,7 @@
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
           let $customerOffer := ./DataObjects/Offer
           let $travelDetails := ./DataObjects/TravelDetails
-          return &lt;message name=&quot;AgencyOfferMessage&quot;>
+          return &lt;message name=&quot;Offer&quot;>
               &lt;correlation>
                 &lt;key name=&quot;Global_Request&quot;>
                   &lt;property name=&quot;request_id&quot;>{$travelDetails/cu_request_id/text()}&lt;/property>

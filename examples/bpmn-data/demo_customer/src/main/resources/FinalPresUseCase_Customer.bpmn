@@ -109,7 +109,7 @@ return&#xD;
         <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" id="_FormalExpression_4" language="XQuery">let $travelDetails := ./DataObjects/TravelDetails&#xD;
 return &#xD;
-	&lt;message name=&quot;TravelDetailsMessage&quot;>&#xD;
+	&lt;message name=&quot;Travel Details&quot;>&#xD;
        	&lt;correlation>&#xD;
               	&lt;key name=&quot;Global_Request&quot;>&#xD;
                   		&lt;property name=&quot;request_id&quot;>{$travelDetails/travelID/text()}&lt;/property>&#xD;

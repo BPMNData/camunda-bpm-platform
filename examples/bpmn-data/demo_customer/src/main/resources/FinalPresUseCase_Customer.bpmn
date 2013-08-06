@@ -130,7 +130,7 @@ return &#xD;
     <bpmn2:startEvent id="sid-CE9C4457-F1DB-4218-B472-BC901EC88676">
       <bpmn2:outgoing>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</bpmn2:outgoing>
     </bpmn2:startEvent>
-    <bpmn2:task id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" name="Work Out Travel Details">
+    <bpmn2:userTask id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" name="Work Out Travel Details" camundabpm:formKey="embedded:app:forms/enter_details.html" camundabpm:candidateUsers="demo">
       <bpmn2:incoming>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</bpmn2:incoming>
       <bpmn2:outgoing>sid-7A08B184-D37E-41CD-B75D-02810390B335</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -142,7 +142,7 @@ return &#xD;
         <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
         <bpmn2:targetRef>CustomerTravelDetailsObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-    </bpmn2:task>
+    </bpmn2:userTask>
     <bpmn2:sequenceFlow id="sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630" sourceRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A" targetRef="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB"/>
     <bpmn2:sequenceFlow id="sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE" sourceRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" targetRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A"/>
     <bpmn2:sequenceFlow id="sid-AB926619-2A70-4341-929D-141CB0B4E9E0" sourceRef="sid-CE9C4457-F1DB-4218-B472-BC901EC88676" targetRef="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7"/>

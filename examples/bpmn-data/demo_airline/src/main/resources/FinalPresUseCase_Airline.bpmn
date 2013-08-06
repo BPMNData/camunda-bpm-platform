@@ -76,7 +76,11 @@
         <bpmn2:flowNodeRef>ServiceTask_1</bpmn2:flowNodeRef>
       </bpmn2:lane>
     </bpmn2:laneSet>
-    <bpmn2:task id="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264" name="Create Offer">
+    <bpmn2:userTask id="sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264" name="Create Offer" camundabpm:formKey="embedded:app:forms/enter_details.html" camundabpm:candidateUsers="demo">
+      <bpmn2:extensionElements>
+        <camundabpm:taskListener event="complete" class="de.hpi.uni.potsdam.bpmn_to_sql.listener.CompleteCreateOfferTaskListener" ></camundabpm:taskListener>
+      </bpmn2:extensionElements>
+      
       <bpmn2:incoming>sid-D7340171-FB8E-44F0-BC01-F238B1445F8D</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_3">
@@ -93,7 +97,7 @@
         <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
         <bpmn2:targetRef>AirlineOfferObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-    </bpmn2:task>
+    </bpmn2:userTask>
     <bpmn2:receiveTask id="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05" name="Receive Request" implementation="webService" instantiate="true" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6">
       <bpmn2:outgoing>sid-D7340171-FB8E-44F0-BC01-F238B1445F8D</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">

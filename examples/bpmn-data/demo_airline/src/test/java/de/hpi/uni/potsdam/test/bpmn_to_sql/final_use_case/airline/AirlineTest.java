@@ -7,6 +7,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
 
@@ -71,12 +75,19 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
     
     assertAndRunDataInputJobForActivity("sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264", 1, 1);
     
+    Task createOfferTask = taskService.createTaskQuery().singleResult();
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("inboundFlightNumber", "1234");
+    variables.put("outboundFlightNumber", "12345");
+    variables.put("price", 1000.0d);
+    taskService.complete(createOfferTask.getId(), variables);
+    
     dataObjects("Offer", 1)
-//	  .shouldHave("requestID", "42")
-//	  .shouldHave("state", "received")
-//	  .shouldHave("inboundFlightNumber", "1234")
-//	  .shouldHave("outboundFlightNumber", "12345")
-//	  .shouldHave("price", 1000.0d)
+  	  .shouldHave("requestID", "5")
+  	  .shouldHave("state", "received")
+  	  .shouldHave("inboundFlightNumber", "1234")
+  	  .shouldHave("outboundFlightNumber", "12345")
+  	  .shouldHave("price", 1000.0d)
     .doAssert();
     
     assertAndRunDataInputJobForActivity("sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954", 1, 1);

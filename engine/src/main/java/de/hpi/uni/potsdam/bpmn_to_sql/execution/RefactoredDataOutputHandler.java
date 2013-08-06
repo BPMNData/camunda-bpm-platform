@@ -84,6 +84,7 @@ public class RefactoredDataOutputHandler {
             DataObjectSpecification outputObjectSpec = null;
             if (context.isCaseObject()) {
               outputObjectSpec = caseObject;
+              execution.setCaseObjectID(caseObjectId);
             } else {
               outputObjectSpec = dataObject(outputObject.getName(), outputObject.getPkey(), UUID.randomUUID().toString())
                 .references(outputObject.getFkeys().get(0), caseObject);

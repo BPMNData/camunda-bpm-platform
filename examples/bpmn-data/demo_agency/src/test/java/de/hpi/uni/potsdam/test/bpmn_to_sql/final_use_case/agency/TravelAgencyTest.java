@@ -7,9 +7,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.camunda.bpm.engine.runtime.Execution;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
 
@@ -106,8 +109,11 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     // create airline requests
     assertAndRunDataInputJobForActivity("sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081", 1, 1);
     
-    // TODO assert payload
     dataObjects("AirlineRequest", 2)
+      .where("departure", "Berlin")
+      .where("destination", "London")
+      .where("start_date", "1.1.2000")
+      .where("return_date", "7.1.2000")
       .shouldHave("state", "created")
       .doAssert();
     
@@ -150,6 +156,21 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     
     // pick best offer
     assertAndRunDataInputJobForActivity("sid-45A7F1E4-8B24-4545-AC15-3D50752C3949", 1, 1);
+    
+    // randomly pick a request
+    String requestId = (String) poManager.getPersistentObjects("AirlineRequest", new HashMap<String, Object>()).get(0).get("requestID");
+    
+    Task pickOfferTask = taskService.createTaskQuery().singleResult();
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("requestId", requestId);
+    taskService.complete(pickOfferTask.getId(), variables);
+    
+    dataObjects("Offer", 1)
+      .shouldHave("inboundFlightNumber", "123")
+      .shouldHave("outboundFlightNumber", "456")
+      .shouldHave("price", 1000.0d)
+      .shouldHave("state", "created")
+    .doAssert();
     
     // refer customer to airline
     assertAndRunDataInputJobForActivity("sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8", 1, 1);

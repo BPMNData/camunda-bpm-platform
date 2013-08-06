@@ -51,6 +51,14 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- task listener workaround -->
+    <dependency>
+      <groupId>org.camunda.bpm.example</groupId>
+	  <artifactId>demo_tasklisteners</artifactId>
+	  <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    
   </dependencies>
 
   <build>

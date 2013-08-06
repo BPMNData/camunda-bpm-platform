@@ -32,13 +32,11 @@
       </bpt:messageContentDef>
     </bpmn2:extensionElements>
   </bpmn2:message>
-  
   <bpmn2:endPoint id="agencyEndpoint">
-     <bpmn2:extensionElements>
-        <camundabpm:address>http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
-     </bpmn2:extensionElements>
+    <bpmn2:extensionElements>
+      <camundabpm:address xsi:type="xsd:anyType">http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+    </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  
   <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
     <bpmn2:correlationPropertyRetrievalExpression messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD">
       <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -48,19 +46,14 @@
   </bpmn2:correlationProperty>
   <bpmn2:collaboration id="sid-7ef533cf-097b-4518-a7bc-8fba6514f82f">
     <bpmn2:participant id="sid-93F82E05-3BD5-4073-9C9E-9578938C20A4" name="Customer" processRef="sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D"/>
-    <bpmn2:participant id="Participant_3" name="Airline"/>
     <bpmn2:participant id="Participant_4" name="Travel Agency">
       <bpmn2:endPointRef>agencyEndpoint</bpmn2:endPointRef>
     </bpmn2:participant>
     <bpmn2:messageFlow id="MessageFlow_2" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="" sourceRef="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" targetRef="Participant_4"/>
     <bpmn2:messageFlow id="MessageFlow_4" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" name="" sourceRef="Participant_4" targetRef="sid-A7836AF4-158D-4126-988A-C20643D72F8A"/>
-    <bpmn2:messageFlow id="MessageFlow_5" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="Participant_4" targetRef="Participant_3"/>
-    <bpmn2:messageFlow id="MessageFlow_6" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="Participant_3" targetRef="Participant_4"/>
     <bpmn2:conversation id="TravelConversation">
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_4</bpmn2:messageFlowRef>
-      <bpmn2:messageFlowRef>MessageFlow_5</bpmn2:messageFlowRef>
-      <bpmn2:messageFlowRef>MessageFlow_6</bpmn2:messageFlowRef>
       <bpmn2:correlationKey id="requestID_Key" name="Global_Request">
         <bpmn2:correlationPropertyRef>propRequest_ID</bpmn2:correlationPropertyRef>
       </bpmn2:correlationKey>
@@ -82,18 +75,22 @@
     <bpmn2:receiveTask id="sid-A7836AF4-158D-4126-988A-C20643D72F8A" name="Receive Airline Reference" implementation="webService" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E">
       <bpmn2:incoming>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</bpmn2:incoming>
       <bpmn2:outgoing>sid-1C99C16A-FAF1-4100-85F8-56D7A4C8C630</bpmn2:outgoing>
-      <bpmn2:dataOutputAssociation id="DataOutputAssociation_8">
+      <bpmn2:ioSpecification id="InputOutputSpecification_3">
+        <bpmn2:dataOutput id="DataOutput_2"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
         <bpmn2:targetRef>CustomerAirlineReferenceObj</bpmn2:targetRef>
-        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
-         let $offerMsg := ./message/payload/Global_Offer
-          return
-            &lt;Flights>
-              &lt;airline>{$offerMsg/airline/text()}&lt;/airline>
-              &lt;inboundFlightNumber>{$offerMsg/inboundFlightNumber/text()}&lt;/inboundFlightNumber>
-              &lt;outboundFlightNumber>{$offerMsg/outboundFlightNumber/text()}&lt;/outboundFlightNumber>
-              &lt;price>{$offerMsg/price/text()}&lt;/price>
-            &lt;/Flights>
-        </bpmn2:transformation>
+        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" id="_FormalExpression_10" language="XQuery">let $offerMsg := ./message/payload/Global_Offer&#xD;
+return&#xD;
+	&lt;Flights>&#xD;
+		&lt;airline>{$offerMsg/airline/text()}&lt;/airline>&#xD;
+              &lt;inboundFlightNumber>{$offerMsg/inboundFlightNumber/text()}&lt;/inboundFlightNumber>&#xD;
+              &lt;outboundFlightNumber>{$offerMsg/outboundFlightNumber/text()}&lt;/outboundFlightNumber>&#xD;
+              &lt;price>{$offerMsg/price/text()}&lt;/price>&#xD;
+	&lt;/Flights></bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
     <bpmn2:endEvent id="sid-A8C492FA-5501-49E6-BF17-427B8E44A1AB">
@@ -102,28 +99,32 @@
     <bpmn2:sendTask id="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE" name="Send Travel Details" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
       <bpmn2:incoming>sid-7A08B184-D37E-41CD-B75D-02810390B335</bpmn2:incoming>
       <bpmn2:outgoing>sid-8827154A-8D3D-4A92-8264-5BE13B84A8CE</bpmn2:outgoing>
-      <bpmn2:dataInputAssociation id="DataInputAssociation_7">
+      <bpmn2:ioSpecification id="InputOutputSpecification_1">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_1">
         <bpmn2:sourceRef>CustomerTravelDetailsObj</bpmn2:sourceRef>
-        <bpmn2:targetRef>sid-DCCABAF9-7DB7-4172-AF27-7165547156AE</bpmn2:targetRef>
-        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
-          let $travelDetails := ./DataObjects/TravelDetails
-          return &lt;message name=&quot;TravelDetailsMessage&quot;>
-              &lt;correlation>
-                &lt;key name=&quot;Global_Request&quot;>
-                  &lt;property name=&quot;request_id&quot;>{$travelDetails/travelID/text()}&lt;/property>
-                &lt;/key>
-              &lt;/correlation>
-              &lt;payload>
-                &lt;Global_Request>
-                  &lt;request_id>{$travelDetails/travelID/text()}&lt;/request_id>
-                  &lt;departure>{$travelDetails/departure/text()}&lt;/departure>
-                  &lt;destination>{$travelDetails/destination/text()}&lt;/destination>
-                  &lt;start_date>{$travelDetails/start_date/text()}&lt;/start_date>
-                  &lt;return_date>{$travelDetails/return_date/text()}&lt;/return_date>
-                &lt;/Global_Request>
-              &lt;/payload>
-            &lt;/message>         
-        </bpmn2:transformation>
+        <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
+        <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" id="_FormalExpression_4" language="XQuery">let $travelDetails := ./DataObjects/TravelDetails&#xD;
+return &#xD;
+	&lt;message name=&quot;TravelDetailsMessage&quot;>&#xD;
+       	&lt;correlation>&#xD;
+              	&lt;key name=&quot;Global_Request&quot;>&#xD;
+                  		&lt;property name=&quot;request_id&quot;>{$travelDetails/travelID/text()}&lt;/property>&#xD;
+                	&lt;/key>&#xD;
+              &lt;/correlation>&#xD;
+              &lt;payload>&#xD;
+                	&lt;Global_Request>&#xD;
+                  		&lt;request_id>{$travelDetails/travelID/text()}&lt;/request_id>&#xD;
+                  		&lt;departure>{$travelDetails/departure/text()}&lt;/departure>&#xD;
+                  		&lt;destination>{$travelDetails/destination/text()}&lt;/destination>&#xD;
+                  		&lt;start_date>{$travelDetails/start_date/text()}&lt;/start_date>&#xD;
+                  		&lt;return_date>{$travelDetails/return_date/text()}&lt;/return_date>&#xD;
+                	&lt;/Global_Request>&#xD;
+              &lt;/payload>&#xD;
+	&lt;/message></bpmn2:transformation>
       </bpmn2:dataInputAssociation>
     </bpmn2:sendTask>
     <bpmn2:startEvent id="sid-CE9C4457-F1DB-4218-B472-BC901EC88676">
@@ -132,7 +133,13 @@
     <bpmn2:task id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" name="Work Out Travel Details">
       <bpmn2:incoming>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</bpmn2:incoming>
       <bpmn2:outgoing>sid-7A08B184-D37E-41CD-B75D-02810390B335</bpmn2:outgoing>
-      <bpmn2:dataOutputAssociation id="DataOutputAssociation_7">
+      <bpmn2:ioSpecification id="InputOutputSpecification_2">
+        <bpmn2:dataOutput id="DataOutput_1"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
+        <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
         <bpmn2:targetRef>CustomerTravelDetailsObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:task>
@@ -145,12 +152,14 @@
         <bpt:primaryKey id="pk_uuid-d0aff44a-bc7c-4eef-a135-53b6e0ad5445" type="new">travelID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-1"/>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
     </bpmn2:dataObject>
     <bpmn2:dataObject id="CustomerAirlineReferenceObj" name="Flights">
       <bpmn2:extensionElements>
         <bpt:foreignKey id="fk_uuid-2881fb12-bcdb-48af-8c64-d568cdd021fd">travelID</bpt:foreignKey>
         <bpt:primaryKey id="pk_uuid-9759e38c-caa1-4a72-8efc-129c7d54d5b5" type="new">flightID</bpt:primaryKey>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="sid-028e129b-7619-401a-a429-f6420b47a029">
@@ -195,23 +204,11 @@
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_13" bpmnElement="CustomerTravelDetailsObj">
         <dc:Bounds height="120.0" width="100.0" x="531.0" y="1078.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_7" bpmnElement="DataOutputAssociation_7" sourceElement="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7_gui" targetElement="_BPMNShape_DataObject_13">
-        <di:waypoint xsi:type="dc:Point" x="529.0" y="1053.0"/>
-        <di:waypoint xsi:type="dc:Point" x="544.0" y="1078.0"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_7" bpmnElement="DataInputAssociation_7" sourceElement="_BPMNShape_DataObject_13" targetElement="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE_gui">
-        <di:waypoint xsi:type="dc:Point" x="624.0" y="1078.0"/>
-        <di:waypoint xsi:type="dc:Point" x="642.0" y="1053.0"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_14" bpmnElement="CustomerAirlineReferenceObj">
-        <dc:Bounds height="120.0" width="100.0" x="2138.0" y="1086.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_8" bpmnElement="DataOutputAssociation_8" sourceElement="sid-A7836AF4-158D-4126-988A-C20643D72F8A_gui" targetElement="_BPMNShape_DataObject_14">
-        <di:waypoint xsi:type="dc:Point" x="2103.0" y="1053.0"/>
-        <di:waypoint xsi:type="dc:Point" x="2138.0" y="1091.0"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_Participant_8" bpmnElement="Participant_3" isHorizontal="true">
-        <dc:Bounds height="100.0" width="2004.0" x="335.0" y="720.0"/>
+        <dc:Bounds height="120.0" width="100.0" x="2136.0" y="1068.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="45.0" x="2164.0" y="1193.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_Participant_9" bpmnElement="Participant_4" isHorizontal="true">
         <dc:Bounds height="100.0" width="2004.0" x="335.0" y="552.0"/>
@@ -219,22 +216,29 @@
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_2" bpmnElement="MessageFlow_2" sourceElement="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE_gui" targetElement="_BPMNShape_Participant_9">
         <di:waypoint xsi:type="dc:Point" x="670.0" y="973.0"/>
         <di:waypoint xsi:type="dc:Point" x="670.0" y="813.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="813.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="652.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1179.0" y="652.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="985.0" y="712.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_4" bpmnElement="MessageFlow_4" sourceElement="_BPMNShape_Participant_9" targetElement="sid-A7836AF4-158D-4126-988A-C20643D72F8A_gui">
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="652.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="812.0"/>
-        <di:waypoint xsi:type="dc:Point" x="2067.0" y="812.0"/>
-        <di:waypoint xsi:type="dc:Point" x="2067.0" y="973.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1426.0" y="652.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2017.0" y="985.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1881.0" y="910.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_5" bpmnElement="MessageFlow_5" sourceElement="_BPMNShape_Participant_9" targetElement="_BPMNShape_Participant_8">
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="652.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="720.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_13" targetElement="sid-DCCABAF9-7DB7-4172-AF27-7165547156AE_gui">
+        <di:waypoint xsi:type="dc:Point" x="624.0" y="1078.0"/>
+        <di:waypoint xsi:type="dc:Point" x="642.0" y="1053.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_6" bpmnElement="MessageFlow_6" sourceElement="_BPMNShape_Participant_8" targetElement="_BPMNShape_Participant_9">
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="720.0"/>
-        <di:waypoint xsi:type="dc:Point" x="1337.0" y="652.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7_gui" targetElement="_BPMNShape_DataObject_13">
+        <di:waypoint xsi:type="dc:Point" x="529.0" y="1053.0"/>
+        <di:waypoint xsi:type="dc:Point" x="544.0" y="1078.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="sid-A7836AF4-158D-4126-988A-C20643D72F8A_gui" targetElement="_BPMNShape_DataObject_14">
+        <di:waypoint xsi:type="dc:Point" x="2108.0" y="1053.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2136.0" y="1080.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

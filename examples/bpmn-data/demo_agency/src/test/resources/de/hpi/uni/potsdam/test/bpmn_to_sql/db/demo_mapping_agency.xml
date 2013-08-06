@@ -35,16 +35,13 @@
   </select>
   
   <select id="selectSingleAirlinerequest" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select requestID, travelID, airline, departure, destination, start_date, return_date, inboundFlightNumber, outboundFlightNumber, price, state from AirlineRequest 
+    select requestID, travelID, departure, destination, start_date, return_date, inboundFlightNumber, outboundFlightNumber, price, state from AirlineRequest 
     <where>
         <if test="requestID != null">
             requestID = #{requestID}
         </if>
         <if test="travelID != null">
             and travelID = #{travelID}
-        </if>
-        <if test="airline != null">
-            and airline = #{airline}
         </if>
         <if test="departure != null">
             and departure = #{departure}
@@ -75,16 +72,13 @@
   
   
   <select id="selectSingleOffer" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select offerID, travelID, airline, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
+    select offerID, travelID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
     <where>
         <if test="offerID != null">
             offerID = #{offerID}
         </if>
         <if test="travelID != null">
             and travelID = #{travelID}
-        </if>
-        <if test="airline != null">
-            and airline = #{airline}
         </if>
         <if test="inboundFlightNumber != null">
             and inboundFlightNumber = #{inboundFlightNumber}

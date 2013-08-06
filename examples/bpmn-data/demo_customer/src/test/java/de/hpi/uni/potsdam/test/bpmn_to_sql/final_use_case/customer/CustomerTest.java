@@ -69,10 +69,13 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
     Task enterDetailsTask = taskService.createTaskQuery().singleResult();
     Map<String, Object> variables = new HashMap<String, Object>();
     variables.put("departure", "Berlin");
+    variables.put("price", 1000.0d);
     taskService.complete(enterDetailsTask.getId(), variables);
     
     dataObjects("TravelDetails", 1).where("travelID", caseObjectId)
     .shouldHave("state", "created")
+    .shouldHave("departure", "Berlin")
+    .shouldHave("price", 1000.0d)
     .doAssert();
     
     assertAndRunDataInputJobForActivity("sid-DCCABAF9-7DB7-4172-AF27-7165547156AE", 1, 1);

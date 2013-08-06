@@ -131,6 +131,10 @@ return &#xD;
       <bpmn2:outgoing>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</bpmn2:outgoing>
     </bpmn2:startEvent>
     <bpmn2:userTask id="sid-3D42A93B-E351-43A9-87B8-AE202EB06EC7" name="Work Out Travel Details" camundabpm:formKey="embedded:app:forms/enter_details.html" camundabpm:candidateUsers="demo">
+      <bpmn2:extensionElements>
+        <camundabpm:taskListener event="complete" class="de.hpi.uni.potsdam.bpmn_to_sql.listener.CompleteTravelDetailsTaskListener" ></camundabpm:taskListener>
+      </bpmn2:extensionElements>
+      
       <bpmn2:incoming>sid-AB926619-2A70-4341-929D-141CB0B4E9E0</bpmn2:incoming>
       <bpmn2:outgoing>sid-7A08B184-D37E-41CD-B75D-02810390B335</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">

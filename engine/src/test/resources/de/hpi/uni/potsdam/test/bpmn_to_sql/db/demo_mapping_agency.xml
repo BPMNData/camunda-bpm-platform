@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="de.hpi.uni.potsdam.test.bpmn_to_sql.db">
+
+  <select id="selectSingleTraveldetails" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select travelID, cu_request_id, customer, departure, destination, start_date, return_date, state from TravelDetails 
+    <where>
+        <if test="travelID != null">
+            travelID = #{travelID}
+        </if>
+        <if test="cu_request_id != null">
+            and cu_request_id = #{cu_request_id}
+        </if>
+        <if test="customer != null">
+            and customer = #{customer}
+        </if>
+        <if test="departure != null">
+            and departure = #{departure}
+        </if>
+        <if test="destination != null">
+            and destination = #{destination}
+        </if>
+        <if test="start_date != null">
+            and start_date = #{start_date}
+        </if>
+        <if test="return_date != null">
+            and return_date = #{return_date}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleAirline" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select airlineID, name, country, address, state from Airline 
+    <where>
+        <if test="airlineID != null">
+            airlineID = #{airlineID}
+        </if>
+        <if test="name != null">
+            and name = #{name}
+        </if>
+        <if test="country != null">
+            and country = #{country}
+        </if>
+        <if test="address != null">
+            and address = #{address}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleAirlinerequest" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select requestID, travelID, airlineID, departure, destination, start_date, return_date, inboundFlightNumber, outboundFlightNumber, price, state from AirlineRequest 
+    <where>
+        <if test="requestID != null">
+            requestID = #{requestID}
+        </if>
+        <if test="travelID != null">
+            and travelID = #{travelID}
+        </if>
+        <if test="airlineID != null">
+            and airlineID = #{airlineID}
+        </if>
+        <if test="departure != null">
+            and departure = #{departure}
+        </if>
+        <if test="destination != null">
+            and destination = #{destination}
+        </if>
+        <if test="start_date != null">
+            and start_date = #{start_date}
+        </if>
+        <if test="return_date != null">
+            and return_date = #{return_date}
+        </if>
+        <if test="inboundFlightNumber != null">
+            and inboundFlightNumber = #{inboundFlightNumber}
+        </if>
+        <if test="outboundFlightNumber != null">
+            and outboundFlightNumber = #{outboundFlightNumber}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+  
+  
+  <select id="selectSingleOffer" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select offerID, requestID, airlineID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
+    <where>
+        <if test="offerID != null">
+            offerID = #{offerID}
+        </if>
+        <if test="requestID != null">
+            and requestID = #{requestID}
+        </if>
+        <if test="airlineID != null">
+            and airlineID = #{airlineID}
+        </if>
+        <if test="inboundFlightNumber != null">
+            and inboundFlightNumber = #{inboundFlightNumber}
+        </if>
+        <if test="outboundFlightNumber != null">
+            and outboundFlightNumber = #{outboundFlightNumber}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select>
+</mapper>

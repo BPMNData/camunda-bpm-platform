@@ -47,7 +47,7 @@
     <bpmn2:messageFlow id="MessageFlow_5" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="Participant_1"/>
     <bpmn2:messageFlow id="MessageFlow_6" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="Participant_2"/>
     <bpmn2:messageFlow id="MessageFlow_7" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" name="" sourceRef="Participant_2" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A"/>
-    <bpmn2:conversation id="Travel Conversation">
+    <bpmn2:conversation id="TravelConversation">
       <bpmn2:messageFlowRef>MessageFlow_4</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_5</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_6</bpmn2:messageFlowRef>
@@ -72,15 +72,24 @@
       </bpmn2:lane>
     </bpmn2:laneSet>
     <bpmn2:subProcess id="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99" name="Collect Offers">
+      <bpmn2:extensionElements>
+        <bpt:scopeInformation id="si-7cad2a7e-b839-4fa6-946d-3df5afb9f0ea" caseObject="AirlineRequest"/>
+      </bpmn2:extensionElements>
       <bpmn2:incoming>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</bpmn2:incoming>
       <bpmn2:outgoing>sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_3">
+        <bpmn2:dataInput id="DataInput_3"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation id="DataInputAssociation_2">
         <bpmn2:sourceRef>TravelAgencyRequestObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_3</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_3">
         <bpmn2:targetRef>TravelAgencyOfferObj2</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-      <bpmn2:multiInstanceLoopCharacteristics id="sid-79e498d9-7de4-4866-b623-f3219cf4b001"/>
+      <bpmn2:multiInstanceLoopCharacteristics id="sid-79e498d9-7de4-4866-b623-f3219cf4b001" camundabpm:collection="AirlineRequest"/>
       <bpmn2:receiveTask id="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A" name="Receive Offer" implementation="webService">
         <bpmn2:incoming>sid-B32A3579-2494-4FE5-BA81-CA3184A130D6</bpmn2:incoming>
         <bpmn2:outgoing>sid-A384BCB6-4562-45E1-BDFD-E89F239D7994</bpmn2:outgoing>
@@ -109,19 +118,27 @@
           <bpt:foreignKey id="fk_uuid-76febd3a-d42a-4511-8389-dc8f004f24c0">travelID</bpt:foreignKey>
           <bpt:primaryKey id="pk_uuid-319a08d5-bd86-4082-9f24-78a3ac2fb250">requestID</bpt:primaryKey>
         </bpmn2:extensionElements>
+        <bpmn2:dataState name="created"/>
       </bpmn2:dataObject>
       <bpmn2:dataObject id="TravelAgencyOfferObj" name="AirlineRequest">
         <bpmn2:extensionElements>
           <bpt:primaryKey id="pk_uuid-0ded860a-7de2-4bda-b13e-a6b1bc9c98e3">requestID</bpt:primaryKey>
           <bpt:foreignKey id="fk_uuid-07cfd0c7-9392-482d-96f7-a510900a9e9d">travelID</bpt:foreignKey>
         </bpmn2:extensionElements>
+        <bpmn2:dataState name="updated"/>
       </bpmn2:dataObject>
       <bpmn2:sequenceFlow id="SequenceFlow_1" sourceRef="sid-DF04D950-0A35-4CA7-8BD6-C754265FA017" targetRef="ServiceTask_1"/>
-      <bpmn2:sendTask id="sid-62E12787-4027-4843-8276-B721BA2D2FE2" name="Send Request" implementation="webService">
+      <bpmn2:sendTask id="sid-62E12787-4027-4843-8276-B721BA2D2FE2" name="Send Request" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
         <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
         <bpmn2:outgoing>sid-B32A3579-2494-4FE5-BA81-CA3184A130D6</bpmn2:outgoing>
+        <bpmn2:ioSpecification id="InputOutputSpecification_5">
+          <bpmn2:dataInput id="DataInput_5"/>
+          <bpmn2:inputSet/>
+          <bpmn2:outputSet/>
+        </bpmn2:ioSpecification>
         <bpmn2:dataInputAssociation id="DataInputAssociation_3">
           <bpmn2:sourceRef>TravelAgencyRequestObj2</bpmn2:sourceRef>
+          <bpmn2:targetRef>DataInput_5</bpmn2:targetRef>
           <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
           let $airlineRequest := ./DataObjects/AirlineRequest
           return &lt;message name=&quot;AirlineRequestMessage&quot;>
@@ -144,17 +161,28 @@
         </bpmn2:dataInputAssociation>
       </bpmn2:sendTask>
       <bpmn2:sequenceFlow id="sid-B32A3579-2494-4FE5-BA81-CA3184A130D6" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A"/>
-      <bpmn2:serviceTask id="ServiceTask_1" name="Resolve Airline Address">
+      <bpmn2:serviceTask id="ServiceTask_1" camundabpm:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.agency.ResolveAirlineDelegate" name="Resolve Airline Address">
         <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
         <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+        <bpmn2:ioSpecification id="InputOutputSpecification_4">
+          <bpmn2:dataInput id="DataInput_4"/>
+          <bpmn2:inputSet/>
+          <bpmn2:outputSet/>
+        </bpmn2:ioSpecification>
       </bpmn2:serviceTask>
       <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="ServiceTask_1" targetRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2"/>
     </bpmn2:subProcess>
-    <bpmn2:sendTask id="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" name="Refer Customer to Airline" implementation="webService">
+    <bpmn2:sendTask id="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" name="Refer Customer to Airline" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData">
       <bpmn2:incoming>sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D</bpmn2:incoming>
       <bpmn2:outgoing>sid-0584298C-78B4-4260-B86F-D858354BD3DB</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_6">
+        <bpmn2:dataInput id="DataInput_6"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation id="DataInputAssociation_4">
         <bpmn2:sourceRef>TravelAgencyAirlineReferenceObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_6</bpmn2:targetRef>
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
           let $customerOffer := ./DataObjects/Offer
           let $travelDetails := ./DataObjects/TravelDetails
@@ -180,8 +208,13 @@
     <bpmn2:endEvent id="sid-A60D6C72-63FD-4DD5-B01B-713F28661077">
       <bpmn2:incoming>sid-0584298C-78B4-4260-B86F-D858354BD3DB</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:receiveTask id="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E" name="Receive Travel Details" implementation="webService" instantiate="true">
+    <bpmn2:receiveTask id="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E" name="Receive Travel Details" implementation="webService" instantiate="true" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC">
       <bpmn2:outgoing>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_1">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
         <bpmn2:targetRef>TravelAgencyTravelDetailsObj</bpmn2:targetRef>
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -189,10 +222,8 @@
           return
             &lt;TravelDetails>
               &lt;cu_request_id>{$requestMsg/request_id/text()}&lt;/cu_request_id>
-              &lt;customer/>
               &lt;departure>{$requestMsg/departure/text()}&lt;/departure>
               &lt;destination>{$requestMsg/destination/text()}&lt;/destination>
-              &lt;price>{$requestMsg/price/text()}&lt;/price>
               &lt;start_date>{$requestMsg/start_date/text()}&lt;/start_date>
               &lt;return_date>{$requestMsg/return_date/text()}&lt;/return_date>              
             &lt;/TravelDetails>
@@ -202,8 +233,14 @@
     <bpmn2:task id="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" name="Pick Best Offer">
       <bpmn2:incoming>sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF</bpmn2:incoming>
       <bpmn2:outgoing>sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_7">
+        <bpmn2:dataInput id="DataInput_7"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation id="DataInputAssociation_8">
         <bpmn2:sourceRef>TravelAgencyOfferObj2</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_7</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_4">
         <bpmn2:targetRef>TravelAgencyAirlineReferenceObj</bpmn2:targetRef>
@@ -212,10 +249,19 @@
     <bpmn2:task id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" name="Create Request">
       <bpmn2:incoming>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</bpmn2:incoming>
       <bpmn2:outgoing>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_2">
+        <bpmn2:dataInput id="DataInput_2"/>
+        <bpmn2:inputSet/>
+        <bpmn2:outputSet/>
+      </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation id="DataInputAssociation_1">
         <bpmn2:sourceRef>TravelAgencyTravelDetailsObj</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_2</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:extensionElements>
+          <bpt:cardinality id="pv1">numberOfRequests</bpt:cardinality>
+        </bpmn2:extensionElements>
         <bpmn2:targetRef>TravelAgencyRequestObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:task>
@@ -229,24 +275,28 @@
         <bpt:primaryKey id="pk_uuid-93796c40-9f0b-47c0-a8e9-8e6740682325" type="new">travelID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-1"/>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
     <bpmn2:dataObject id="TravelAgencyRequestObj" name="AirlineRequest" isCollection="true">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-ed7c7bf8-f766-4fc4-adf6-f9bafb904dd2" type="new">requestID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-4b96009b-9c3d-4a24-affc-d707655c6389">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
     </bpmn2:dataObject>
     <bpmn2:dataObject id="TravelAgencyOfferObj2" name="AirlineRequest" isCollection="true">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-ce02e785-4c78-4219-83da-81c7f626a661">requestID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-39421f0e-4809-4fc0-b422-c4073def856f">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="updated"/>
     </bpmn2:dataObject>
     <bpmn2:dataObject id="TravelAgencyAirlineReferenceObj" name="Offer">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-80c2e19f-4c29-4eae-8778-4488c92703b7" type="new">offerID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-56dabb66-0b62-47e5-ba48-8a2c3a37e25d">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
     </bpmn2:dataObject>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="sid-028e129b-7619-401a-a429-f6420b47a029">

@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS `AirlineRequest` (
   `price` DOUBLE,
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`requestID`),
-  FOREIGN KEY (`travelID`) REFERENCES TravelDetails(`travelID`),
-  FOREIGN KEY (`airlineID`) REFERENCES Airline(`airlineID`)
+  FOREIGN KEY (`travelID`) REFERENCES TravelDetails(`travelID`) ON DELETE CASCADE,
+  FOREIGN KEY (`airlineID`) REFERENCES Airline(`airlineID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `Offer` (
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `Offer` (
   `price` DOUBLE,
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`offerID`),
-  FOREIGN KEY (`requestID`) REFERENCES AirlineRequest(`requestID`)
+  FOREIGN KEY (`requestID`) REFERENCES AirlineRequest(`requestID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `Airline` (`airlineID`,  `name`, `country`, `address`, `state`) VALUES ('AB', 'Air Berlin', 'Germany', '127.0.0.1', 'active'), ('UA', 'United Airlines', 'USA', '127.0.0.1', 'active'), ('LH', 'Lufthansa', 'Germany', '127.0.0.1', 'active');
+INSERT INTO `Airline` (`airlineID`,  `name`, `country`, `address`, `state`) VALUES ('AB', 'Air Berlin', 'Germany', 'http://localhost:8082/bpmn-data-endpoint', 'active'), ('LH', 'Lufthansa', 'Germany', 'http://localhost:8083/bpmn-data-endpoint', 'active');

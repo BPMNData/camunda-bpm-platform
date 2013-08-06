@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS `Flights` (
   `price` DOUBLE,
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`flightID`),
-  FOREIGN KEY (`travelID`) REFERENCES TravelDetails(`travelID`)
+  FOREIGN KEY (`travelID`) REFERENCES TravelDetails(`travelID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

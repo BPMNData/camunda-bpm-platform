@@ -74,7 +74,7 @@ public class RefactoredDataOutputHandler {
         String statementType = outputObject.getPkType();
         
         // statement creation
-        if (statementType.equals("new")) {
+        if ("new".equals(statementType)) {
           InsertObjectSpecification insertSpec = insert();
           int numberOfItems = 1;
           if (context.isCollectionDependentDataObject()) {
@@ -111,7 +111,7 @@ public class RefactoredDataOutputHandler {
             outputObjectSpec.attribute("state", values(context.getInputObjectStates()));
           }
           
-          if (statementType.equals("delete")) {
+          if ("delete".equals(statementType)) {
             query = outputObjectSpec.getDeleteStatement().toSqlString();
           } else {
             // update

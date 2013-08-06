@@ -7,6 +7,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.hpi.uni.potsdam.test.bpmn_to_sql.util.PersistentObjectAssertionSpecification.dataObjects;
 
+import java.util.List;
+
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Assert;
@@ -40,11 +42,11 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
       " </payload>" +
       "</message>";
   
-  private static final String AIRLINE_RESPONSE_MESSAGE = 
+  private static final String AIRLINE_RESPONSE_MESSAGE_FORMAT = 
       "<message name=\"Offer\">" +
       " <correlation>" +
       "   <key name=\"Global_Request\">" +
-      "     <property name=\"request_id\">42</property>" +
+      "     <property name=\"request_id\">%s</property>" +
       "   </key>" +
       " </correlation>" +
       " <payload>"+
@@ -57,7 +59,8 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
       "</message>";
   
   protected WireMockServer mockEndpointAirline1 = new WireMockServer(WireMockConfiguration.wireMockConfig().port(8082));
-  protected WireMockServer mockEndpointAirline2 = new WireMockServer(WireMockConfiguration.wireMockConfig().port(8083));
+  
+  protected WireMockServer mockEndpointCustomer = new WireMockServer(WireMockConfiguration.wireMockConfig().port(8081));
   
   protected String getCustomDbMappingsFilePath() {
     return DEMO_DATA_MAPPING_FILE;
@@ -67,16 +70,16 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     
     super.setUp();
     mockEndpointAirline1.start();
-    mockEndpointAirline2.start();
+    mockEndpointCustomer.start();
     
     // TODO assert message that is sent
     
-    WireMock.configureFor("localhost", 8082);
+    WireMock.configureFor("localhost", 8081);
     stubFor(post(urlEqualTo("/bpmn-data-endpoint/message"))
         .withHeader("Content-Type", equalTo("application/xml"))
         .willReturn(aResponse().withStatus(204)));
     
-    WireMock.configureFor("localhost", 8083);
+    WireMock.configureFor("localhost", 8082);
     stubFor(post(urlEqualTo("/bpmn-data-endpoint/message"))
         .withHeader("Content-Type", equalTo("application/xml"))
         .willReturn(aResponse().withStatus(204)));
@@ -114,18 +117,29 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     // send task
     assertAndRunDataInputJobForActivity("sid-62E12787-4027-4843-8276-B721BA2D2FE2", 2, 2);
     
+    // manipulating the correlation property as we do not know the exact request id
+    List<Execution> executions = runtimeService.createExecutionQuery().messageEventSubscriptionName("Offer").list();
+    Assert.assertEquals(2, executions.size());
+    
+    Execution execution1 = executions.get(0);
+    runtimeService.setVariableLocal(execution1.getId(), "propRequest_ID", "42");
+    
+    Execution execution2 = executions.get(1);
+    runtimeService.setVariableLocal(execution2.getId(), "propRequest_ID", "23");
+    
+    
     // send first response
-    runtimeService.correlateBpmnDataMessage(AIRLINE_RESPONSE_MESSAGE);
+    runtimeService.correlateBpmnDataMessage(String.format(AIRLINE_RESPONSE_MESSAGE_FORMAT, "42"));
     
     dataObjects("AirlineRequest", 1)
       .where("inboundFlightNumber", "123")
       .where("outboundFlightNumber", "456")
       .where("price", 1000.0d)
       .shouldHave("state", "updated")
-  .doAssert();
+    .doAssert();
     
     // send second response
-    runtimeService.correlateBpmnDataMessage(AIRLINE_RESPONSE_MESSAGE);
+    runtimeService.correlateBpmnDataMessage(String.format(AIRLINE_RESPONSE_MESSAGE_FORMAT, "23"));
     
     dataObjects("AirlineRequest", 2)
       .where("inboundFlightNumber", "123")
@@ -138,7 +152,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     assertAndRunDataInputJobForActivity("sid-45A7F1E4-8B24-4545-AC15-3D50752C3949", 1, 1);
     
     // refer customer to airline
-    assertAndRunDataInputJobForActivity("sid-45A7F1E4-8B24-4545-AC15-3D50752C3949", 1, 1);
+    assertAndRunDataInputJobForActivity("sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8", 1, 1);
     
     // instance should have finished
     Assert.assertNull(runtimeService.createProcessInstanceQuery().singleResult());
@@ -149,6 +163,6 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     mockEndpointAirline1.stop();
-    mockEndpointAirline2.stop();
+    mockEndpointCustomer.stop();
   }
 }

@@ -43,14 +43,14 @@ CREATE TABLE IF NOT EXISTS `AirlineRequest` (
 
 CREATE TABLE IF NOT EXISTS `Offer` (
   `offerID` varchar(60) NOT NULL,
-  `requestID` varchar(60),
+  `travelID` varchar(60),
   `airlineID` varchar(60),
   `inboundFlightNumber` varchar(255),
   `outboundFlightNumber` varchar(255),
   `price` DOUBLE,
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`offerID`),
-  FOREIGN KEY (`requestID`) REFERENCES AirlineRequest(`requestID`) ON DELETE CASCADE
+  FOREIGN KEY (`travelID`) REFERENCES TravelDetails(`travelID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `Airline` (`airlineID`,  `name`, `country`, `address`, `state`) VALUES ('AB', 'Air Berlin', 'Germany', 'http://localhost:8082/bpmn-data-endpoint', 'active'), ('LH', 'Lufthansa', 'Germany', 'http://localhost:8083/bpmn-data-endpoint', 'active');

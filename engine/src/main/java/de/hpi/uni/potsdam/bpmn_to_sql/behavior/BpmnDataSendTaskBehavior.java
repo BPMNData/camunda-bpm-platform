@@ -39,7 +39,7 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
     int statusCode = response.getStatusLine().getStatusCode();
     
     if (statusCode / 100 != 2) {
-      throw new ProcessEngineException("Could not make reques to " + endPointAddress +". Got status " + statusCode);
+      throw new ProcessEngineException("Could not make request to " + endPointAddress +". Got status " + statusCode);
     }
     
     updateCorrelationKeys(execution, messageContent);

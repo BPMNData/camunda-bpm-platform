@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:camundabpm="http://activiti.org/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:myData="http://www.example.org/DataDefinitions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_tEY-0PQ2EeKXzfEHMsI0Zg" targetNamespace="http://activiti.org/bpmn">
-  <bpmn2:message id="sid-98865D20-5528-4085-9369-926F5D3405FD" name="Airline Reference">
-    <bpmn2:extensionElements>
-      <bpt:messageContentDef xsi:type="xsd:anyType">
-        <bpt:payloadDef xsi:type="xsd:anyType" ref="global-offer-id"/>
-        <bpt:correlationDef xsi:type="xsd:anyType" ref="requestID_Key"/>
-      </bpt:messageContentDef>
-    </bpmn2:extensionElements>
-  </bpmn2:message>
   <bpmn2:message id="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="Travel Details">
     <bpmn2:extensionElements>
       <bpt:messageContentDef xsi:type="xsd:anyType">
@@ -32,6 +24,19 @@
       </bpt:messageContentDef>
     </bpmn2:extensionElements>
   </bpmn2:message>
+  
+  <bpmn2:endPoint id="airlineEndpoint">
+    <bpmn2:extensionElements>
+      <camundabpm:address xsi:type="xsd:anyType">${endpointAddress}</camundabpm:address>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  
+  <bpmn2:endPoint id="customerEndpoint">
+    <bpmn2:extensionElements>
+      <camundabpm:address xsi:type="xsd:anyType">http://localhost:8081/bpmn-data-endpoint/message</camundabpm:address>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  
   <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
     <bpmn2:correlationPropertyRetrievalExpression messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD">
       <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -41,12 +46,16 @@
   </bpmn2:correlationProperty>
   <bpmn2:collaboration id="sid-7ef533cf-097b-4518-a7bc-8fba6514f82f">
     <bpmn2:participant id="sid-16C66F66-5794-426D-90E6-79B740EAB44C" name="Travel Agency" processRef="sid-F3AB6388-19E7-4054-82A3-4365AB424E69"/>
-    <bpmn2:participant id="Participant_1" name="Customer"/>
-    <bpmn2:participant id="Participant_2" name="Travel Agency"/>
+    <bpmn2:participant id="Participant_1" name="Customer">
+      <bpmn2:endPointRef>customerEndpoint</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:participant id="Participant_2" name="Airline">
+      <bpmn2:endPointRef>airlineEndpoint</bpmn2:endPointRef>
+    </bpmn2:participant>
     <bpmn2:messageFlow id="MessageFlow_4" messageRef="sid-AAA7DD74-2026-4A10-A625-A4353B582CEC" name="" sourceRef="Participant_1" targetRef="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E"/>
-    <bpmn2:messageFlow id="MessageFlow_5" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="Participant_1"/>
-    <bpmn2:messageFlow id="MessageFlow_6" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="Participant_2"/>
-    <bpmn2:messageFlow id="MessageFlow_7" messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD" name="" sourceRef="Participant_2" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A"/>
+    <bpmn2:messageFlow id="MessageFlow_5" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="Participant_1"/>
+    <bpmn2:messageFlow id="MessageFlow_6" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="sid-62E12787-4027-4843-8276-B721BA2D2FE2" targetRef="Participant_2"/>
+    <bpmn2:messageFlow id="MessageFlow_7" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="Participant_2" targetRef="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A"/>
     <bpmn2:conversation id="TravelConversation">
       <bpmn2:messageFlowRef>MessageFlow_4</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_5</bpmn2:messageFlowRef>
@@ -90,7 +99,7 @@
         <bpmn2:targetRef>TravelAgencyOfferObj2</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
       <bpmn2:multiInstanceLoopCharacteristics id="sid-79e498d9-7de4-4866-b623-f3219cf4b001" camundabpm:collection="AirlineRequest"/>
-      <bpmn2:receiveTask id="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A" name="Receive Offer" implementation="webService">
+      <bpmn2:receiveTask id="sid-ECDFF786-0F6F-4EC1-8C3B-A92A5330169A" name="Receive Offer" implementation="webService" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E">
         <bpmn2:incoming>sid-B32A3579-2494-4FE5-BA81-CA3184A130D6</bpmn2:incoming>
         <bpmn2:outgoing>sid-A384BCB6-4562-45E1-BDFD-E89F239D7994</bpmn2:outgoing>
         <bpmn2:dataOutputAssociation id="DataOutputAssociation_9">

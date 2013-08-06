@@ -7,7 +7,7 @@ public class ResolveAirlineDelegate implements JavaDelegate {
 
   @Override
   public void execute(DelegateExecution execution) throws Exception {
-    execution.setVariable("endpointAddress", "http://localhost:8080/bpmn-data-endpoint");
+    execution.setVariable("endpointAddress", "http://localhost:8082/bpmn-data-endpoint/message");
   }
 
 }

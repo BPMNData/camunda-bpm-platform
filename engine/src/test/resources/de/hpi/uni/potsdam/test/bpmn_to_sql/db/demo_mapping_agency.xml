@@ -96,13 +96,13 @@
   
   
   <select id="selectSingleOffer" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select offerID, requestID, airlineID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
+    select offerID, travelID, airlineID, inboundFlightNumber, outboundFlightNumber, price, state from Offer 
     <where>
         <if test="offerID != null">
             offerID = #{offerID}
         </if>
-        <if test="requestID != null">
-            and requestID = #{requestID}
+        <if test="travelID != null">
+            and travelID = #{travelID}
         </if>
         <if test="airlineID != null">
             and airlineID = #{airlineID}

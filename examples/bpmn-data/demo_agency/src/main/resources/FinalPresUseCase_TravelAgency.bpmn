@@ -255,7 +255,7 @@
         <bpmn2:targetRef>TravelAgencyAirlineReferenceObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:task>
-    <bpmn2:task id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" name="Create Request">
+    <bpmn2:serviceTask id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" name="Create Request"  camundabpm:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.agency.CreateAirlineRequestsDelegate">
       <bpmn2:incoming>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</bpmn2:incoming>
       <bpmn2:outgoing>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -273,7 +273,7 @@
         </bpmn2:extensionElements>
         <bpmn2:targetRef>TravelAgencyRequestObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-    </bpmn2:task>
+    </bpmn2:serviceTask>
     <bpmn2:sequenceFlow id="sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D" sourceRef="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" targetRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8"/>
     <bpmn2:sequenceFlow id="sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37" sourceRef="sid-7329A24D-EF9C-4FF1-8B97-BEDBFD41C58E" targetRef="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081"/>
     <bpmn2:sequenceFlow id="sid-0584298C-78B4-4260-B86F-D858354BD3DB" sourceRef="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8" targetRef="sid-A60D6C72-63FD-4DD5-B01B-713F28661077"/>

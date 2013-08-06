@@ -106,8 +106,11 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     // create airline requests
     assertAndRunDataInputJobForActivity("sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081", 1, 1);
     
-    // TODO assert payload
     dataObjects("AirlineRequest", 2)
+      .where("departure", "Berlin")
+      .where("destination", "London")
+      .where("start_date", "1.1.2000")
+      .where("return_date", "7.1.2000")
       .shouldHave("state", "created")
       .doAssert();
     

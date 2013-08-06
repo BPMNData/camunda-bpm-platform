@@ -35,7 +35,6 @@
         <include>com.fasterxml.uuid:java-uuid-generator:jar:*</include>
         <include>joda-time:joda-time:jar:*</include>
         
-        
       </includes>     
     </dependencySet>
     
@@ -45,7 +44,8 @@
       <outputDirectory>server/apache-tomcat-${tomcat.version}/lib</outputDirectory>
       <includes>
         <include>org.apache.httpcomponents:httpclient:jar:*</include>  
-        <include>net.sf.saxon:Saxon-HE:jar:*</include>          
+        <include>net.sf.saxon:Saxon-HE:jar:*</include>     
+        <include>mysql:mysql-connector-java:jar:*</include>     
       </includes>
     </dependencySet>
     

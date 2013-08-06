@@ -34,6 +34,11 @@
       </bpt:messageContentDef>
     </bpmn2:extensionElements>
   </bpmn2:message>
+  <bpmn2:endPoint id="agencyEndpoint">
+    <bpmn2:extensionElements>
+      <camundabpm:address xsi:type="xsd:anyType">http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
   <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
     <bpmn2:correlationPropertyRetrievalExpression messageRef="Message_2">
       <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -45,7 +50,9 @@
     <bpmn2:participant id="sid-1E870CD9-D37D-4975-BA2B-5C1E224F9F28" name="Airline" processRef="sid-499A179B-745D-4F64-A035-8E05E5B7DCA6">
       <bpmn2:participantMultiplicity id="sid-6f565368-e6cd-4355-8550-28fba9f3ee75" maximum="2" minimum="2"/>
     </bpmn2:participant>
-    <bpmn2:participant id="Participant_1" name="Travel Agency"/>
+    <bpmn2:participant id="Participant_1" name="Travel Agency">
+      <bpmn2:endPointRef>agencyEndpoint</bpmn2:endPointRef>
+    </bpmn2:participant>
     <bpmn2:messageFlow id="MessageFlow_1" messageRef="sid-6B455ECB-14D7-4797-AA9C-11A3934516C6" name="" sourceRef="Participant_1" targetRef="sid-2242C9E1-5C65-489E-8EF3-AC24D7C81C05"/>
     <bpmn2:messageFlow id="MessageFlow_2" messageRef="sid-70075E35-BB20-4EB7-B3F6-65E292BCB31E" name="" sourceRef="sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954" targetRef="Participant_1"/>
     <bpmn2:conversation id="TravelConversation">

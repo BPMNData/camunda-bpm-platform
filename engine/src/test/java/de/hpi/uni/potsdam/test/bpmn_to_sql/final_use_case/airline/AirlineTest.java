@@ -47,7 +47,6 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
   }
   
   protected void setUp() throws Exception {
-    
     super.setUp();
     mockEndpoint.start();
     

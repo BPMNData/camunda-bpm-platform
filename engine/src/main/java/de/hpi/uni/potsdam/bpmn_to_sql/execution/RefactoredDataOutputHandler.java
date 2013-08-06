@@ -199,7 +199,7 @@ public class RefactoredDataOutputHandler {
         context.outputObjectState = (String) execution.getVariableLocal(outputObject.getState().substring(1));
       }
       
-      String scope = execution.getActivity().getParent().getId().split(":")[0];
+      String scope = (String) execution.getActivity().getParent().getId().split(":")[0];
       context.isCaseObject = DataObjectClassification.isMainDataObject(outputObject, scope);
       context.isDependentObject = !context.isCaseObject;
       context.isSingleDependentDataObject = DataObjectClassification.isDependentDataObject(outputObject, scope);

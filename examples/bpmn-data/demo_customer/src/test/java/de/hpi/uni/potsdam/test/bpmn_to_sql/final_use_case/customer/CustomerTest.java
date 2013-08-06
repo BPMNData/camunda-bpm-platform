@@ -69,6 +69,10 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
     Task enterDetailsTask = taskService.createTaskQuery().singleResult();
     Map<String, Object> variables = new HashMap<String, Object>();
     variables.put("departure", "Berlin");
+    variables.put("destination", "London");
+    variables.put("hotel", "asdf");
+    variables.put("start_date", "10.1.2013");
+    variables.put("return_date", "1.1.2013");
     variables.put("price", 1000.0d);
     taskService.complete(enterDetailsTask.getId(), variables);
     

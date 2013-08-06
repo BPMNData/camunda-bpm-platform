@@ -86,7 +86,6 @@
         <bpmn2:transformation xsi:type="bpmn2:tFormalExpression" id="_FormalExpression_10" language="XQuery">let $offerMsg := ./message/payload/Global_Offer&#xD;
 return&#xD;
 	&lt;Flights>&#xD;
-		&lt;airline>{$offerMsg/airline/text()}&lt;/airline>&#xD;
               &lt;inboundFlightNumber>{$offerMsg/inboundFlightNumber/text()}&lt;/inboundFlightNumber>&#xD;
               &lt;outboundFlightNumber>{$offerMsg/outboundFlightNumber/text()}&lt;/outboundFlightNumber>&#xD;
               &lt;price>{$offerMsg/price/text()}&lt;/price>&#xD;

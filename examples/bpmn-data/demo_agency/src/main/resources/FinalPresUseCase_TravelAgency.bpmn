@@ -314,6 +314,7 @@
     <bpmn2:dataObject id="DataObject_1" name="TravelDetails">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-09f16b40-b888-4d14-b135-be938df36012">travelID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-2"></bpt:foreignKey>
       </bpmn2:extensionElements>
       <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>

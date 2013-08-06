@@ -24,19 +24,16 @@
       </bpt:messageContentDef>
     </bpmn2:extensionElements>
   </bpmn2:message>
-  
   <bpmn2:endPoint id="airlineEndpoint">
     <bpmn2:extensionElements>
       <camundabpm:address xsi:type="xsd:anyType">${endpointAddress}</camundabpm:address>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  
   <bpmn2:endPoint id="customerEndpoint">
     <bpmn2:extensionElements>
       <camundabpm:address xsi:type="xsd:anyType">http://localhost:8081/bpmn-data-endpoint/message</camundabpm:address>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  
   <bpmn2:correlationProperty id="propRequest_ID" name="Property Request ID" type="string">
     <bpmn2:correlationPropertyRetrievalExpression messageRef="sid-98865D20-5528-4085-9369-926F5D3405FD">
       <bpmn2:messagePath xsi:type="bpmn2:tFormalExpression" language="XPath">
@@ -213,6 +210,10 @@
             &lt;/message>         
         </bpmn2:transformation>
       </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_5">
+        <bpmn2:sourceRef>DataObject_1</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_6</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
     </bpmn2:sendTask>
     <bpmn2:endEvent id="sid-A60D6C72-63FD-4DD5-B01B-713F28661077">
       <bpmn2:incoming>sid-0584298C-78B4-4260-B86F-D858354BD3DB</bpmn2:incoming>
@@ -239,9 +240,9 @@
         </bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
-    <bpmn2:userTask id="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" name="Pick Best Offer" camundabpm:formKey="embedded:app:forms/pick_offer.html" camundabpm:candidateUsers="demo">
+    <bpmn2:userTask id="sid-45A7F1E4-8B24-4545-AC15-3D50752C3949" camundabpm:formKey="embedded:app:forms/pick_offer.html" camundabpm:candidateUsers="demo" name="Pick Best Offer">
       <bpmn2:extensionElements>
-        <camundabpm:taskListener event="complete" class="de.hpi.uni.potsdam.bpmn_to_sql.listener.PickBestOfferTaskListener" ></camundabpm:taskListener>
+        <camundabpm:taskListener class="de.hpi.uni.potsdam.bpmn_to_sql.listener.PickBestOfferTaskListener" event="complete"/>
       </bpmn2:extensionElements>
       <bpmn2:incoming>sid-63BA26EC-FC82-47C5-A791-2ABA3A8BDBFF</bpmn2:incoming>
       <bpmn2:outgoing>sid-FAACDCAD-CEDB-4A11-B54D-B00207A4D19D</bpmn2:outgoing>
@@ -258,7 +259,7 @@
         <bpmn2:targetRef>TravelAgencyAirlineReferenceObj</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:userTask>
-    <bpmn2:serviceTask id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" name="Create Request"  camundabpm:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.agency.CreateAirlineRequestsDelegate">
+    <bpmn2:serviceTask id="sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081" camundabpm:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.agency.CreateAirlineRequestsDelegate" name="Create Request">
       <bpmn2:incoming>sid-56CF48DB-5B22-477B-85C2-3C7A929A0C37</bpmn2:incoming>
       <bpmn2:outgoing>sid-C3F699A3-D311-44C5-A41B-5B692C905DBE</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -309,6 +310,12 @@
         <bpt:foreignKey id="fk_uuid-56dabb66-0b62-47e5-ba48-8a2c3a37e25d">travelID</bpt:foreignKey>
       </bpmn2:extensionElements>
       <bpmn2:dataState name="created"/>
+    </bpmn2:dataObject>
+    <bpmn2:dataObject id="DataObject_1" name="TravelDetails">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-09f16b40-b888-4d14-b135-be938df36012">travelID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
   </bpmn2:process>
   <bpmndi:BPMNDiagram id="sid-028e129b-7619-401a-a429-f6420b47a029">
@@ -493,6 +500,13 @@
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="sid-034EC80D-1970-4BF0-B055-69D0D86DFC99_gui" targetElement="_BPMNShape_DataObject_8">
         <di:waypoint xsi:type="dc:Point" x="1715.0" y="309.0"/>
         <di:waypoint xsi:type="dc:Point" x="1738.0" y="306.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_16" bpmnElement="DataObject_1">
+        <dc:Bounds height="120.0" width="100.0" x="2033.0" y="145.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_5" bpmnElement="DataInputAssociation_5" sourceElement="_BPMNShape_DataObject_16" targetElement="sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8_gui">
+        <di:waypoint xsi:type="dc:Point" x="2079.0" y="265.0"/>
+        <di:waypoint xsi:type="dc:Point" x="2070.0" y="395.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

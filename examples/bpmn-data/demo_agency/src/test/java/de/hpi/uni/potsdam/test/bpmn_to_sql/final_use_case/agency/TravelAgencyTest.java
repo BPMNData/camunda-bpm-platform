@@ -85,8 +85,8 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
         .willReturn(aResponse().withStatus(204)));
   }
   
-  @DatabaseSetup(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/agency/setup_agency_db.sql")
-  @Deployment(resources = "de/hpi/uni/potsdam/test/bpmn_to_sql/final_use_case/agency/FinalPresUseCase_TravelAgency.bpmn")
+  @DatabaseSetup(resources = "setup_agency_db.sql")
+  @Deployment(resources = "FinalPresUseCase_TravelAgency.bpmn")
   public void testTravelAgency() {
     runtimeService.correlateBpmnDataMessage(REQUEST_MESSAGE);
     

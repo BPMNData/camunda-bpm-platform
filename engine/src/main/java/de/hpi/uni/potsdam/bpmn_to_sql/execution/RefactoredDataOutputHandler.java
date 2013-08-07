@@ -151,7 +151,7 @@ public class RefactoredDataOutputHandler {
       HashMap<DataObject, ArrayList<HashMap<String, String>>> inputDataObjects = (HashMap<DataObject, ArrayList<HashMap<String, String>>>) execution.getVariableLocal("dataObjects");
       for (HashMap<String, String> objectUpdate : inputDataObjects.get(dataObject)){
         for (Entry<String, String> attributeUpdate : objectUpdate.entrySet()){
-          if (!attributeUpdate.getValue().equals("")){
+          if (!attributeUpdate.getValue().trim().isEmpty()){
             AttributeUpdate stateUpdate = new AttributeUpdate(attributeUpdate.getKey(), attributeUpdate.getValue());
             updates.add(stateUpdate);            
           }
@@ -166,7 +166,7 @@ public class RefactoredDataOutputHandler {
       HashMap<DataObject, ArrayList<HashMap<String, String>>> inputDataObjects = (HashMap<DataObject, ArrayList<HashMap<String, String>>>) execution.getVariableLocal("dataObjects");
       for (HashMap<String, String> objectUpdate : inputDataObjects.get(dataObject)){
         for (Entry<String, String> attributeUpdate : objectUpdate.entrySet()){
-          if (!attributeUpdate.getValue().equals("")){
+          if (!attributeUpdate.getValue().trim().isEmpty()){
             dataSpec = dataSpec.attribute(attributeUpdate.getKey(), attributeUpdate.getValue());         
           }
         }

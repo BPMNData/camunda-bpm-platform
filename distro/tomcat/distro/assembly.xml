@@ -71,7 +71,7 @@
 
     <dependencySet>
         <includes>
-            <include>org.camunda.bpm.tasklist:camunda-tasklist-tomcat:war:*</include>
+            <include>org.camunda.bpm.tasklist:bpmn-data-camunda-tasklist-tomcat:war:*</include>
         </includes>
         <outputDirectory>server/apache-tomcat-${tomcat.version}/webapps/tasklist</outputDirectory>
         <unpack>true</unpack>

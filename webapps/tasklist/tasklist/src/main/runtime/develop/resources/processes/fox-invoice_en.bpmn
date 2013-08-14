@@ -81,7 +81,7 @@
     <endEvent id="invoiceProcessed" name="invoice processed">
       <incoming>SequenceFlow_1</incoming>
     </endEvent>
-    <userTask id="assignApprover" activiti:formKey="app:develop/invoice/assign-approver.html" activiti:candidateGroups="management" name="assign approver">
+    <userTask id="assignApprover" activiti:formKey="embedded:app:develop/invoice/assign-approver.html" activiti:candidateGroups="management" name="assign approver">
       <incoming>sequenceFlow_187</incoming>
       <outgoing>sequenceFlow_178</outgoing>
     </userTask>

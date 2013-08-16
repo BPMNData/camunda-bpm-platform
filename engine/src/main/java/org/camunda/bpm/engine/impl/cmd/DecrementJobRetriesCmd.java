@@ -26,6 +26,9 @@ import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
 import org.camunda.bpm.engine.impl.jobexecutor.MessageAddedNotification;
 import org.camunda.bpm.engine.impl.persistence.entity.JobEntity;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputUnavailableException;
+import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
+
 /**
  * @author Tom Baeyens
  */
@@ -45,7 +48,11 @@ public class DecrementJobRetriesCmd implements Command<Object> {
       .getCommandContext()
       .getJobManager()
       .findJobById(jobId);
-    job.setRetries(job.getRetries() - 1);
+    
+    if (!(AsyncDataInputJobHandler.TYPE.equals(job.getJobHandlerType()) && 
+        exception instanceof DataInputUnavailableException)) {
+      job.setRetries(job.getRetries() - 1); 
+    }
     job.setLockOwner(null);
     job.setLockExpirationTime(null);
     

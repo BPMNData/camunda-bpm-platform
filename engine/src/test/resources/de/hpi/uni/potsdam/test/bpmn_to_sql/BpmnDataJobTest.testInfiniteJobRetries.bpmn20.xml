@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+			 xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+			 xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+			 xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+			 xmlns:signavio="http://www.signavio.com"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns:activiti="http://activiti.org/bpmn"
+			 xmlns:bpt="http://bpt.hpi.uni-potsdam.de"
+			 exporter="Signavio Process Editor, http://www.signavio.com"
+			 exporterVersion="6.7.0"
+			 expressionLanguage="http://www.w3.org/1999/XPath"
+			 id="sid-e2022f89-b461-4154-95e1-413f19f947ab"
+			 targetNamespace="http://www.signavio.com/bpmn20"
+			 typeLanguage="http://www.w3.org/2001/XMLSchema"
+			 xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+
+	<process id="jobTestProcess">
+		<extensionElements>
+			<bpt:scopeInformation id="mainProcess" caseObject="Order" />
+		</extensionElements>
+		<startEvent id="start">
+		</startEvent>
+		<task completionQuantity="1" id="task" isForCompensation="false" name="C" startQuantity="1">
+			<dataInputAssociation id="sid-5F9495CC-D67C-4D40-B182-1555FEF1C2B5">
+				<sourceRef>orderObj</sourceRef>
+				<targetRef>task</targetRef>
+			</dataInputAssociation>
+		</task>
+		<endEvent id="end">
+		</endEvent>
+		<sequenceFlow id="flow1" sourceRef="start" targetRef="task"/>
+		<sequenceFlow id="flow2" sourceRef="task" targetRef="end"/>
+		<dataObject id="orderObj" isCollection="false" name="Order">
+			<extensionElements>
+				<bpt:primaryKey id="pk" type="">oid</bpt:primaryKey>
+				<bpt:foreignKey id="fk" type=""></bpt:foreignKey>
+			</extensionElements>
+			<dataState id="state" name="initial"/>
+		</dataObject>
+	</process>
+</definitions>

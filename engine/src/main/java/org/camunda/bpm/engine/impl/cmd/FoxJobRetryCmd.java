@@ -24,6 +24,8 @@ import org.camunda.bpm.engine.impl.persistence.entity.JobEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
+import de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler;
+
 
 public class FoxJobRetryCmd implements Command<Object> {
 
@@ -60,7 +62,13 @@ public class FoxJobRetryCmd implements Command<Object> {
   }
 
   private void executeCustomStrategy(CommandContext commandContext, JobEntity job, ActivityImpl activity) throws Exception {
-    String failedJobRetryTimeCycle = (String) activity.getProperty(FoxFailedJobParseListener.FOX_FAILED_JOB_CONFIGURATION);
+    
+    String failedJobRetryTimeCycle = null;
+    if (isBpmnDataJob(job)) {
+      failedJobRetryTimeCycle = Context.getProcessEngineConfiguration().getBpmnDataConfiguration().getDataJobRetryTimeCycle();
+    } else {
+      failedJobRetryTimeCycle = (String) activity.getProperty(FoxFailedJobParseListener.FOX_FAILED_JOB_CONFIGURATION);
+    }
     
     DurationHelper durationHelper = new DurationHelper(failedJobRetryTimeCycle);
     job.setLockExpirationTime(durationHelper.getDateAfter());
@@ -69,7 +77,10 @@ public class FoxJobRetryCmd implements Command<Object> {
     if (job.getRevision() == 2) {
       job.setRetries(durationHelper.getTimes());
     }
-    job.setRetries(job.getRetries() - 1);
+    
+    if (!isBpmnDataJob(job)) {
+      job.setRetries(job.getRetries() - 1);
+    }
     
     if (exception != null) {
       job.setExceptionMessage(exception.getMessage());
@@ -80,6 +91,10 @@ public class FoxJobRetryCmd implements Command<Object> {
     MessageAddedNotification messageAddedNotification = new MessageAddedNotification(jobExecutor);
     TransactionContext transactionContext = commandContext.getTransactionContext();
     transactionContext.addTransactionListener(TransactionState.COMMITTED, messageAddedNotification);
+  }
+  
+  private boolean isBpmnDataJob(JobEntity job) {
+    return AsyncDataInputJobHandler.TYPE.equals(job.getJobHandlerType());
   }
 
   private ActivityImpl getCurrentActivity(CommandContext commandContext, JobEntity job) {
@@ -98,7 +113,7 @@ public class FoxJobRetryCmd implements Command<Object> {
       if (processDefinition != null) {
         activity = processDefinition.getInitial();
       }
-    } else if (AsyncContinuationJobHandler.TYPE.equals(type)) {
+    } else if (AsyncContinuationJobHandler.TYPE.equals(type) || AsyncDataInputJobHandler.TYPE.equals(type)) {
       ExecutionEntity execution = fetchExecutionEntity(job.getExecutionId());
       if (execution != null) {
         activity = execution.getActivity();

@@ -7,6 +7,9 @@ public class BpmnDataConfiguration {
   protected String jdbcUsername = "testuser";
   protected String jdbcPassword = "test623";
   
+  // by default, retry an input job every 20 seconds
+  protected String dataJobRetryTimeCycle = "R/PT20S";
+  
   public String getJdbcDriver() {
     return jdbcDriver;
   }
@@ -31,4 +34,11 @@ public class BpmnDataConfiguration {
   public void setJdbcPassword(String jdbcPassword) {
     this.jdbcPassword = jdbcPassword;
   }
+  public String getDataJobRetryTimeCycle() {
+    return dataJobRetryTimeCycle;
+  }
+  public void setDataJobRetryTimeCycle(String dataJobRetryTimeCycle) {
+    this.dataJobRetryTimeCycle = dataJobRetryTimeCycle;
+  }
+  
 }

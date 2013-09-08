@@ -1,6 +1,7 @@
 create table ACT_RU_INCIDENT (
   ID_ nvarchar(64) not null,
   INCIDENT_TIMESTAMP_ datetime2 not null,
+  INCIDENT_MSG_ nvarchar(4000),
   INCIDENT_TYPE_ nvarchar(255) not null,
   EXECUTION_ID_ nvarchar(64),
   ACTIVITY_ID_ nvarchar(255),
@@ -250,15 +251,24 @@ WHERE SUSPENSION_STATE_ is null;
 /** add authorizations **/
 
 create table ACT_RU_AUTHORIZATION (
-    ID_ nvarchar(64) not null,
-    REV_ int,
-    GROUP_ID_ nvarchar(255),
-    USER_ID_ nvarchar(255),
-    RESOURCE_TYPE_ nvarchar(255) not null,
-    RESOURCE_ID_ nvarchar(64),
-    PERMS_ int,
-    primary key (ID_)
+  ID_ varchar(64) not null,
+  REV_ integer not null,
+  TYPE_ integer not null,
+  GROUP_ID_ varchar(255),
+  USER_ID_ varchar(255),
+  RESOURCE_TYPE_ integer not null,
+  RESOURCE_ID_ varchar(64),
+  PERMS_ integer,
+  primary key (ID_)
 );
 
-create unique index ACT_UNIQ_AUTH_USER on ACT_RU_AUTHORIZATION (USER_ID_,RESOURCE_TYPE_,RESOURCE_ID_) where USER_ID_ is not null;
-create unique index ACT_UNIQ_AUTH_GROUP on ACT_RU_AUTHORIZATION (GROUP_ID_,RESOURCE_TYPE_,RESOURCE_ID_) where GROUP_ID_ is not null;
+create unique index ACT_UNIQ_AUTH_USER on ACT_RU_AUTHORIZATION (TYPE_,USER_ID_,RESOURCE_TYPE_,RESOURCE_ID_) where USER_ID_ is not null;
+create unique index ACT_UNIQ_AUTH_GROUP on ACT_RU_AUTHORIZATION (TYPE_,GROUP_ID_,RESOURCE_TYPE_,RESOURCE_ID_) where GROUP_ID_ is not null;
+
+/** add deployment ids to jobs **/
+alter table ACT_RU_JOB 
+    add DEPLOYMENT_ID_ nvarchar(64);
+    
+/** add parent act inst ID */
+alter table ACT_HI_ACTINST 
+    add PARENT_ACT_INST_ID_ nvarchar(64);

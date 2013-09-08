@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,6 +13,7 @@
 package org.camunda.bpm.engine.impl;
 
 import java.sql.Connection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,11 +21,11 @@ import java.util.Set;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.application.ProcessApplicationRegistration;
 import org.camunda.bpm.engine.ManagementService;
-import org.camunda.bpm.engine.impl.cmd.ActivateDeploymentForApplicationCmd;
+import org.camunda.bpm.engine.impl.cmd.RegisterProcessApplicationCmd;
 import org.camunda.bpm.engine.impl.cmd.DeleteJobCmd;
 import org.camunda.bpm.engine.impl.cmd.ExecuteJobsCmd;
 import org.camunda.bpm.engine.impl.cmd.GetJobExceptionStacktraceCmd;
-import org.camunda.bpm.engine.impl.cmd.GetProcessApplicationForDeployment;
+import org.camunda.bpm.engine.impl.cmd.GetProcessApplicationForDeploymentCmd;
 import org.camunda.bpm.engine.impl.cmd.GetPropertiesCmd;
 import org.camunda.bpm.engine.impl.cmd.GetTableCountCmd;
 import org.camunda.bpm.engine.impl.cmd.GetTableMetaDataCmd;
@@ -32,7 +33,8 @@ import org.camunda.bpm.engine.impl.cmd.GetTableNameCmd;
 import org.camunda.bpm.engine.impl.cmd.RegisterDeploymentCmd;
 import org.camunda.bpm.engine.impl.cmd.SetJobRetriesCmd;
 import org.camunda.bpm.engine.impl.cmd.UnregisterDeploymentCmd;
-import org.camunda.bpm.engine.impl.cmd.UnregisterProcessApplication;
+import org.camunda.bpm.engine.impl.cmd.UnregisterProcessApplicationCmd;
+import org.camunda.bpm.engine.impl.cmd.SetJobDuedateCmd;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.DbSqlSession;
 import org.camunda.bpm.engine.impl.db.DbSqlSessionFactory;
@@ -53,27 +55,31 @@ import org.camunda.bpm.engine.runtime.JobQuery;
  * @author Saeid Mizaei
  */
 public class ManagementServiceImpl extends ServiceImpl implements ManagementService {
-  
-  public ProcessApplicationRegistration registerProcessApplication(String deploymentId, ProcessApplicationReference reference) {    
-    return commandExecutor.execute(new ActivateDeploymentForApplicationCmd(deploymentId, reference));
+
+  public ProcessApplicationRegistration registerProcessApplication(String deploymentId, ProcessApplicationReference reference) {
+    return commandExecutor.execute(new RegisterProcessApplicationCmd(deploymentId, reference));
   }
-  
-  public boolean unregisterProcessApplication(String deploymentId, boolean removeProcessesFromCache) {
-    return commandExecutor.execute(new UnregisterProcessApplication(deploymentId, removeProcessesFromCache));        
+
+  public void unregisterProcessApplication(String deploymentId, boolean removeProcessesFromCache) {
+    commandExecutor.execute(new UnregisterProcessApplicationCmd(deploymentId, removeProcessesFromCache));
   }
-  
+
+  public void unregisterProcessApplication(Set<String> deploymentIds, boolean removeProcessesFromCache) {
+    commandExecutor.execute(new UnregisterProcessApplicationCmd(deploymentIds, removeProcessesFromCache));
+  }
+
   public String getProcessApplicationForDeployment(String deploymentId) {
-    return commandExecutor.execute(new GetProcessApplicationForDeployment(deploymentId));
+    return commandExecutor.execute(new GetProcessApplicationForDeploymentCmd(deploymentId));
   }
 
   public Map<String, Long> getTableCount() {
     return commandExecutor.execute(new GetTableCountCmd());
   }
-  
+
   public String getTableName(Class<?> activitiEntityClass) {
-    return commandExecutor.execute(new GetTableNameCmd(activitiEntityClass));    
+    return commandExecutor.execute(new GetTableNameCmd(activitiEntityClass));
   }
-  
+
   public TableMetaData getTableMetaData(String tableName) {
     return commandExecutor.execute(new GetTableMetaDataCmd(tableName));
   }
@@ -81,7 +87,7 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
   public void executeJob(String jobId) {
     commandExecutor.execute(new ExecuteJobsCmd(jobId));
   }
-  
+
   public void deleteJob(String jobId) {
     commandExecutor.execute(new DeleteJobCmd(jobId));
   }
@@ -90,10 +96,14 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
     commandExecutor.execute(new SetJobRetriesCmd(jobId, retries));
   }
 
+  public void setJobDuedate(String jobId, Date newDuedate) {
+    commandExecutor.execute(new SetJobDuedateCmd(jobId, newDuedate));
+  }
+
   public TablePageQuery createTablePageQuery() {
     return new TablePageQueryImpl(commandExecutor);
   }
-  
+
   public JobQuery createJobQuery() {
     return new JobQueryImpl(commandExecutor);
   }
@@ -120,11 +130,11 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
   public ProcessDefinitionStatisticsQuery createProcessDefinitionStatisticsQuery() {
     return new ProcessDefinitionStatisticsQueryImpl(commandExecutor);
   }
-  
+
   public ActivityStatisticsQuery createActivityStatisticsQuery(String processDefinitionId) {
     return new ActivityStatisticsQueryImpl(processDefinitionId, commandExecutor);
   }
-  
+
   public DeploymentStatisticsQuery createDeploymentStatisticsQuery() {
     return new DeploymentStatisticsQueryImpl(commandExecutor);
   }
@@ -133,9 +143,7 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
     return commandExecutor.execute(new Command<Set<String>>() {
       public Set<String> execute(CommandContext commandContext) {
         Set<String> registeredDeployments = Context.getProcessEngineConfiguration().getRegisteredDeployments();
-        synchronized (registeredDeployments) {
-          return new HashSet<String>(registeredDeployments);
-        }
+        return new HashSet<String>(registeredDeployments);
       }
     });
   }
@@ -144,7 +152,6 @@ public class ManagementServiceImpl extends ServiceImpl implements ManagementServ
     commandExecutor.execute(new RegisterDeploymentCmd(deploymentId));
   }
 
-  @Override
   public void unregisterDeploymentForJobExecutor(final String deploymentId) {
     commandExecutor.execute(new UnregisterDeploymentCmd(deploymentId));
   }

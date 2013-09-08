@@ -148,7 +148,7 @@ public abstract class ProcessEngineConfiguration {
   
   /** switch for controlling whether the process engine performs authorization checks.
    * The default value is false. */
-  protected boolean isAuthorizationChecksEnabled = false;
+  protected boolean authorizationEnabled = false;
 
   /** use one of the static createXxxx methods instead */
   protected ProcessEngineConfiguration() {
@@ -157,7 +157,13 @@ public abstract class ProcessEngineConfiguration {
   public abstract ProcessEngine buildProcessEngine();
   
   public static ProcessEngineConfiguration createProcessEngineConfigurationFromResourceDefault() {
-    return createProcessEngineConfigurationFromResource("activiti.cfg.xml", "processEngineConfiguration");
+    ProcessEngineConfiguration processEngineConfiguration = null;
+    try {
+      processEngineConfiguration = createProcessEngineConfigurationFromResource("camunda.cfg.xml", "processEngineConfiguration");
+    } catch (RuntimeException ex) {
+      processEngineConfiguration = createProcessEngineConfigurationFromResource("activiti.cfg.xml", "processEngineConfiguration");
+    }
+    return processEngineConfiguration;
   }
 
   public static ProcessEngineConfiguration createProcessEngineConfigurationFromResource(String resource) {
@@ -533,12 +539,12 @@ public abstract class ProcessEngineConfiguration {
     return this;
   }
   
-  public boolean isAuthorizationChecksEnabled() {
-    return isAuthorizationChecksEnabled;
+  public boolean isAuthorizationEnabled() {
+    return authorizationEnabled;
   }
   
-  public ProcessEngineConfiguration setAuthorizationChecksEnabled(boolean isAuthorizationChecksEnabled) {
-    this.isAuthorizationChecksEnabled = isAuthorizationChecksEnabled;
+  public ProcessEngineConfiguration setAuthorizationEnabled(boolean isAuthorizationChecksEnabled) {
+    this.authorizationEnabled = isAuthorizationChecksEnabled;
     return this;
   }
   

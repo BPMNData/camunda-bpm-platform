@@ -37,7 +37,7 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
   
   protected void initializeProcessEngine() {
     ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
-        .createProcessEngineConfigurationFromResource("activiti.cfg.xml");
+        .createProcessEngineConfigurationFromResource("camunda.cfg.xml");
     
     config.setCorrelationHandler(new BpmnDataCorrelationHandler());
     config.setBpmnDataAware(true);

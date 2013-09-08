@@ -1,0 +1,102 @@
+<div class="ctn-content-container ctn-collapsable-parent">
+
+  <!-- toolbar -->
+  <div class="ctn-toolbar">
+    <a class="btn btn-toolbar" href ng-click="openCancelProcessInstanceDialog()"
+       help
+       help-text="Cancel running process instance"
+       help-placement="'left'">
+      
+      <i class="icon-remove-circle"></i>
+    </a>
+
+    <a class="btn btn-toolbar" href ng-click="openJobRetriesDialog()"
+       help
+       help-text="Increment Number of Retries of Failed Jobs"
+       help-placement="'left'">
+      <i class="icon-repeat"></i>
+    </a>
+
+    <a class="btn btn-toolbar" href ng-click="openAddVariableDialog()"
+       help
+       help-text="Add a new variable to Process Instance"
+       help-placement="'left'">
+      <i class="icon-plus"></i>
+    </a>
+  </div>
+
+  <!-- sitebar -->
+  <div class="ctn-column ctn-sitebar ctn-collapsable ctn-scroll" collapsable="left">
+
+    <div class="page-header">
+      <small>Process Instance View</small>
+      <h1>{{ processDefinition.name || processDefinition.key }}</h1>
+      <p>
+        <strong title="Process instance id, as it appears in the database">{{ processInstance.id }}</strong>
+      </p>
+    </div>
+
+    <div class="filters" ng-controller="ProcessInstanceFilterController">
+      <h5>
+        Filter
+
+        <button class="btn btn-small btn-link btn-control btn-control-link"
+                help help-text="The activity instance tree with all currently selected activity instances. You may change the selection via (CTRL +) click.">
+          <i class="icon-question-sign"></i>
+        </button>
+      </h5>
+
+      <div class="filter">
+        <button class="btn btn-link btn-mini btn-control"
+                ng-show="filterData.activityInstanceCount"
+                ng-click="clearSelection()">
+          <i class="icon-remove"></i>
+        </button>
+        
+        <ng-pluralize count="filterData.activityInstanceCount"
+                    when="{ 'null' : 'Nothing', 
+                            '0': 'Nothing',
+                            'one': '1 activity instance',
+                            'other': '{{ filterData.activityInstanceCount }} activity instances'}">
+        </ng-pluralize>
+
+        selected
+      </div>
+
+
+      <div class="filter instance-tree">
+        <div activity-instance-tree="activityInstanceTree" 
+             selection="filter"
+             on-element-click="handleActivityInstanceSelection(id, activityId, $event)">
+        </div>
+      </div>
+    </div>
+
+    <a class="hide-collapsable pull-right"></a>
+  </div>
+
+  <div class="ctn-column ctn-content ctn-collapsable-parent">
+
+    <!-- content top pane -->
+    <div class="ctn-row ctn-content-top">
+      <div process-diagram="processDiagram" process-diagram-overlay="processDiagramOverlay" on-element-click="handleBpmnElementSelection(id, $event)" selection="filter"></div>
+    </div>
+
+    <!-- content bottom pane -->
+    <div class="ctn-row ctn-content-bottom ctn-tabbed ctn-collapsable" collapse="bottom">
+      <div ng-show="processInstanceTabs.length">
+        <ul class="nav nav-tabs">
+          <li ng-class="{ active: selectedView == viewProvider }" ng-repeat="viewProvider in processInstanceTabs">
+            <a href ng-click="selectView(viewProvider)">{{ viewProvider.label }}</a>
+          </li>
+        </ul>
+  
+        <div class="ctn-tabbed-content ctn-scroll">
+          <view provider="selectedView" vars="processInstanceVars" />
+        </div>
+      </div>
+    </div>
+    
+    <a class="show-collapsable"></a>
+  </div>
+</div>

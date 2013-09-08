@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.camunda.bpm.tomcat</groupId>
     <artifactId>bpmn-data-camunda-tomcat</artifactId>
-    <version>7.0.0-alpha8</version>
+    <version>7.0.0-Final</version>
   </parent>
 
   <name>camunda BPM - tomcat Assembly</name>
@@ -21,20 +21,20 @@
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>apache-tomcat-dist</artifactId>
-      <version>${tomcat.version}</version>
+      <version>${version.tomcat}</version>
       <type>tar.gz</type>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jdbc</artifactId>
-      <version>7.0.33</version>
+      <version>${version.tomcat}</version>
     </dependency>
 
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
@@ -46,7 +46,7 @@
       <artifactId>mail</artifactId>
       <version>1.4.1</version>
     </dependency>   
-    
+
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
@@ -56,25 +56,30 @@
       <groupId>com.fasterxml.uuid</groupId>
       <artifactId>java-uuid-generator</artifactId>
     </dependency>
-    
-    
+
+
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>bpmn-data-camunda-engine</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-cdi</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-spring</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.camunda.bpm.identity</groupId>
+      <artifactId>camunda-identity-ldap</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-rest</artifactId>

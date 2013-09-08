@@ -12,22 +12,27 @@
  */
 package org.camunda.bpm.engine.impl.interceptor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.camunda.bpm.application.ProcessApplicationReference;
+import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.TaskAlreadyClaimedException;
-import org.camunda.bpm.engine.impl.application.ProcessApplicationManager;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.TransactionContext;
 import org.camunda.bpm.engine.impl.cfg.TransactionContextFactory;
 import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.context.ProcessApplicationContextUtil;
 import org.camunda.bpm.engine.impl.db.DbSqlSession;
+import org.camunda.bpm.engine.impl.identity.Authentication;
 import org.camunda.bpm.engine.impl.identity.ReadOnlyIdentityProvider;
 import org.camunda.bpm.engine.impl.identity.WritableIdentityProvider;
 import org.camunda.bpm.engine.impl.jobexecutor.FailedJobCommandFactory;
@@ -74,6 +79,8 @@ public class CommandContext {
   protected LinkedList<AtomicOperation> nextOperations = new LinkedList<AtomicOperation>();
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
   protected FailedJobCommandFactory failedJobCommandFactory;
+  
+  protected List<CommandContextCloseListener> commandContextCloseListeners = new LinkedList<CommandContextCloseListener>();
 
   public CommandContext(Command<?> command, ProcessEngineConfigurationImpl processEngineConfiguration) {
     this(command, processEngineConfiguration, processEngineConfiguration.getTransactionContextFactory());
@@ -124,19 +131,12 @@ public class CommandContext {
 
   protected ProcessApplicationReference getTargetProcessApplication(InterpretableExecution execution) {
     
-    String deploymentId = execution.getProcessDefinition().getDeploymentId();
-    ProcessApplicationManager processApplicationManager = processEngineConfiguration.getProcessApplicationManager();
-    
-    return processApplicationManager.getProcessApplicationForDeployment(deploymentId);
+    return ProcessApplicationContextUtil.getTargetProcessApplication(execution);
   }
   
   protected boolean requiresContextSwitch(final AtomicOperation executionOperation, ProcessApplicationReference processApplicationReference) {
     
-    final ProcessApplicationReference currentProcessApplication = Context.getCurrentProcessApplication();
-    
-    return processApplicationReference != null 
-      && ( currentProcessApplication == null || !processApplicationReference.getName().equals(currentProcessApplication.getName()) );
-    
+    return ProcessApplicationContextUtil.requiresContextSwitch(processApplicationReference);
   }
 
   public void close() {
@@ -150,6 +150,7 @@ public class CommandContext {
         try {
 
           if (exception == null) {
+            fireCommandContextClose();            
             flushSessions();
           }
 
@@ -188,6 +189,8 @@ public class CommandContext {
     if (exception != null) {
       if (exception instanceof Error) {
         throw (Error) exception;
+      } else if (exception instanceof PersistenceException) {
+        throw new ProcessEngineException("Process engine persistence exception", exception);
       } else if (exception instanceof RuntimeException) {
         throw (RuntimeException) exception;
       } else {
@@ -196,14 +199,22 @@ public class CommandContext {
     }
   }
  
+  protected void fireCommandContextClose() {
+    for (CommandContextCloseListener listener : commandContextCloseListeners) {
+      listener.onCommandContextClose(this);      
+    }    
+  }
+
   protected void flushSessions() {
-    for (Session session : sessions.values()) {
+    List<Session> sessions = new ArrayList<Session>(this.sessions.values());
+    for (Session session : sessions) {
       session.flush();
     }
   }
 
   protected void closeSessions() {
-    for (Session session : sessions.values()) {
+    List<Session> sessions = new ArrayList<Session>(this.sessions.values());
+    for (Session session : sessions) {
       try {
         session.close();
       } catch (Throwable exception) {
@@ -330,7 +341,7 @@ public class CommandContext {
   public StatisticsManager getStatisticsManager() {
     return getSession(StatisticsManager.class);
   }
-  
+
   public AuthorizationManager getAuthorizationManager() {
     return getSession(AuthorizationManager.class);
   }
@@ -345,6 +356,12 @@ public class CommandContext {
 
   // getters and setters //////////////////////////////////////////////////////
 
+  public void registerCommandContextCloseListener(CommandContextCloseListener commandContextCloseListener) {
+    if(!commandContextCloseListeners.contains(commandContextCloseListener)) {
+      commandContextCloseListeners.add(commandContextCloseListener);
+    }
+  }
+  
   public TransactionContext getTransactionContext() {
     return transactionContext;
   }
@@ -359,5 +376,41 @@ public class CommandContext {
   }
   public FailedJobCommandFactory getFailedJobCommandFactory() {
     return failedJobCommandFactory;
+  }
+  
+  public Authentication getAuthentication() {
+    IdentityService identityService = processEngineConfiguration.getIdentityService();
+    return identityService.getCurrentAuthentication();
+  }
+  
+  public void runWithoutAuthentication(Runnable runnable) {   
+    IdentityService identityService = processEngineConfiguration.getIdentityService();
+    Authentication currentAuthentication = identityService.getCurrentAuthentication();
+    try {
+      identityService.clearAuthentication();
+      runnable.run();
+    } finally {
+      identityService.setAuthentication(currentAuthentication);
+    }
+  }
+
+  public String getAuthenticatedUserId() {
+    IdentityService identityService = processEngineConfiguration.getIdentityService();
+    Authentication currentAuthentication = identityService.getCurrentAuthentication();
+    if(currentAuthentication == null) {
+      return null;
+    } else {
+      return currentAuthentication.getUserId();      
+    }
+  }
+  
+  public List<String> getAuthenticatedGroupIds() {
+    IdentityService identityService = processEngineConfiguration.getIdentityService();
+    Authentication currentAuthentication = identityService.getCurrentAuthentication();
+    if(currentAuthentication == null) {
+      return null;
+    } else {
+      return currentAuthentication.getGroupIds();      
+    }
   }
 }

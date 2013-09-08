@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.camunda.bpm.qa</groupId>
     <artifactId>camunda-qa</artifactId>
-    <version>7.0.0-alpha8</version>
+    <version>7.0.0-Final</version>
   </parent>
 
   <dependencies>
@@ -34,19 +34,16 @@
     <dependency>
       <groupId>com.oracle.jdbc</groupId>
       <artifactId>ojdbc6</artifactId>
-      <version>11.2.0.3</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>sqljdbc4</artifactId>
-      <version>4.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.1-902.jdbc4</version>
       <scope>runtime</scope>
     </dependency>   
   </dependencies>

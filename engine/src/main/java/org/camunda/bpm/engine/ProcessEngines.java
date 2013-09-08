@@ -52,7 +52,7 @@ import org.camunda.bpm.engine.impl.util.ReflectUtil;
  * on this class.<br>
  * <br>
  * The {@link #init()} method will try to build one {@link ProcessEngine} for 
- * each activiti.cfg.xml file found on the classpath.  If you have more then one,
+ * each camunda.cfg.xml file found on the classpath.  If you have more then one,
  * make sure you specify different process.engine.name values.
  *  
  * @author Tom Baeyens
@@ -71,7 +71,7 @@ public abstract class ProcessEngines {
   protected static List<ProcessEngineInfo> processEngineInfos = new ArrayList<ProcessEngineInfo>();
   
   /** Initializes all process engines that can be found on the classpath for 
-   * resources <code>activiti.cfg.xml</code> (plain Activiti style configuration)
+   * resources <code>camunda.cfg.xml</code> (plain Activiti style configuration)
    * and for resources <code>activiti-context.xml</code> (Spring style configuration). */
   public synchronized static void init() {
     if (!isInitialized) {
@@ -82,9 +82,13 @@ public abstract class ProcessEngines {
       ClassLoader classLoader = ReflectUtil.getClassLoader();
       Enumeration<URL> resources = null;
       try {
-        resources = classLoader.getResources("activiti.cfg.xml");
+        resources = classLoader.getResources("camunda.cfg.xml");
       } catch (IOException e) {
-        throw new ProcessEngineException("problem retrieving activiti.cfg.xml resources on the classpath: "+System.getProperty("java.class.path"), e);
+        try {
+          resources = classLoader.getResources("activiti.cfg.xml");
+        } catch(IOException ex) {
+          throw new ProcessEngineException("problem retrieving camunda.cfg.xml and activiti.cfg.xml resources on the classpath: "+System.getProperty("java.class.path"), ex);
+        }
       }
       
       // Remove duplicated configuration URL's using set. Some classloaders may return identical URL's twice, causing duplicate startups
@@ -94,7 +98,7 @@ public abstract class ProcessEngines {
       }
       for (Iterator<URL> iterator = configUrls.iterator(); iterator.hasNext();) {
         URL resource = iterator.next();
-        initProcessEnginFromResource(resource);
+        initProcessEngineFromResource(resource);
       }
       
       try {
@@ -145,7 +149,7 @@ public abstract class ProcessEngines {
     processEngines.remove(processEngine.getName());
   }
 
-  private static ProcessEngineInfo initProcessEnginFromResource(URL resourceUrl) {
+  private static ProcessEngineInfo initProcessEngineFromResource(URL resourceUrl) {
     ProcessEngineInfo processEngineInfo = processEngineInfosByResourceUrl.get(resourceUrl);
     // if there is an existing process engine info
     if (processEngineInfo!=null) {
@@ -229,7 +233,7 @@ public abstract class ProcessEngines {
   public static ProcessEngineInfo retry(String resourceUrl) {
     log.fine("retying initializing of resource " + resourceUrl);
     try {
-      return initProcessEnginFromResource(new URL(resourceUrl));
+      return initProcessEngineFromResource(new URL(resourceUrl));
     } catch (MalformedURLException e) {
       throw new ProcessEngineException("invalid url: "+resourceUrl, e);
     }

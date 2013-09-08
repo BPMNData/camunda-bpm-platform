@@ -35,17 +35,21 @@ import org.camunda.bpm.engine.rest.helper.MockJobBuilder;
 import org.camunda.bpm.engine.rest.helper.MockProvider;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.JobQuery;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 
 public abstract class AbstractJobRestServiceInteractionTest extends AbstractRestServiceTest {
 
   protected static final String JOB_RESOURCE_URL = TEST_RESOURCE_ROOT_PATH + "/job/{id}";
   protected static final String JOB_RESOURCE_SET_RETRIES_URL = JOB_RESOURCE_URL + "/retries";
   protected static final String JOB_RESOURCE_EXECUTE_JOB_URL = JOB_RESOURCE_URL + "/execute";
+  protected static final String JOB_RESOURCE_GET_STACKTRACE_URL = JOB_RESOURCE_URL + "/stacktrace";
+  protected static final String JOB_RESOURCE_SET_DUEDATE_URL = JOB_RESOURCE_URL + "/duedate";
 
   private ProcessEngine namedProcessEngine;
   private ManagementService mockManagementService;
@@ -185,4 +189,78 @@ public abstract class AbstractJobRestServiceInteractionTest extends AbstractRest
     .body("type", equalTo(RestException.class.getSimpleName())).body("message", equalTo("Runtime exception"))
     .when().post(JOB_RESOURCE_EXECUTE_JOB_URL);
   }
+  
+  @Test
+  public void testGetStacktrace() {
+    String stacktrace = "aStacktrace";
+    when(mockManagementService.getJobExceptionStacktrace(MockProvider.EXAMPLE_JOB_ID)).thenReturn(stacktrace);
+    
+    Response response = given().pathParam("id", MockProvider.EXAMPLE_JOB_ID)
+    .then().expect().statusCode(Status.OK.getStatusCode()).contentType(ContentType.TEXT)
+    .when().get(JOB_RESOURCE_GET_STACKTRACE_URL);
+    
+    String content = response.asString();
+    Assert.assertEquals(stacktrace, content);
+  }
+  
+  @Test
+  public void testGetStacktraceJobNotFound() {
+    String exceptionMessage = "job not found";
+    doThrow(new ProcessEngineException(exceptionMessage)).when(mockManagementService).getJobExceptionStacktrace(MockProvider.EXAMPLE_JOB_ID);
+    
+    given().pathParam("id", MockProvider.EXAMPLE_JOB_ID)
+    .then().expect().statusCode(Status.NOT_FOUND.getStatusCode())
+    .body("type", equalTo(InvalidRequestException.class.getSimpleName()))
+    .body("message", equalTo(exceptionMessage))
+    .when().get(JOB_RESOURCE_GET_STACKTRACE_URL);
+  }
+
+  @Test
+  public void testSetJobDuedate() {
+    Date newDuedate = MockProvider.createMockDuedate();
+    Map<String, Object> duedateVariableJson = new HashMap<String, Object>();
+    duedateVariableJson.put("duedate", newDuedate);
+
+    given().pathParam("id", MockProvider.EXAMPLE_JOB_ID).contentType(ContentType.JSON).body(duedateVariableJson).then().expect()
+    .statusCode(Status.NO_CONTENT.getStatusCode())
+    .when().put(JOB_RESOURCE_SET_DUEDATE_URL);
+
+    verify(mockManagementService).setJobDuedate(MockProvider.EXAMPLE_JOB_ID, newDuedate);
+
+  }
+
+  @Test
+  public void testSetJobDuedateNull() {
+    Map<String, Object> duedateVariableJson = new HashMap<String, Object>();
+    duedateVariableJson.put("duedate", null);
+
+    given().pathParam("id", MockProvider.EXAMPLE_JOB_ID).contentType(ContentType.JSON).body(duedateVariableJson).then().expect()
+    .statusCode(Status.NO_CONTENT.getStatusCode())
+    .when().put(JOB_RESOURCE_SET_DUEDATE_URL);
+
+    verify(mockManagementService).setJobDuedate(MockProvider.EXAMPLE_JOB_ID, null);
+
+  }
+
+  @Test
+  public void testSetJobDuedateNonExistentJob() {
+    Date newDuedate = MockProvider.createMockDuedate();
+    String expectedMessage = "No job found with id '" + MockProvider.NON_EXISTING_JOB_ID + "'.";
+  
+    doThrow(new ProcessEngineException(expectedMessage)).when(mockManagementService).setJobDuedate(MockProvider.NON_EXISTING_JOB_ID,
+        newDuedate);
+
+    Map<String, Object> duedateVariableJson = new HashMap<String, Object>();
+    duedateVariableJson.put("duedate", newDuedate);
+
+    given().pathParam("id", MockProvider.NON_EXISTING_JOB_ID).contentType(ContentType.JSON)
+    .body(duedateVariableJson).then().expect()
+    .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+    .body("type", equalTo(InvalidRequestException.class.getSimpleName()))
+    .body("message", equalTo(expectedMessage))
+    .when().put(JOB_RESOURCE_SET_DUEDATE_URL);
+
+    verify(mockManagementService).setJobDuedate(MockProvider.NON_EXISTING_JOB_ID, newDuedate);
+  }
+
 }

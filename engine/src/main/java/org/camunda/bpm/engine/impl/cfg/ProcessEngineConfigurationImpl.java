@@ -21,13 +21,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
@@ -75,6 +75,8 @@ import org.camunda.bpm.engine.impl.calendar.CycleBusinessCalendar;
 import org.camunda.bpm.engine.impl.calendar.DueDateBusinessCalendar;
 import org.camunda.bpm.engine.impl.calendar.DurationBusinessCalendar;
 import org.camunda.bpm.engine.impl.calendar.MapBusinessCalendarManager;
+import org.camunda.bpm.engine.impl.cfg.auth.DefaultAuthorizationProvider;
+import org.camunda.bpm.engine.impl.cfg.auth.ResourceAuthorizationProvider;
 import org.camunda.bpm.engine.impl.cfg.standalone.StandaloneMybatisTransactionContextFactory;
 import org.camunda.bpm.engine.impl.db.DbIdGenerator;
 import org.camunda.bpm.engine.impl.db.DbSqlSessionFactory;
@@ -95,7 +97,11 @@ import org.camunda.bpm.engine.impl.form.FormTypes;
 import org.camunda.bpm.engine.impl.form.JuelFormEngine;
 import org.camunda.bpm.engine.impl.form.LongFormType;
 import org.camunda.bpm.engine.impl.form.StringFormType;
-import org.camunda.bpm.engine.impl.history.handler.HistoryParseListener;
+import org.camunda.bpm.engine.impl.history.handler.DbHistoryEventHandler;
+import org.camunda.bpm.engine.impl.history.handler.HistoryEventHandler;
+import org.camunda.bpm.engine.impl.history.parser.HistoryParseListener;
+import org.camunda.bpm.engine.impl.history.producer.CacheAwareHistoryEventProducer;
+import org.camunda.bpm.engine.impl.history.producer.HistoryEventProducer;
 import org.camunda.bpm.engine.impl.identity.ReadOnlyIdentityProvider;
 import org.camunda.bpm.engine.impl.identity.WritableIdentityProvider;
 import org.camunda.bpm.engine.impl.identity.db.DbIdentityServiceProvider;
@@ -338,24 +344,37 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected SessionFactory identityProviderSessionFactory;
 
   protected PasswordEncryptor passwordEncryptor;
-  
+
   protected Set<String> registeredDeployments;
+
+  protected ResourceAuthorizationProvider resourceAuthorizationProvider;
+
+  protected List<ProcessEnginePlugin> processEnginePlugins = new ArrayList<ProcessEnginePlugin>();
 
   protected boolean bpmnDataAware = false;
   
   protected BpmnDataConfiguration bpmnDataConfiguration;
-  
+
+  protected HistoryEventProducer historyEventProducer;
+
+  protected HistoryEventHandler historyEventHandler;
+
   // buildProcessEngine ///////////////////////////////////////////////////////
 
   public ProcessEngine buildProcessEngine() {
     init();
-    return new ProcessEngineImpl(this);
+    ProcessEngineImpl processEngine = new ProcessEngineImpl(this);
+    invokePostProcessEngineBuild(processEngine);
+    return processEngine;
   }
 
   // init /////////////////////////////////////////////////////////////////////
 
   protected void init() {
+    invokePreInit();
     initHistoryLevel();
+    initHistoryEventProducer();
+    initHistoryEventHandler();
     initExpressionManager();
     initVariableTypes();
     initBeans();
@@ -386,9 +405,34 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     
     initPasswordDigest();
     initDeploymentRegistration();
+    initResourceAuthorizationProvider();
+    invokePostInit();
     
     if (bpmnDataAware) {
       initBpmnDataConfiguration();
+    }
+  }
+
+  protected void invokePreInit() {
+    for (ProcessEnginePlugin plugin : processEnginePlugins) {
+
+      log.log(Level.INFO, "PLUGIN {0} activated on process engine {1}",
+          new String[]{plugin.getClass().getSimpleName(),
+          getProcessEngineName()});
+
+      plugin.preInit(this);
+    }
+  }
+
+  protected void invokePostInit() {
+    for (ProcessEnginePlugin plugin : processEnginePlugins) {
+      plugin.postInit(this);
+    }
+  }
+
+  protected void invokePostProcessEngineBuild(ProcessEngine engine) {
+    for (ProcessEnginePlugin plugin : processEnginePlugins) {
+      plugin.postProcessEngineBuild(engine);
     }
   }
 
@@ -654,10 +698,19 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
           properties.put("limitBetween" , DbSqlSessionFactory.databaseSpecificLimitBetweenStatements.get(databaseType));
           properties.put("orderBy" , DbSqlSessionFactory.databaseSpecificOrderByStatements.get(databaseType));
           properties.put("limitBeforeNativeQuery" , DbSqlSessionFactory.databaseSpecificLimitBeforeNativeQueryStatements.get(databaseType));
-          
+
           properties.put("bitand1" , DbSqlSessionFactory.databaseSpecificBitAnd1.get(databaseType));
           properties.put("bitand2" , DbSqlSessionFactory.databaseSpecificBitAnd2.get(databaseType));
           properties.put("bitand3" , DbSqlSessionFactory.databaseSpecificBitAnd3.get(databaseType));
+
+          properties.put("dateDiff1" , DbSqlSessionFactory.databaseSpecificDateDiff1.get(databaseType));
+          properties.put("dateDiff2" , DbSqlSessionFactory.databaseSpecificDateDiff2.get(databaseType));
+          properties.put("dateDiff3" , DbSqlSessionFactory.databaseSpecificDateDiff3.get(databaseType));
+
+          properties.put("trueConstant", DbSqlSessionFactory.databaseSpecificTrueConstant.get(databaseType));
+          properties.put("falseConstant", DbSqlSessionFactory.databaseSpecificFalseConstant.get(databaseType));
+
+          properties.put("dbSpecificDummyTable" , DbSqlSessionFactory.databaseSpecificDummyTable.get(databaseType));
         }
         XMLConfigBuilder parser = new XMLConfigBuilder(reader,"", properties);
         Configuration configuration = parser.getConfiguration();
@@ -803,7 +856,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   protected List<BpmnParseListener> getDefaultBPMNParseListeners() {
     List<BpmnParseListener> defaultListeners = new ArrayList<BpmnParseListener>();
         if (historyLevel>=ProcessEngineConfigurationImpl.HISTORYLEVEL_ACTIVITY) {
-      defaultListeners.add(new HistoryParseListener(historyLevel));
+      defaultListeners.add(new HistoryParseListener(historyLevel, historyEventProducer));
     }
     return defaultListeners;
   }
@@ -1095,6 +1148,20 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     }
   }
 
+  // history handlers /////////////////////////////////////////////////////
+
+  protected void initHistoryEventProducer() {
+    if(historyEventProducer == null) {
+      historyEventProducer = new CacheAwareHistoryEventProducer();
+    }
+  }
+
+  protected void initHistoryEventHandler() {
+    if(historyEventHandler == null) {
+      historyEventHandler = new DbHistoryEventHandler();
+    }
+  }
+
   // password digest //////////////////////////////////////////////////////////
 
   protected void initPasswordDigest() {
@@ -1105,7 +1172,15 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
   protected void initDeploymentRegistration() {
     if (registeredDeployments == null) {
-      registeredDeployments = Collections.synchronizedSet(new HashSet<String>());
+      registeredDeployments = new CopyOnWriteArraySet<String>();
+    }
+  }
+
+  // resource authorization provider //////////////////////////////////////////
+
+  protected void initResourceAuthorizationProvider() {
+    if(resourceAuthorizationProvider == null) {
+      resourceAuthorizationProvider = new DefaultAuthorizationProvider();
     }
   }
 
@@ -1892,11 +1967,19 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     this.correlationHandler = correlationHandler;
   }
 
+  public ProcessEngineConfigurationImpl setHistoryEventHandler(HistoryEventHandler historyEventHandler) {
+    this.historyEventHandler = historyEventHandler;
+    return this;
+  }
+
+  public HistoryEventHandler getHistoryEventHandler() {
+    return historyEventHandler;
+  }
+
   public IncidentHandler getIncidentHandler(String incidentType) {
     return incidentHandlers.get(incidentType);
   }
-
-  public Map<String, IncidentHandler> getIncidentHandlers() {
+    public Map<String, IncidentHandler> getIncidentHandlers() {
     return incidentHandlers;
   }
 
@@ -1954,6 +2037,31 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
   public void setRegisteredDeployments(Set<String> registeredDeployments) {
     this.registeredDeployments = registeredDeployments;
+  }
+
+  public ResourceAuthorizationProvider getResourceAuthorizationProvider() {
+    return resourceAuthorizationProvider;
+  }
+
+  public void setResourceAuthorizationProvider(ResourceAuthorizationProvider resourceAuthorizationProvider) {
+    this.resourceAuthorizationProvider = resourceAuthorizationProvider;
+  }
+
+  public List<ProcessEnginePlugin> getProcessEnginePlugins() {
+    return processEnginePlugins;
+  }
+
+  public void setProcessEnginePlugins(List<ProcessEnginePlugin> processEnginePlugins) {
+    this.processEnginePlugins = processEnginePlugins;
+  }
+
+  public ProcessEngineConfigurationImpl setHistoryEventProducer(HistoryEventProducer historyEventProducerFactory) {
+    this.historyEventProducer = historyEventProducerFactory;
+    return this;
+  }
+
+  public HistoryEventProducer getHistoryEventProducer() {
+    return historyEventProducer;
   }
 
 }

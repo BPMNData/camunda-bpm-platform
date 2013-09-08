@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,6 @@ package org.camunda.bpm.engine.cdi.impl.event;
 
 import java.util.List;
 
-import org.camunda.bpm.engine.cdi.BusinessProcessEventType;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -27,17 +26,17 @@ import org.camunda.bpm.engine.impl.variable.VariableDeclaration;
 /**
  * {@link BpmnParseListener} registering the {@link CdiExecutionListener} for
  * distributing execution events using the cdi event infrastructure
- * 
+ *
  * @author Daniel Meyer
  */
 public class CdiEventSupportBpmnParseListener implements BpmnParseListener {
 
   protected void addEndEventListener(ActivityImpl activity) {
-    activity.addExecutionListener(ExecutionListener.EVENTNAME_END, new CdiExecutionListener(activity.getId(), BusinessProcessEventType.END_ACTIVITY));
+    activity.addExecutionListener(ExecutionListener.EVENTNAME_END, new CdiExecutionListener());
   }
 
   protected void addStartEventListener(ActivityImpl activity) {
-    activity.addExecutionListener(ExecutionListener.EVENTNAME_START, new CdiExecutionListener(activity.getId(), BusinessProcessEventType.START_ACTIVITY));
+    activity.addExecutionListener(ExecutionListener.EVENTNAME_START, new CdiExecutionListener());
   }
 
   @Override
@@ -140,7 +139,7 @@ public class CdiEventSupportBpmnParseListener implements BpmnParseListener {
 
   @Override
   public void parseSequenceFlow(Element sequenceFlowElement, ScopeImpl scopeElement, TransitionImpl transition) {
-    transition.addExecutionListener(new CdiExecutionListener(transition.getId()));
+    transition.addExecutionListener(new CdiExecutionListener());
   }
 
   @Override
@@ -152,7 +151,7 @@ public class CdiEventSupportBpmnParseListener implements BpmnParseListener {
   @Override
   public void parseMultiInstanceLoopCharacteristics(Element activityElement, Element multiInstanceLoopCharacteristicsElement, ActivityImpl activity) {
   }
-  
+
   @Override
   public void parseRootElement(Element rootElement, List<ProcessDefinitionEntity> processDefinitions) {
   }
@@ -201,7 +200,7 @@ public class CdiEventSupportBpmnParseListener implements BpmnParseListener {
   @Override
   public void parseIntermediateThrowEvent(Element intermediateEventElement, ScopeImpl scope, ActivityImpl activity) {
     addStartEventListener(activity);
-    addEndEventListener(activity);    
+    addEndEventListener(activity);
   }
 
   @Override
@@ -211,7 +210,7 @@ public class CdiEventSupportBpmnParseListener implements BpmnParseListener {
   @Override
   public void parseBoundaryEvent(Element boundaryEventElement, ScopeImpl scopeElement, ActivityImpl nestedActivity) {
   }
-  
+
   @Override
   public void parseIntermediateMessageCatchEventDefinition(Element messageEventDefinition, ActivityImpl nestedActivity) {
   }

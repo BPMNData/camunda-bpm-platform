@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.camunda.bpm</groupId>
 		<artifactId>camunda-root</artifactId>
-		<version>7.0.0-alpha8</version>
+		<version>7.0.0-Final</version>
 	</parent>
 
   <dependencies>
@@ -124,10 +124,10 @@
 
     <dependency>
       <groupId>org.jboss.spec</groupId>
-	  <artifactId>jboss-javaee-web-6.0</artifactId>
-	  <type>pom</type>
-	  <scope>provided</scope>
-	</dependency>
+      <artifactId>jboss-javaee-web-6.0</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
     
     <dependency>
       <groupId>org.springframework</groupId>
@@ -208,9 +208,9 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
         <includes>
-          <include>**/activiti.cfg.xml</include>
-          <include>**/*activiti.cfg.xml</include>
-          <include>**/activiti.cfg.db.xml</include>
+          <include>**/camunda.cfg.xml</include>
+          <include>**/*camunda.cfg.xml</include>
+          <include>**/camunda.cfg.db.xml</include>
         </includes>
       </testResource>
     </testResources>
@@ -387,7 +387,7 @@
                 <configuration>
                   <tasks>                                     
                     <echo message="updating activiti configuration to db ${database}" />
-                    <copy file="target/test-classes/activiti.cfg.db.xml" tofile="target/test-classes/activiti.cfg.xml" overwrite="true">
+                    <copy file="target/test-classes/camunda.cfg.db.xml" tofile="target/test-classes/camunda.cfg.xml" overwrite="true">
                       <filterset filtersfile="${db.properties.file}" />
                     </copy>
                     
@@ -432,8 +432,8 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <echo message="updating activiti configuration to qa/cfg/historyfull.activiti.cfg.xml" />
-                    <copy file="${basedir}/../../qa/cfg/historyfull.activiti.cfg.xml" tofile="target/test-classes/activiti.cfg.xml" overwrite="true" />
+                    <echo message="updating activiti configuration to qa/cfg/historyfull.camunda.cfg.xml" />
+                    <copy file="${basedir}/../../qa/cfg/historyfull.camunda.cfg.xml" tofile="target/test-classes/camunda.cfg.xml" overwrite="true" />
                   </tasks>
                 </configuration>
               </execution>
@@ -474,8 +474,8 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <echo message="updating activiti configuration to qa/cfg/historyaudit.activiti.cfg.xml" />
-                    <copy file="${basedir}/../../qa/cfg/historyaudit.activiti.cfg.xml" tofile="target/test-classes/activiti.cfg.xml" overwrite="true" />
+                    <echo message="updating activiti configuration to qa/cfg/historyaudit.camunda.cfg.xml" />
+                    <copy file="${basedir}/../../qa/cfg/historyaudit.camunda.cfg.xml" tofile="target/test-classes/camunda.cfg.xml" overwrite="true" />
                   </tasks>
                 </configuration>
               </execution>
@@ -516,8 +516,8 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <echo message="updating activiti configuration to qa/cfg/historynone.activiti.cfg.xml" />
-                    <copy file="${basedir}/../../qa/cfg/historynone.activiti.cfg.xml" tofile="target/test-classes/activiti.cfg.xml" overwrite="true" />
+                    <echo message="updating activiti configuration to qa/cfg/historynone.camunda.cfg.xml" />
+                    <copy file="${basedir}/../../qa/cfg/historynone.camunda.cfg.xml" tofile="target/test-classes/camunda.cfg.xml" overwrite="true" />
                   </tasks>
                 </configuration>
               </execution>
@@ -703,15 +703,15 @@
 	  <id>mssql12</id>
 	    <activation>
 		  <property>
-			<name>database</name>
-			<value>mssql12</value>
+        <name>database</name>
+        <value>mssql12</value>
 		  </property>
 		</activation>
 		<dependencies>
 		  <dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
-			<scope>test</scope>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>sqljdbc4</artifactId>
+        <scope>test</scope>
 		  </dependency>
 	   </dependencies>
 	</profile>
@@ -720,15 +720,15 @@
 	  <id>mysql</id>
 	    <activation>
 		  <property>
-			<name>database</name>
-			<value>mysql</value>
+        <name>database</name>
+        <value>mysql</value>
 		  </property>
 		</activation>
 		<dependencies>
 		  <dependency>
 		    <groupId>mysql</groupId>
-     	    <artifactId>mysql-connector-java</artifactId>
-			<scope>test</scope>
+        <artifactId>mysql-connector-java</artifactId>
+			  <scope>test</scope>
 		  </dependency>
 	   </dependencies>
 	</profile>

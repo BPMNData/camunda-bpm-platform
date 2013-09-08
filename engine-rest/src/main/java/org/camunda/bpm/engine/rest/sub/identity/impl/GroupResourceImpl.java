@@ -12,11 +12,20 @@
  */
 package org.camunda.bpm.engine.rest.sub.identity.impl;
 
-import javax.ws.rs.core.Response.Status;
+import static org.camunda.bpm.engine.authorization.Permissions.DELETE;
+import static org.camunda.bpm.engine.authorization.Permissions.UPDATE;
+import static org.camunda.bpm.engine.authorization.Resources.GROUP;
 
-import org.camunda.bpm.engine.ProcessEngine;
+import java.net.URI;
+
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.identity.Group;
+import org.camunda.bpm.engine.rest.GroupRestService;
+import org.camunda.bpm.engine.rest.dto.ResourceOptionsDto;
 import org.camunda.bpm.engine.rest.dto.identity.GroupDto;
 import org.camunda.bpm.engine.rest.exception.InvalidRequestException;
 import org.camunda.bpm.engine.rest.sub.identity.GroupMembersResource;
@@ -28,18 +37,45 @@ import org.camunda.bpm.engine.rest.sub.identity.GroupResource;
  */
 public class GroupResourceImpl extends AbstractIdentityResource implements GroupResource {
   
-  public GroupResourceImpl(ProcessEngine processEngine, String groupId) {
-    super(processEngine, groupId);
+  private String rootResourcePath;
+
+  public GroupResourceImpl(String processEngineName, String groupId, String rootResourcePath) {
+    super(processEngineName, GROUP, groupId);
+    this.rootResourcePath = rootResourcePath;
   }
 
-  public GroupDto getGroup() {
+  public GroupDto getGroup(UriInfo context) {
     
     Group dbGroup = findGroupObject();    
     if(dbGroup == null) {
       throw new InvalidRequestException(Status.NOT_FOUND, "Group with id " + resourceId + " does not exist");
     }
     
-    return GroupDto.fromGroup(dbGroup);
+    GroupDto group = GroupDto.fromGroup(dbGroup);
+    
+    return group;
+  }
+  
+  public ResourceOptionsDto availableOperations(UriInfo context) {
+    
+    ResourceOptionsDto dto = new ResourceOptionsDto();
+
+    // add links if operations are authorized
+    URI uri = context.getBaseUriBuilder()
+        .path(rootResourcePath)
+        .path(GroupRestService.class)
+        .path(resourceId)
+        .build();
+    
+    dto.addReflexiveLink(uri, HttpMethod.GET, "self");    
+    if(!identityService.isReadOnly() && isAuthorized(DELETE)) {
+      dto.addReflexiveLink(uri, HttpMethod.DELETE, "delete");
+    }    
+    if(!identityService.isReadOnly() && isAuthorized(UPDATE)) {
+      dto.addReflexiveLink(uri, HttpMethod.PUT, "update");
+    }
+    
+    return dto;
   }
 
 
@@ -52,28 +88,18 @@ public class GroupResourceImpl extends AbstractIdentityResource implements Group
     }
     
     group.update(dbGroup);        
-    try {
-      identityService.saveGroup(dbGroup);
-      
-    } catch (ProcessEngineException e) {
-      throw new InvalidRequestException(Status.INTERNAL_SERVER_ERROR, "Exception while updating group "+resourceId+": "+e.getMessage());
-    }
+
+    identityService.saveGroup(dbGroup);
   }
   
 
   public void deleteGroup() {    
-    ensureNotReadOnly();
-    
-    try {
-      identityService.deleteGroup(resourceId);
-    } catch(ProcessEngineException e) {
-      throw new InvalidRequestException(Status.INTERNAL_SERVER_ERROR, "Exception while deleting group "+resourceId+": "+e.getMessage());
-    }
-        
+    ensureNotReadOnly();    
+    identityService.deleteGroup(resourceId);        
   }
 
   public GroupMembersResource getGroupMembersResource() {
-    return new GroupMembersResourceImpl(processEngine, resourceId);
+    return new GroupMembersResourceImpl(processEngine.getName(), resourceId, rootResourcePath);
   }
   
   protected Group findGroupObject() {

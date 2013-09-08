@@ -91,7 +91,7 @@ public abstract class AbstractBpmnDataTestCase extends PluggableProcessEngineTes
       initializeBpmnDataConfiguration();
       
       cachedProcessEngine = ((ProcessEngineConfigurationImpl) ProcessEngineConfiguration
-          .createProcessEngineConfigurationFromResource("activiti.cfg.xml"))
+          .createProcessEngineConfigurationFromResource("camunda.cfg.xml"))
           .setBpmnDataAware(true)
           .setBpmnDataConfiguration(bpmnDataConfiguration)
           .buildProcessEngine();

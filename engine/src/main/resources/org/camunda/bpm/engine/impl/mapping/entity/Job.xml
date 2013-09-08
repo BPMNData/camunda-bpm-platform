@@ -28,7 +28,7 @@
     <result property="exclusive" column="EXCLUSIVE_" jdbcType="BOOLEAN" />
     <result property="executionId" column="EXECUTION_ID_" jdbcType="VARCHAR" />
     <result property="processInstanceId" column="PROCESS_INSTANCE_ID_" jdbcType="VARCHAR" />
-    <result property="retries" column="RETRIES_" jdbcType="INTEGER" />
+    <result property="retriesFromPersistence" column="RETRIES_" jdbcType="INTEGER" />
     <result property="exceptionByteArrayId" column="EXCEPTION_STACK_ID_" jdbcType="VARCHAR" />
     <result property="exceptionMessage" column="EXCEPTION_MSG_" jdbcType="VARCHAR" />
     <result property="jobHandlerType" column="HANDLER_TYPE_" jdbcType="VARCHAR" />
@@ -182,6 +182,9 @@
       </if>
       <if test="exceptionMessage">
       	and RES.EXCEPTION_MSG_ = #{exceptionMessage}
+      </if>
+      <if test="noRetriesLeft">
+        and RES.RETRIES_ = 0
       </if>
     </where>
   </sql>

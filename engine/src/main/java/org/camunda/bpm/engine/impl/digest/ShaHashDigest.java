@@ -23,5 +23,10 @@ public class ShaHashDigest extends Base64EncodedHashDigest implements PasswordEn
   protected String getAlgorithmName() {
     return "SHA";
   }
+  
+  @Override
+  public String encrypt(String password) {
+    return "{SHA}" + super.encrypt(password);
+  }
 
 }

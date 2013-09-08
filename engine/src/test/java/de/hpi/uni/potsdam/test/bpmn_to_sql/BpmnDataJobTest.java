@@ -23,7 +23,7 @@ public class BpmnDataJobTest extends AbstractBpmnDataTestCase {
     } catch (ProcessEngineException e) {
       // job failure is expected
       inputDataJob = managementService.createJobQuery().singleResult();
-      Assert.assertEquals("Retries should not have been decremented", 3, inputDataJob.getRetries());
+      Assert.assertEquals("Retries should not have been decremented", Integer.MAX_VALUE, inputDataJob.getRetries());
     }
   }
 }

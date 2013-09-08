@@ -149,6 +149,7 @@ create table ACT_RU_EVENT_SUBSCR (
 create table ACT_RU_INCIDENT (
   ID_ varchar(64) not null,
   INCIDENT_TIMESTAMP_ timestamp not null,
+  INCIDENT_MSG_ varchar(4000),
   INCIDENT_TYPE_ varchar(255) not null,
   EXECUTION_ID_ varchar(64),
   ACTIVITY_ID_ varchar(255),
@@ -161,14 +162,15 @@ create table ACT_RU_INCIDENT (
 );
 
 create table ACT_RU_AUTHORIZATION (
-    ID_ varchar(64) not null,
-    REV_ integer not null,
-    GROUP_ID_ varchar(255),
-    USER_ID_ varchar(255),
-    RESOURCE_TYPE_ varchar(255) not null,
-    RESOURCE_ID_ varchar(64),
-    PERMS_ integer,
-    primary key (ID_)
+  ID_ varchar(64) not null,
+  REV_ integer not null,
+  TYPE_ integer not null,
+  GROUP_ID_ varchar(255),
+  USER_ID_ varchar(255),
+  RESOURCE_TYPE_ varchar(255) not null,
+  RESOURCE_ID_ varchar(64),
+  PERMS_ integer,
+  primary key (ID_)
 );
 
 
@@ -208,11 +210,7 @@ alter table ACT_RU_EXECUTION
 alter table ACT_RU_EXECUTION
     add constraint ACT_FK_EXE_PROCDEF 
     foreign key (PROC_DEF_ID_) 
-    references ACT_RE_PROCDEF (ID_);    
-    
-alter table ACT_RU_EXECUTION
-    add constraint ACT_UNIQ_RU_BUS_KEY
-    unique(PROC_DEF_ID_, BUSINESS_KEY_);
+    references ACT_RE_PROCDEF (ID_);
     
 alter table ACT_RU_IDENTITYLINK
     add constraint ACT_FK_TSKASS_TASK
@@ -291,8 +289,8 @@ alter table ACT_RU_INCIDENT
     
 alter table ACT_RU_AUTHORIZATION
     add constraint ACT_UNIQ_AUTH_USER
-    unique (USER_ID_,RESOURCE_TYPE_,RESOURCE_ID_);
+    unique (TYPE_, USER_ID_,RESOURCE_TYPE_,RESOURCE_ID_);
     
 alter table ACT_RU_AUTHORIZATION
     add constraint ACT_UNIQ_AUTH_GROUP
-    unique (GROUP_ID_,RESOURCE_TYPE_,RESOURCE_ID_);
+    unique (TYPE_, GROUP_ID_,RESOURCE_TYPE_,RESOURCE_ID_);

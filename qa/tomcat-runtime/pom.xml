@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.camunda.bpm.qa</groupId>
     <artifactId>camunda-qa</artifactId>
-    <version>7.0.0-alpha8</version>
+    <version>7.0.0-Final</version>
   </parent>
 
   <dependencies>
@@ -105,7 +105,7 @@
                 <inherited>false</inherited>
                 <configuration>
                   <includeScope>runtime</includeScope>
-                  <outputDirectory>target/server/apache-tomcat-7.0.33/lib</outputDirectory>
+                  <outputDirectory>target/server/apache-tomcat-${version.tomcat}/lib</outputDirectory>
                 </configuration>
               </execution>
             </executions>
@@ -129,7 +129,7 @@
                 </goals>
                 <configuration>
                   <overwrite>true</overwrite>
-                  <outputDirectory>target/server/apache-tomcat-7.0.33</outputDirectory>
+                  <outputDirectory>target/server/apache-tomcat-${version.tomcat}</outputDirectory>
                 </configuration>
               </execution>
             </executions>

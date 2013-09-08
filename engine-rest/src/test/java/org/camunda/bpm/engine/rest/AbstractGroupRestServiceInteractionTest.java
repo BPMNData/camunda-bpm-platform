@@ -13,20 +13,29 @@
 package org.camunda.bpm.engine.rest;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.camunda.bpm.engine.authorization.Permissions.DELETE;
+import static org.camunda.bpm.engine.authorization.Permissions.UPDATE;
+import static org.camunda.bpm.engine.authorization.Resources.GROUP;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response.Status;
 
+import org.camunda.bpm.engine.AuthorizationService;
 import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.identity.GroupQuery;
+import org.camunda.bpm.engine.impl.identity.Authentication;
 import org.camunda.bpm.engine.rest.dto.identity.GroupDto;
 import org.camunda.bpm.engine.rest.exception.InvalidRequestException;
 import org.camunda.bpm.engine.rest.helper.MockProvider;
@@ -41,19 +50,24 @@ import com.jayway.restassured.http.ContentType;
  */
 public abstract class AbstractGroupRestServiceInteractionTest extends AbstractRestServiceTest {
   
-  protected static final String GROUP_URL = TEST_RESOURCE_ROOT_PATH + "/group/{id}";
+  protected static final String SERVICE_URL = TEST_RESOURCE_ROOT_PATH + "/group";
+  protected static final String GROUP_URL = SERVICE_URL + "/{id}";
   protected static final String GROUP_MEMBERS_URL = GROUP_URL + "/members/{userId}";
   protected static final String GROUP_CREATE_URL = TEST_RESOURCE_ROOT_PATH + "/group/create";
   
   protected IdentityService identityServiceMock;
+  protected AuthorizationService authorizationServiceMock;
   
   @Before
   public void setupGroupData() {
     
     identityServiceMock = mock(IdentityService.class);
+    authorizationServiceMock = mock(AuthorizationService.class);
     
     // mock identity service
     when(processEngine.getIdentityService()).thenReturn(identityServiceMock);
+    // authorization service
+    when(processEngine.getAuthorizationService()).thenReturn(authorizationServiceMock);
     
   }
   
@@ -70,6 +84,136 @@ public abstract class AbstractGroupRestServiceInteractionTest extends AbstractRe
       .body("id", equalTo(MockProvider.EXAMPLE_GROUP_ID))
       .body("name", equalTo(MockProvider.EXAMPLE_GROUP_NAME))
       .when().get(GROUP_URL);
+  }
+  
+  @Test
+  public void testUserRestServiceOptions() {
+    String fullAuthorizationUrl = "http://localhost:" + PORT + TEST_RESOURCE_ROOT_PATH + GroupRestService.PATH;
+        
+    given()
+      .then()
+        .statusCode(Status.OK.getStatusCode())
+        
+        .body("links[0].href", equalTo(fullAuthorizationUrl))
+        .body("links[0].method", equalTo(HttpMethod.GET))
+        .body("links[0].rel", equalTo("list"))
+        
+        .body("links[1].href", equalTo(fullAuthorizationUrl+"/count"))
+        .body("links[1].method", equalTo(HttpMethod.GET))
+        .body("links[1].rel", equalTo("count"))
+        
+        .body("links[2].href", equalTo(fullAuthorizationUrl+"/create"))
+        .body("links[2].method", equalTo(HttpMethod.POST))
+        .body("links[2].rel", equalTo("create"))
+                
+    .when()
+        .options(SERVICE_URL);
+    
+    verify(identityServiceMock, times(1)).getCurrentAuthentication();
+    
+  }  
+
+  @Test
+  public void testGroupResourceOptionsUnauthenticated() {
+    String fullGroupUrl = "http://localhost:" + PORT + TEST_RESOURCE_ROOT_PATH + "/group/" + MockProvider.EXAMPLE_GROUP_ID;
+    
+    Group sampleGroup = MockProvider.createMockGroup();
+    GroupQuery sampleGroupQuery = mock(GroupQuery.class);
+    when(identityServiceMock.createGroupQuery()).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.groupId(MockProvider.EXAMPLE_GROUP_ID)).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.singleResult()).thenReturn(sampleGroup);
+    
+    given()
+        .pathParam("id", MockProvider.EXAMPLE_GROUP_ID)
+    .then()
+        .expect().statusCode(Status.OK.getStatusCode())
+                
+        .body("links[0].href", equalTo(fullGroupUrl))
+        .body("links[0].method", equalTo(HttpMethod.GET))
+        .body("links[0].rel", equalTo("self"))
+        
+        .body("links[1].href", equalTo(fullGroupUrl))
+        .body("links[1].method", equalTo(HttpMethod.DELETE))
+        .body("links[1].rel", equalTo("delete"))
+        
+        .body("links[2].href", equalTo(fullGroupUrl))
+        .body("links[2].method", equalTo(HttpMethod.PUT))
+        .body("links[2].rel", equalTo("update"))
+        
+    .when().options(GROUP_URL);
+       
+    verify(identityServiceMock, times(2)).getCurrentAuthentication();    
+  }
+  
+  @Test
+  public void testGroupResourceOptionsUnauthorized() {
+    String fullGroupUrl = "http://localhost:" + PORT + TEST_RESOURCE_ROOT_PATH + "/group/" + MockProvider.EXAMPLE_GROUP_ID;
+        
+    Authentication authentication = new Authentication(MockProvider.EXAMPLE_USER_ID, null);    
+    when(identityServiceMock.getCurrentAuthentication()).thenReturn(authentication);
+    when(authorizationServiceMock.isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, DELETE, GROUP, MockProvider.EXAMPLE_GROUP_ID)).thenReturn(false);
+    when(authorizationServiceMock.isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, UPDATE, GROUP, MockProvider.EXAMPLE_GROUP_ID)).thenReturn(false);
+    
+    Group sampleGroup = MockProvider.createMockGroup();
+    GroupQuery sampleGroupQuery = mock(GroupQuery.class);
+    when(identityServiceMock.createGroupQuery()).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.groupId(MockProvider.EXAMPLE_GROUP_ID)).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.singleResult()).thenReturn(sampleGroup);
+    
+    given()
+        .pathParam("id", MockProvider.EXAMPLE_GROUP_ID)
+    .then()
+        .expect().statusCode(Status.OK.getStatusCode())
+        
+        .body("links[0].href", equalTo(fullGroupUrl))
+        .body("links[0].method", equalTo(HttpMethod.GET))
+        .body("links[0].rel", equalTo("self"))
+        
+        .body("links[1]", nullValue())
+        .body("links[2]", nullValue())
+       
+    .when().options(GROUP_URL);
+    
+    verify(identityServiceMock, times(2)).getCurrentAuthentication();    
+    verify(authorizationServiceMock, times(1)).isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, DELETE, GROUP, MockProvider.EXAMPLE_GROUP_ID);
+    verify(authorizationServiceMock, times(1)).isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, UPDATE, GROUP, MockProvider.EXAMPLE_GROUP_ID);
+  }
+  
+  @Test
+  public void testGroupResourceOptionsAuthorized() {
+    String fullGroupUrl = "http://localhost:" + PORT + TEST_RESOURCE_ROOT_PATH + "/group/" + MockProvider.EXAMPLE_GROUP_ID;
+        
+    Authentication authentication = new Authentication(MockProvider.EXAMPLE_USER_ID, null);    
+    when(identityServiceMock.getCurrentAuthentication()).thenReturn(authentication);
+    when(authorizationServiceMock.isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, DELETE, GROUP, MockProvider.EXAMPLE_GROUP_ID)).thenReturn(true);
+    when(authorizationServiceMock.isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, UPDATE, GROUP, MockProvider.EXAMPLE_GROUP_ID)).thenReturn(false);
+    
+    Group sampleGroup = MockProvider.createMockGroup();
+    GroupQuery sampleGroupQuery = mock(GroupQuery.class);
+    when(identityServiceMock.createGroupQuery()).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.groupId(MockProvider.EXAMPLE_GROUP_ID)).thenReturn(sampleGroupQuery);
+    when(sampleGroupQuery.singleResult()).thenReturn(sampleGroup);
+    
+    given()
+        .pathParam("id", MockProvider.EXAMPLE_GROUP_ID)
+    .then()
+        .expect().statusCode(Status.OK.getStatusCode())
+        
+        .body("links[0].href", equalTo(fullGroupUrl))
+        .body("links[0].method", equalTo(HttpMethod.GET))
+        .body("links[0].rel", equalTo("self"))
+        
+        .body("links[1].href", equalTo(fullGroupUrl))
+        .body("links[1].method", equalTo(HttpMethod.DELETE))
+        .body("links[1].rel", equalTo("delete"))
+        
+        .body("links[2]", nullValue())
+       
+    .when().options(GROUP_URL);
+    
+    verify(identityServiceMock, times(2)).getCurrentAuthentication();    
+    verify(authorizationServiceMock, times(1)).isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, DELETE, GROUP, MockProvider.EXAMPLE_GROUP_ID);
+    verify(authorizationServiceMock, times(1)).isUserAuthorized(MockProvider.EXAMPLE_USER_ID, null, UPDATE, GROUP, MockProvider.EXAMPLE_GROUP_ID);
   }
   
   @Test
@@ -161,12 +305,11 @@ public abstract class AbstractGroupRestServiceInteractionTest extends AbstractRe
   public void testGroupCreateExistingFails() {
     Group newGroup = MockProvider.createMockGroup();    
     when(identityServiceMock.newGroup(MockProvider.EXAMPLE_GROUP_ID)).thenReturn(newGroup);
-    doThrow(new RuntimeException("")).when(identityServiceMock).saveGroup(newGroup);
+    doThrow(new ProcessEngineException("")).when(identityServiceMock).saveGroup(newGroup);
     
     given().body(GroupDto.fromGroup(newGroup)).contentType(ContentType.JSON)
       .then().expect().statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode()).contentType(ContentType.JSON)
-      .body("type", equalTo(InvalidRequestException.class.getSimpleName()))
-      .body("message", equalTo("Exception while saving new group "))
+      .body("type", equalTo(ProcessEngineException.class.getSimpleName()))
       .when().post(GROUP_CREATE_URL);
     
     verify(identityServiceMock).newGroup(MockProvider.EXAMPLE_GROUP_ID);

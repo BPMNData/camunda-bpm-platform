@@ -12,14 +12,16 @@
  */
 package org.camunda.bpm.engine.cdi.test.api.annotation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.camunda.bpm.engine.cdi.BusinessProcess;
 import org.camunda.bpm.engine.cdi.impl.annotation.StartProcessInterceptor;
 import org.camunda.bpm.engine.cdi.test.CdiProcessEngineTestCase;
 import org.camunda.bpm.engine.cdi.test.impl.beans.DeclarativeProcessController;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Testcase for assuring that the {@link StartProcessInterceptor} behaves as
@@ -46,22 +48,5 @@ public class StartProcessTest extends CdiProcessEngineTestCase {
     businessProcess.completeTask();
   }
 
-  @Test
-  @Deployment(resources = "org/camunda/bpm/engine/cdi/test/api/annotation/StartProcessTest.bpmn20.xml")
-  public void testStartProcessByName() {
-
-    assertNull(runtimeService.createProcessInstanceQuery().singleResult());
-
-    getBeanInstance(DeclarativeProcessController.class).startProcessByName();
-
-    BusinessProcess businessProcess = getBeanInstance(BusinessProcess.class);
-
-    assertNotNull(runtimeService.createProcessInstanceQuery().singleResult());
-
-    assertEquals("Activiti", businessProcess.getVariable("name"));
-
-    businessProcess.startTask(taskService.createTaskQuery().singleResult().getId());  
-    businessProcess.completeTask();
-  }
 
 }

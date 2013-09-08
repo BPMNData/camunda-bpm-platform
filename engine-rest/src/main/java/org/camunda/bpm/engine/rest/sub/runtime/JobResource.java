@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.camunda.bpm.engine.rest.dto.runtime.JobDto;
+import org.camunda.bpm.engine.rest.dto.runtime.JobDuedateDto;
 import org.camunda.bpm.engine.rest.dto.runtime.JobRetriesDto;
 
 public interface JobResource {
@@ -28,6 +29,11 @@ public interface JobResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   JobDto getJob();
+  
+  @GET
+  @Path("/stacktrace")
+  @Produces(MediaType.TEXT_PLAIN)
+  String getStacktrace();
 	  
   @PUT
   @Path("/retries")
@@ -37,4 +43,9 @@ public interface JobResource {
   @POST
   @Path("/execute")
   void executeJob();
+
+  @PUT
+  @Path("/duedate")
+  @Consumes(MediaType.APPLICATION_JSON)
+  void setJobDuedate(JobDuedateDto dto);
 }

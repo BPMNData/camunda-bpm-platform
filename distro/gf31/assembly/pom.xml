@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.camunda.bpm.glassfish</groupId>
     <artifactId>camunda-glassfish</artifactId>
-    <version>7.0.0-alpha8</version>
+    <version>7.0.0-Final</version>
   </parent>
 
   <name>camunda BPM - Glassfish 3.1.x Assembly</name>
@@ -100,18 +100,23 @@
       <artifactId>camunda-glassfish-service</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.camunda.bpm.identity</groupId>
+      <artifactId>camunda-identity-ldap</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
     </dependency>
-        
+
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>        

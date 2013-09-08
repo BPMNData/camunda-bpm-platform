@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.camunda.bpm</groupId>
     <artifactId>camunda-root</artifactId>
-    <version>7.0.0-alpha8</version>
+    <version>7.0.0-Final</version>
   </parent>
 
   <properties>
@@ -102,14 +102,14 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>7.0.26</version>
+      <version>${version.tomcat}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-logging-juli</artifactId>
-      <version>7.0.26</version>
+      <version>${version.tomcat}</version>
       <scope>test</scope>
     </dependency>
 
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>7.0.26</version>
+      <version>${version.tomcat}</version>
       <scope>test</scope>
     </dependency>
 
@@ -160,7 +160,6 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
       <exclusions>
-
         <exclusion>
           <groupId>org.hamcrest</groupId>
           <artifactId>hamcrest-core</artifactId>
@@ -211,6 +210,14 @@
       <scope>test</scope>
     </dependency>
 
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-mock</artifactId>
+		  <version>2.0.8</version>
+		  <scope>test</scope>
+		</dependency>
+    
+
   </dependencies>
 
   <dependencyManagement>
@@ -225,8 +232,105 @@
     </dependencies>
   </dependencyManagement>
   
-  <build>  
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/embedded-resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/Abstract*</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <configuration>
+              <includes>
+                <include>**/rest/standalone/**</include>
+              </includes>
+              <excludes>
+                <exclude>**/rest/resteasy/**</exclude>
+                <exclude>**/rest/jersey/**</exclude>
+                <exclude>**/rest/wink/**</exclude>
+                <exclude>**/rest/history/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>resteasy-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <includes>
+                <include>**/rest/resteasy/**</include>
+                <include>**/rest/history/resteasy/**</include>
+              </includes>
+              <excludes>
+                <exclude>**/rest/jersey/**</exclude>
+                <exclude>**/rest/history/jersey/**</exclude>
+                <exclude>**/rest/wink/**</exclude>
+                <exclude>**/rest/history/wink/**</exclude>
+                <exclude>**/rest/standalone/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>jersey-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <includes>
+                <include>**/rest/jersey/**</include>
+                <include>**/rest/history/jersey/**</include>
+              </includes>
+              <excludes>
+                <exclude>**/rest/resteasy/**</exclude>
+                <exclude>**/rest/history/resteasy/**</exclude>
+                <exclude>**/rest/wink/**</exclude>
+                <exclude>**/rest/history/wink/**</exclude>
+                <exclude>**/rest/standalone/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>wink-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <includes>
+                <include>**/rest/wink/**</include>
+                <include>**/rest/history/wink/**</include>
+              </includes>
+              <excludes>
+                <exclude>**/rest/resteasy/**</exclude>
+                <exclude>**/rest/history/resteasy/**</exclude>
+                <exclude>**/rest/jersey/**</exclude>
+                <exclude>**/rest/history/jersey/**</exclude>
+                <exclude>**/rest/standalone/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -295,13 +399,7 @@
               <workDirectory>target/assembly/work</workDirectory>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
           <execution>
             <id>was</id>
             <phase>package</phase>
@@ -350,16 +448,6 @@
         <rest.http.port>38080</rest.http.port>
       </properties>
       <build>
-        <testResources>
-          <testResource>
-            <directory>src/test/resources</directory>
-            <filtering>true</filtering>
-          </testResource>
-          <testResource>
-            <directory>src/test/embedded-resources</directory>
-            <filtering>true</filtering>
-          </testResource>
-        </testResources>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>

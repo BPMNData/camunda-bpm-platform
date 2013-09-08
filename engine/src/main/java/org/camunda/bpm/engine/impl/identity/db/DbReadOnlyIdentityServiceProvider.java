@@ -14,12 +14,12 @@ package org.camunda.bpm.engine.impl.identity.db;
 
 import java.util.List;
 
+import org.camunda.bpm.engine.authorization.Permission;
+import org.camunda.bpm.engine.authorization.Permissions;
+import org.camunda.bpm.engine.authorization.Resource;
+import org.camunda.bpm.engine.authorization.Resources;
 import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.identity.GroupQuery;
-import org.camunda.bpm.engine.identity.Permission;
-import org.camunda.bpm.engine.identity.Permissions;
-import org.camunda.bpm.engine.identity.Resource;
-import org.camunda.bpm.engine.identity.Resources;
 import org.camunda.bpm.engine.identity.User;
 import org.camunda.bpm.engine.identity.UserQuery;
 import org.camunda.bpm.engine.impl.AbstractQuery;
@@ -80,16 +80,6 @@ public class DbReadOnlyIdentityServiceProvider extends AbstractManager implement
       .check(password, user.getPassword());
   }
 
-  protected String encryptPassword(String password) {
-    if (password == null) {
-      return null;
-    } else {
-      return Context.getProcessEngineConfiguration()
-        .getPasswordEncryptor()
-        .encrypt(password);
-    }
-  }
-
   // groups //////////////////////////////////////////
 
   public GroupEntity findGroupById(String groupId) {
@@ -114,14 +104,14 @@ public class DbReadOnlyIdentityServiceProvider extends AbstractManager implement
     configureQuery(query, Resources.GROUP);
     return getDbSqlSession().selectList("selectGroupByQueryCriteria", query);
   }
-  
-  
+
+
   //authorizations ////////////////////////////////////////////////////
-  
+
   protected void configureQuery(@SuppressWarnings("rawtypes") AbstractQuery query, Resource resource) {
     Context.getCommandContext()
       .getAuthorizationManager()
-      .configureQuery(query, resource);    
+      .configureQuery(query, resource);
   }
 
   protected void checkAuthorization(Permission permission, Resource resource, String resourceId) {

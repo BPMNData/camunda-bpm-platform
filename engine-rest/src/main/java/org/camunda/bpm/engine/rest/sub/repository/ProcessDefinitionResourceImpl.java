@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,14 @@ package org.camunda.bpm.engine.rest.sub.repository;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.camunda.bpm.engine.FormService;
@@ -34,6 +35,7 @@ import org.camunda.bpm.engine.impl.util.IoUtil;
 import org.camunda.bpm.engine.management.ActivityStatistics;
 import org.camunda.bpm.engine.management.ActivityStatisticsQuery;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
 import org.camunda.bpm.engine.rest.dto.StatisticsResultDto;
 import org.camunda.bpm.engine.rest.dto.repository.ActivityStatisticsResultDto;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
@@ -43,6 +45,7 @@ import org.camunda.bpm.engine.rest.dto.runtime.StartProcessInstanceDto;
 import org.camunda.bpm.engine.rest.dto.task.FormDto;
 import org.camunda.bpm.engine.rest.exception.InvalidRequestException;
 import org.camunda.bpm.engine.rest.exception.RestException;
+import org.camunda.bpm.engine.rest.util.ApplicationContextPathUtil;
 import org.camunda.bpm.engine.rest.util.DtoUtil;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
@@ -51,13 +54,13 @@ public class ProcessDefinitionResourceImpl implements ProcessDefinitionResource 
   private ProcessEngine engine;
   private String processDefinitionId;
   private String rootResourcePath;
-  
+
   public ProcessDefinitionResourceImpl(ProcessEngine engine, String processDefinitionId, String rootResourcePath) {
     this.engine = engine;
     this.processDefinitionId = processDefinitionId;
     this.rootResourcePath = rootResourcePath;
   }
-  
+
   @Override
   public ProcessDefinitionDto getProcessDefinition() {
     RepositoryService repoService = engine.getRepositoryService();
@@ -82,26 +85,34 @@ public class ProcessDefinitionResourceImpl implements ProcessDefinitionResource 
     try {
       Map<String, Object> variables = DtoUtil.toMap(parameters.getVariables());
       instance = runtimeService.startProcessInstanceById(processDefinitionId, variables);
-      
+
     } catch (ProcessEngineException e) {
-      throw new RestException(Status.INTERNAL_SERVER_ERROR, e, "Cannot instantiate process definition " + processDefinitionId);
-      
+      String errorMessage = String.format("Cannot instantiate process definition %s: %s", processDefinitionId, e.getMessage());
+      throw new RestException(Status.INTERNAL_SERVER_ERROR, e, errorMessage);
+
     } catch (NumberFormatException e) {
       String errorMessage = String.format("Cannot instantiate process definition %s due to number format exception: %s", processDefinitionId, e.getMessage());
       throw new RestException(Status.BAD_REQUEST, e, errorMessage);
-      
+
     } catch (ParseException e) {
       String errorMessage = String.format("Cannot instantiate process definition %s due to parse exception: %s", processDefinitionId, e.getMessage());
-      throw new RestException(Status.BAD_REQUEST, e, errorMessage);      
-    
+      throw new RestException(Status.BAD_REQUEST, e, errorMessage);
+
     } catch (IllegalArgumentException e) {
       String errorMessage = String.format("Cannot instantiate process definition %s: %s", processDefinitionId, e.getMessage());
-      throw new RestException(Status.BAD_REQUEST, errorMessage);  
+      throw new RestException(Status.BAD_REQUEST, errorMessage);
     }
 
     ProcessInstanceDto result = ProcessInstanceDto.fromProcessInstance(instance);
-    UriBuilder rootUriBuilder = context.getBaseUriBuilder().path(rootResourcePath);
-    result.addReflexiveLink(rootUriBuilder, null, "self");
+
+    URI uri = context.getBaseUriBuilder()
+      .path(rootResourcePath)
+      .path(ProcessInstanceRestService.class)
+      .path(instance.getId())
+      .build();
+
+    result.addReflexiveLink(uri, HttpMethod.GET, "self");
+
     return result;
   }
 
@@ -111,14 +122,14 @@ public class ProcessDefinitionResourceImpl implements ProcessDefinitionResource 
     if (includeIncidents != null && includeIncidentsForType != null) {
       throw new InvalidRequestException(Status.BAD_REQUEST, "Only one of the query parameter includeIncidents or includeIncidentsForType can be set.");
     }
-    
+
     ManagementService mgmtService = engine.getManagementService();
     ActivityStatisticsQuery query = mgmtService.createActivityStatisticsQuery(processDefinitionId);
-    
+
     if (includeFailedJobs != null && includeFailedJobs) {
       query.includeFailedJobs();
     }
-    
+
     if (includeIncidents != null && includeIncidents) {
       query.includeIncidents();
     } else if (includeIncidentsForType != null) {
@@ -155,15 +166,16 @@ public class ProcessDefinitionResourceImpl implements ProcessDefinitionResource 
   @Override
   public FormDto getStartForm() {
     final FormService formService = engine.getFormService();
-    
+
     final StartFormData formData;
     try {
       formData = formService.getStartFormData(processDefinitionId);
     } catch (ProcessEngineException e) {
       throw new InvalidRequestException(Status.BAD_REQUEST, e, "Cannot get start form data for process definition " + processDefinitionId);
     }
+    FormDto dto = FormDto.fromFormData(formData);
+    dto.setContextPath(ApplicationContextPathUtil.getApplicationPath(engine, processDefinitionId));
 
-    return FormDto.fromFormData(formData);
+    return dto;
   }
-
 }

@@ -116,33 +116,6 @@ public class RuntimeServiceTest extends PluggableProcessEngineTestCase {
   
   @Deployment(resources={
     "org/camunda/bpm/engine/test/api/oneTaskProcess.bpmn20.xml"})
-  public void testNonUniqueBusinessKey() {
-    runtimeService.startProcessInstanceByKey("oneTaskProcess", "123");
-    try {
-      runtimeService.startProcessInstanceByKey("oneTaskProcess", "123");
-      fail("Non-unique business key used, this should fail");
-    } catch(Exception e) {
-      
-    }
-  }
-  
-  // some databases might react strange on having mutiple times null for the business key
-  // when the unique constraint is {processDefinitionId, businessKey}
-  @Deployment(resources={
-    "org/camunda/bpm/engine/test/api/oneTaskProcess.bpmn20.xml"})
-  public void testMultipleNullBusinessKeys() {
-    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess");
-    assertNull(processInstance.getBusinessKey());
-    
-    runtimeService.startProcessInstanceByKey("oneTaskProcess");
-    runtimeService.startProcessInstanceByKey("oneTaskProcess");
-    
-    assertEquals(3, runtimeService.createProcessInstanceQuery().count());
-  }
-
-  
-  @Deployment(resources={
-    "org/camunda/bpm/engine/test/api/oneTaskProcess.bpmn20.xml"})
   public void testDeleteProcessInstance() {
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess");
     assertEquals(1, runtimeService.createProcessInstanceQuery().processDefinitionKey("oneTaskProcess").count());
@@ -333,6 +306,23 @@ public class RuntimeServiceTest extends PluggableProcessEngineTestCase {
     Map<String, Object> variables = runtimeService.getVariables(processInstance.getId());
     assertEquals(variables, processVariables);
        
+  }
+  
+  @Deployment
+  public void testSignalInactiveExecution() {
+    ProcessInstance instance = runtimeService.startProcessInstanceByKey("testSignalInactiveExecution");
+    
+    // there exist two executions: the inactive parent (the process instance) and the child that actually waits in the receive task
+    try {
+      runtimeService.signal(instance.getId());
+      fail();
+    } catch(ProcessEngineException e) {
+      // happy path
+      assertTextPresent("cannot signal execution " + instance.getId() + ": it has no current activity", e.getMessage());
+    } catch (Exception e) {
+      fail("Signalling an inactive execution that has no activity should result in a ProcessEngineException");
+    }
+
   }
   
   public void testGetVariablesUnexistingExecutionId() {

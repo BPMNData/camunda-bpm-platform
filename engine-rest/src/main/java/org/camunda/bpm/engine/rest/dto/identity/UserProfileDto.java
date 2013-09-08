@@ -27,7 +27,7 @@ public class UserProfileDto {
   protected String firstName;
   protected String lastName;
   protected String email;
-  
+    
   // transformers ////////////////////////////////////////
   
   public static UserProfileDto fromUser(User user) {
@@ -87,5 +87,4 @@ public class UserProfileDto {
   public void setEmail(String email) {
     this.email = email;
   }
-  
 }

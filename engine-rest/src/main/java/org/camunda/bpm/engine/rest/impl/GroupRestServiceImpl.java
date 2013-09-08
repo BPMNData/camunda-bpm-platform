@@ -12,9 +12,16 @@
  */
 package org.camunda.bpm.engine.rest.impl;
 
+import static org.camunda.bpm.engine.authorization.Authorization.ANY;
+import static org.camunda.bpm.engine.authorization.Permissions.CREATE;
+import static org.camunda.bpm.engine.authorization.Resources.GROUP;
+
+import java.net.URI;
 import java.util.List;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.camunda.bpm.engine.IdentityService;
@@ -22,6 +29,7 @@ import org.camunda.bpm.engine.identity.Group;
 import org.camunda.bpm.engine.identity.GroupQuery;
 import org.camunda.bpm.engine.rest.GroupRestService;
 import org.camunda.bpm.engine.rest.dto.CountResultDto;
+import org.camunda.bpm.engine.rest.dto.ResourceOptionsDto;
 import org.camunda.bpm.engine.rest.dto.identity.GroupDto;
 import org.camunda.bpm.engine.rest.dto.identity.GroupQueryDto;
 import org.camunda.bpm.engine.rest.exception.InvalidRequestException;
@@ -32,18 +40,18 @@ import org.camunda.bpm.engine.rest.sub.identity.impl.GroupResourceImpl;
  * @author Daniel Meyer
  *
  */
-public class GroupRestServiceImpl extends AbstractRestProcessEngineAware implements GroupRestService {
+public class GroupRestServiceImpl extends AbstractAuthorizedRestResource implements GroupRestService {
   
   public GroupRestServiceImpl() {
-    super();
+    super(GROUP, ANY);
   }
 
   public GroupRestServiceImpl(String engineName) {
-    super(engineName);
+    super(engineName, GROUP, ANY);
   }
 
   public GroupResource getGroup(String id) {
-    return new GroupResourceImpl(getProcessEngine(), id);
+    return new GroupResourceImpl(getProcessEngine().getName(), id, relativeRootResourcePath);
   }
 
   public List<GroupDto> queryGroups(UriInfo uriInfo, Integer firstResult, Integer maxResults) {
@@ -83,14 +91,37 @@ public class GroupRestServiceImpl extends AbstractRestProcessEngineAware impleme
       throw new InvalidRequestException(Status.FORBIDDEN, "Identity service implementation is read-only.");
     }
     
-    try {
-      Group newGroup = identityService.newGroup(groupDto.getId());
-      groupDto.update(newGroup);
-      identityService.saveGroup(newGroup);
+    Group newGroup = identityService.newGroup(groupDto.getId());
+    groupDto.update(newGroup);
+    identityService.saveGroup(newGroup);
       
-    } catch(RuntimeException e) {
-      throw new InvalidRequestException(Status.INTERNAL_SERVER_ERROR, "Exception while saving new group "+e.getMessage());
+  }
+  
+  public ResourceOptionsDto availableOperations(UriInfo context) {
+    
+    final IdentityService identityService = getIdentityService();
+    
+    UriBuilder baseUriBuilder = context.getBaseUriBuilder()
+        .path(relativeRootResourcePath)
+        .path(GroupRestService.class);
+    
+    ResourceOptionsDto resourceOptionsDto = new ResourceOptionsDto();
+    
+    // GET /
+    URI baseUri = baseUriBuilder.build();    
+    resourceOptionsDto.addReflexiveLink(baseUri, HttpMethod.GET, "list");
+    
+    // GET /count
+    URI countUri = baseUriBuilder.clone().path("/count").build();
+    resourceOptionsDto.addReflexiveLink(countUri, HttpMethod.GET, "count");
+    
+    // POST /create
+    if(!identityService.isReadOnly() && isAuthorized(CREATE)) {
+      URI createUri = baseUriBuilder.clone().path("/create").build();
+      resourceOptionsDto.addReflexiveLink(createUri, HttpMethod.POST, "create");  
     }
+    
+    return resourceOptionsDto;
   }
   
   // utility methods //////////////////////////////////////

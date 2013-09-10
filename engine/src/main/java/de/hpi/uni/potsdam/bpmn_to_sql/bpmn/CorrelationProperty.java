@@ -1,10 +1,17 @@
 package de.hpi.uni.potsdam.bpmn_to_sql.bpmn;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CorrelationProperty {
 
   protected String id;
   protected String name;
-  protected String retrievalExpression;
+  protected Map<String, String> retrievalExpressions;
+  
+  public CorrelationProperty() {
+    this.retrievalExpressions = new HashMap<String, String>();
+  }
   
   public String getId() {
     return id;
@@ -18,10 +25,10 @@ public class CorrelationProperty {
   public void setName(String name) {
     this.name = name;
   }
-  public String getRetrievalExpression() {
-    return retrievalExpression;
+  public String getRetrievalExpression(String messageName) {
+    return retrievalExpressions.get(messageName);
   }
-  public void setRetrievalExpression(String retrievalExpression) {
-    this.retrievalExpression = retrievalExpression;
+  public void addRetrievalExpression(String messageName, String retrievalExpression) {
+    retrievalExpressions.put(messageName, retrievalExpression);
   }  
 }

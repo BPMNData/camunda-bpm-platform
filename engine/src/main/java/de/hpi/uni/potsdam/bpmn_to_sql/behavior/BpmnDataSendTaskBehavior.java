@@ -13,6 +13,7 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.MessageInstance;
 
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
@@ -54,6 +55,10 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
       throw new ProcessEngineException("Send task " + execution.getActivity().getId() + " has no outgoing message flow");
     }
     
-    CorrelationHelper.populateCorrelationKeysInScope(execution, message, messageFlow.getCorrelationKeys());
+    MessageInstance messageInstance = new MessageInstance();
+    messageInstance.setContent(message);
+    messageInstance.setMessageDefinition(messageFlow.getMessage());
+    
+    CorrelationHelper.populateCorrelationKeysInScope(execution, messageInstance, messageFlow.getCorrelationKeys());
   }
 }

@@ -40,20 +40,35 @@ public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
             + activity.getId() + " without incoming message flow");
       }
       
+      List<CorrelationResult> correlationResults = new ArrayList<CorrelationResult>();
       for (CorrelationKey correlationKey : incomingMessageFlow.getCorrelationKeys()) {
-        boolean matches = true;
+        CorrelationResult result = new CorrelationResult(correlationKey.getId());
         for (CorrelationProperty property : correlationKey.getCorrelationProperties()) {
-          String retrievalExpression = property.getRetrievalExpression();
+          String retrievalExpression = property.getRetrievalExpression(messageName);
+          if (retrievalExpression == null) {
+            result.keyDefinedForMessage = false;
+            result.keyMatches = false;
+            break;
+          }
+          
+          if (!executionEntity.hasVariable(property.getId())) {
+            result.keyDefinedForScope = false;
+            result.keyMatches = false;
+            break;
+          }
+          
           String resolvedProperty = xQueryHandler.runXPath(messageContent, retrievalExpression);
-          if (!executionEntity.hasVariable(property.getId()) || !resolvedProperty.equals(executionEntity.getVariable(property.getId()))) {
-            matches = false;
+          
+          if (!resolvedProperty.equals(executionEntity.getVariable(property.getId()))) {
+            result.keyMatches = false;
             break;
           }
         }
-        
-        if (matches) {
-          matchingExecutions.add(waitingExecution);
-        }
+        correlationResults.add(result);
+      }
+      
+      if (fulfillsCorrelationCondition(correlationResults)) {
+        matchingExecutions.add(waitingExecution);
       }
     }
     
@@ -65,6 +80,37 @@ public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
     }
     
     return matchingExecutions.get(0);
+  }
+  
+  /**
+   * Checks that at least one key matches. For all the non-matching keys, 
+   * it has to hold that they are either undefined for the message or the scope.
+   */
+  private boolean fulfillsCorrelationCondition(List<CorrelationResult> correlationResults) {
+    boolean oneMatchingKey = false;
+    boolean allKeysMatchOrUndefined = true;
+    for (CorrelationResult correlationResult : correlationResults) {
+      if (correlationResult.keyMatches) {
+        oneMatchingKey = true;
+      }
+      if (!correlationResult.keyMatches && correlationResult.keyDefinedForScope && correlationResult.keyDefinedForMessage) {
+        allKeysMatchOrUndefined = false;
+      }
+    }
+    
+    return oneMatchingKey && allKeysMatchOrUndefined;
+  }
+
+  private class CorrelationResult {
+    
+    public CorrelationResult(String correlationKeyId) {
+      this.correlationKeyId = correlationKeyId;
+    }
+    
+    String correlationKeyId;
+    boolean keyMatches = true;
+    boolean keyDefinedForMessage = true;
+    boolean keyDefinedForScope = true;
   }
 
 }

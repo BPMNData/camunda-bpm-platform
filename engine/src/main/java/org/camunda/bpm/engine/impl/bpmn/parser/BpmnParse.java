@@ -319,10 +319,10 @@ public class BpmnParse extends Parse {
         addError("endpoint requires an extension element with an address element", endpointElement);
       }
       Element addressElement = extensionElement.elementNS(BpmnParser.ACTIVITI_BPMN_EXTENSIONS_NS, "address");
-      if (addressElement == null || addressElement.getText().trim().isEmpty()) {
-        addError("endpoint requires address element", endpointElement);
+      if (addressElement == null || addressElement.attribute("value") == null) {
+        addError("endpoint requires 'address' element with 'value' attribute'", endpointElement);
       }
-      endpointAddresses.put(endpointElement.attribute("id"), addressElement.getText().trim());
+      endpointAddresses.put(endpointElement.attribute("id"), addressElement.attribute("value").trim());
     }
     
   }
@@ -333,20 +333,26 @@ public class BpmnParse extends Parse {
       correlationProperty.setId(correlationPropertyElement.attribute("id"));
       correlationProperty.setName(correlationPropertyElement.attribute("name"));
       
-      Element retrievalExpressionElement = correlationPropertyElement.element("correlationPropertyRetrievalExpression");
-      if (retrievalExpressionElement == null) {
+      List<Element> retrievalExpressionElements = correlationPropertyElement.elements("correlationPropertyRetrievalExpression");
+      if (retrievalExpressionElements.isEmpty()) {
         addError("Correlation property requires a correlationPropertyRetrievalExpression", correlationPropertyElement);
       } else {
-        Element messagePathElement = retrievalExpressionElement.element("messagePath");
-        if (messagePathElement == null) {
-          addError("retrieval expression requires messagePath element", correlationPropertyElement);
-        } else {
-          correlationProperty.setRetrievalExpression(messagePathElement.getText());
+        for (Element retrievalExpressionElement : retrievalExpressionElements) {
+          parseRetrievalExpression(retrievalExpressionElement, correlationProperty);
         }
       }
       correlationProperties.put(correlationProperty.getId(), correlationProperty);
     }
-    
+  }
+  
+  private void parseRetrievalExpression(Element retrievalExpressionElement, CorrelationProperty correlationProperty) {
+    Element messagePathElement = retrievalExpressionElement.element("messagePath");
+    String messageRef = retrievalExpressionElement.attribute("messageRef");
+    if (messagePathElement == null) {
+      addError("retrieval expression requires messagePath element", retrievalExpressionElement);
+    } else {
+      correlationProperty.addRetrievalExpression(messageRef, messagePathElement.getText());
+    }
   }
 
   protected void collectElementIds() {
@@ -391,7 +397,7 @@ public class BpmnParse extends Parse {
       String importType = theImport.attribute("importType");
       XMLImporter importer = this.getImporter(importType, theImport);
       if (importer == null) {
-        addError("Could not import item of type " + importType, theImport);
+        addWarning("Could not import item of type " + importType, theImport);
       } else {
         importer.importFrom(theImport, this);
       }
@@ -463,7 +469,7 @@ public class BpmnParse extends Parse {
       String itemRef = this.resolveName(messageElement.attribute("itemRef"));
       String name = messageElement.attribute("name");
 
-      MessageDefinition messageDefinition = new MessageDefinition(this.targetNamespace + ":" + id, name);
+      MessageDefinition messageDefinition = new MessageDefinition(this.targetNamespace + ":" + id, id, name);
 
       if(itemRef != null) {
         if(!this.itemDefinitions.containsKey(itemRef)) {
@@ -649,7 +655,8 @@ public class BpmnParse extends Parse {
     if (collaboration != null) {
       for (Element messageFlowElement : collaboration.elements("messageFlow")) {
         MessageFlow flow = new MessageFlow();
-        flow.setMessage(messages.get(messageFlowElement.attribute("messageRef")));
+        String messageId = messageFlowElement.attribute("messageRef");
+        flow.setMessage(messages.get(resolveName(messageId)));
         flow.setId(messageFlowElement.attribute("id"));
         
         

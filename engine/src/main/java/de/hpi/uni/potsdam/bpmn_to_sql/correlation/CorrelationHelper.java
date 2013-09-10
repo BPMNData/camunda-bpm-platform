@@ -14,19 +14,16 @@ import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
 public class CorrelationHelper {
 
-  public static void populateCorrelationKeysInScope(ActivityExecution execution, String message, 
+  /**
+   * Populates all correlation keys that are applicable to this message (i.e. have correlation prop retrieval expressions)
+   */
+  public static void populateCorrelationKeysInScope(ActivityExecution execution, MessageInstance message, 
       List<CorrelationKey> correlationKeys) {
     // determine the correlation scope execution
     ExecutionEntity scopeExecution = determineCorrelationScopeExecution(execution); 
     
     Map<String, Object> resolvedProperties = extractCorrelationProperties(message, correlationKeys);
     scopeExecution.setVariablesLocal(resolvedProperties);
-    
-//    for (CorrelationKey correlationKey : correlationKeys) {
-//      for (CorrelationProperty property : correlationKey.getCorrelationProperties()) {
-//        populatePropertyFromMessage(scopeExecution, property, message);
-//      }
-//    }
   }
   
   protected static ExecutionEntity determineCorrelationScopeExecution(ActivityExecution execution) {
@@ -35,15 +32,8 @@ public class CorrelationHelper {
     return correlationScopeExecution;
   }
   
-//  protected static void populatePropertyFromMessage(ActivityExecution correlationScopeExecution, CorrelationProperty correlationProperty, String message) {
-//    XQueryHandler handler = new XQueryHandler();
-//    String property = handler.runXPath(message, correlationProperty.getRetrievalExpression());
-//    if (property != null && !property.trim().equals("")) {
-//      correlationScopeExecution.setVariableLocal(correlationProperty.getId(), property);
-//    }
-//  }
   
-  public static Map<String, Object> extractCorrelationProperties(String message, 
+  public static Map<String, Object> extractCorrelationProperties(MessageInstance message, 
       List<CorrelationKey> correlationKeys) {
     Map<String, Object> extractedProperties = new HashMap<String, Object>();
     
@@ -59,9 +49,20 @@ public class CorrelationHelper {
     return extractedProperties;
   }
   
-  protected static String resolvePropertyFromMessage(CorrelationProperty correlationProperty, String message) {
+  /**
+   * Returns a correlation key's property value from a message or null, if the property has no retrieval expression for this message
+   */
+  protected static String resolvePropertyFromMessage(CorrelationProperty correlationProperty, MessageInstance message) {
     XQueryHandler handler = new XQueryHandler();
-    String property = handler.runXPath(message, correlationProperty.getRetrievalExpression());
+    String messageDefinitionId = message.getMessageDefinition().getOriginalId();
+    String retrievalExpression = correlationProperty.getRetrievalExpression(messageDefinitionId);
+    
+    if (retrievalExpression == null) {
+      return null;
+    }
+    
+    String property = handler.runXPath(message.getContent(), retrievalExpression);
     return property;
   }
+
 }

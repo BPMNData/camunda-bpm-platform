@@ -5,7 +5,7 @@
   targetNamespace="Examples"
   xmlns:tns="Examples">
   
-  <message id="aMessage" name="aMessageName" />
+  <message id="aMessage" name="aMessage" />
   
   <process id="process">
   

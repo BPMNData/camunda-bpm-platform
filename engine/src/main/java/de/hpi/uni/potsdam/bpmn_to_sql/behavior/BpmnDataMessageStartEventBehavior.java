@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
+import de.hpi.uni.potsdam.bpmn_to_sql.correlation.MessageInstance;
 
 public class BpmnDataMessageStartEventBehavior extends FlowNodeActivityBehavior {
 
@@ -30,6 +31,10 @@ public class BpmnDataMessageStartEventBehavior extends FlowNodeActivityBehavior 
       throw new ProcessEngineException("Start event " + execution.getActivity().getId() + " has no incoming message flow");
     }
     
-    CorrelationHelper.populateCorrelationKeysInScope(execution, message, messageFlow.getCorrelationKeys());
+    MessageInstance messageInstance = new MessageInstance();
+    messageInstance.setContent(message);
+    messageInstance.setMessageDefinition(messageFlow.getMessage());
+    
+    CorrelationHelper.populateCorrelationKeysInScope(execution, messageInstance, messageFlow.getCorrelationKeys());
   }
 }

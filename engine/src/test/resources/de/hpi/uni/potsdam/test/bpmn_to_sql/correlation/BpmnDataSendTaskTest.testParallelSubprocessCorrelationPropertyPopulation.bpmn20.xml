@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:camundabpm="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="7.2.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-c37b42b5-708e-47ce-acb8-f32a1f3478db" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
    
    <correlationProperty id="correlation-property">
-     <correlationPropertyRetrievalExpression messageRef="sid-7896005A-8D9E-414C-8422-A9567CE231EB">
+     <correlationPropertyRetrievalExpression messageRef="auctionRequestMessage">
        <messagePath>/message/correlation/key[@name='some key']/property[@name='some-prop']/text()</messagePath>
      </correlationPropertyRetrievalExpression>
    </correlationProperty>
@@ -10,7 +10,7 @@
    <message id="auctionRequestMessage" name="AuctionRequest"/>
    <endPoint id="auctioningServiceEndPoint">
      <extensionElements>
-        <camundabpm:address>http://localhost:8080/bpmn-data-endpoint/message</camundabpm:address>
+        <camundabpm:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
      </extensionElements>
    </endPoint>
    <collaboration id="collaboration">

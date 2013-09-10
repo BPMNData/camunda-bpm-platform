@@ -15,7 +15,7 @@ import de.hpi.uni.potsdam.bpmn_to_sql.correlation.BpmnDataCorrelationHandler;
 public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase {
 
   private static final String BPMN_DATA_MESSAGE = 
-      "<message name=\"aMessageName\">" +
+      "<message name=\"aMessage\">" +
       " <correlation>" +
       "   <key name=\"some key\">" +
       "     <property name=\"some-prop\">8</property>" +
@@ -24,7 +24,7 @@ public class CorrelateBpmnDataMessageTest extends AbstractProcessEngineTestCase 
       "</message>";
   
   private static final String BPMN_DATA_TWO_PROPERTIES_MESSAGE = 
-      "<message name=\"aMessageName\">" +
+      "<message name=\"aMessage\">" +
       " <correlation>" +
       "   <key name=\"some key\">" +
       "     <property name=\"some-prop\">8</property>" +

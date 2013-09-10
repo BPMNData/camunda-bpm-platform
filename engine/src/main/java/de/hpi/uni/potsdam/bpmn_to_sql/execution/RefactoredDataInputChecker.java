@@ -71,7 +71,6 @@ public class RefactoredDataInputChecker {
       
       String inputObjectName = dataObjectList.get(0).getName();
       String inputObjectPk = dataObjectList.get(0).getPkey();
-      String foreignKey = dataObjectList.get(0).getFkeys().get(0);
       
       String caseObjName = BpmnParse.getScopeInformation().get(scope);
       String caseObjectPk = getCaseObjectPrimaryKey(scope, activityId);
@@ -92,6 +91,7 @@ public class RefactoredDataInputChecker {
         if (isDependentWithoutForeginKey) {
           inputObjectSpec.attribute(caseObjectPk, nullValue());
         } else {
+          String foreignKey = dataObjectList.get(0).getFkeys().get(0);
           inputObjectSpec.references(foreignKey, caseObjectSpec);
         }
       }

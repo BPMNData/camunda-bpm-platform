@@ -150,7 +150,7 @@ public class XQueryHandler {
 		ArrayList<String> results = new ArrayList<String>();
 		Document doc = transformStringToDoc(source);
 		if(!query.equals("")){
-		  query = query.replaceAll("\\n", "");
+		  query = query.replaceAll("\\n", " ");
   		XQDataSource ds = new SaxonXQDataSource();
       XQConnection conn;
       try {
@@ -164,7 +164,7 @@ public class XQueryHandler {
         while (seq.next()) {
           XQItem item = seq.getItem();
           String xml = item.getItemAsString(null);
-          xml = xml.replaceAll("\\n", ""); 
+          xml = xml.replaceAll("\\n", " "); 
           results.add(xml);
         }
       } catch (XQException e) {

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.runtime.EventSubscription;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
@@ -28,7 +29,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
   private static final String DEMO_DATA_MAPPING_FILE = "de/hpi/uni/potsdam/test/bpmn_to_sql/db/demo_mappings_agency.xml";
 
   private static final String REQUEST_MESSAGE = 
-      "<message name=\"Travel Details\">" +
+      "<message name=\"Message_1\">" +
       " <correlation>" +
       "   <key name=\"Global_Request\">" +
       "     <property name=\"request_id\">42</property>" +
@@ -46,18 +47,18 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
       "</message>";
   
   private static final String AIRLINE_RESPONSE_MESSAGE_FORMAT = 
-      "<message name=\"Offer\">" +
+      "<message name=\"Message_3\">" +
       " <correlation>" +
-      "   <key name=\"Global_Request\">" +
+      "   <key name=\"Flight_Request\">" +
       "     <property name=\"request_id\">%s</property>" +
       "   </key>" +
       " </correlation>" +
       " <payload>"+
-      "  <Global_Offer>" +
+      "  <Flight_Offer>" +
       "   <inboundFlightNumber>123</inboundFlightNumber>" +
       "   <outboundFlightNumber>456</outboundFlightNumber>" +
       "   <price>1000</price>" +
-      "  </Global_Offer>" +
+      "  </Flight_Offer>" +
       " </payload>" +
       "</message>";
   
@@ -89,7 +90,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
   }
   
   @DatabaseSetup(resources = "setup_agency_db.sql")
-  @Deployment(resources = "FinalPresUseCase_TravelAgency.bpmn")
+  @Deployment(resources = "travel-agency.compiled.bpmn")
   public void testTravelAgency() {
     runtimeService.correlateBpmnDataMessage(REQUEST_MESSAGE);
     
@@ -107,7 +108,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     runtimeService.setVariable(execution.getId(), "numberOfRequests", "2");
     
     // create airline requests
-    assertAndRunDataInputJobForActivity("sid-1DBDF32D-B72A-4C0A-818F-F6BBA7BDD081", 1, 1);
+    assertAndRunDataInputJobForActivity("ServiceTask_1", 1, 1);
     
     dataObjects("AirlineRequest", 2)
       .where("departure", "Berlin")
@@ -118,20 +119,20 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
       .doAssert();
     
     // sub process
-    assertAndRunDataInputJobForActivity("sid-034EC80D-1970-4BF0-B055-69D0D86DFC99", 1, 1);
+    assertAndRunDataInputJobForActivity("SubProcess_1", 1, 1);
     
     // send task
-    assertAndRunDataInputJobForActivity("sid-62E12787-4027-4843-8276-B721BA2D2FE2", 2, 2);
+    assertAndRunDataInputJobForActivity("SendTask_1", 2, 2);
     
     // manipulating the correlation property as we do not know the exact request id
-    List<Execution> executions = runtimeService.createExecutionQuery().messageEventSubscriptionName("Offer").list();
+    List<Execution> executions = runtimeService.createExecutionQuery().messageEventSubscriptionName("Message_3").list();
     Assert.assertEquals(2, executions.size());
     
     Execution execution1 = executions.get(0);
-    runtimeService.setVariableLocal(execution1.getId(), "propRequest_ID", "42");
+    runtimeService.setVariableLocal(execution1.getId(), "CorrelationProperty_1", "42");
     
     Execution execution2 = executions.get(1);
-    runtimeService.setVariableLocal(execution2.getId(), "propRequest_ID", "23");
+    runtimeService.setVariableLocal(execution2.getId(), "CorrelationProperty_1", "23");
     
     
     // send first response
@@ -155,7 +156,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     .doAssert();
     
     // pick best offer
-    assertAndRunDataInputJobForActivity("sid-45A7F1E4-8B24-4545-AC15-3D50752C3949", 1, 1);
+    assertAndRunDataInputJobForActivity("UserTask_1", 1, 1);
     
     // randomly pick a request
     String requestId = (String) poManager.getPersistentObjects("AirlineRequest", new HashMap<String, Object>()).get(0).get("requestID");
@@ -173,7 +174,7 @@ public class TravelAgencyTest extends AbstractBpmnDataTestCase {
     .doAssert();
     
     // refer customer to airline
-    assertAndRunDataInputJobForActivity("sid-7882B220-4EDE-4D06-A53B-9B889B4D36D8", 1, 1);
+    assertAndRunDataInputJobForActivity("SendTask_2", 1, 1);
     
     // instance should have finished
     Assert.assertNull(runtimeService.createProcessInstanceQuery().singleResult());

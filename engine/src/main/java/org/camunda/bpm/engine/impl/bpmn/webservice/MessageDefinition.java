@@ -16,20 +16,25 @@ import org.camunda.bpm.engine.impl.bpmn.data.ItemDefinition;
 import org.camunda.bpm.engine.impl.bpmn.data.StructureDefinition;
 
 /**
- * Implementation of the BPMN 2.0 'message'
+ * Implementation of the BPMN 2.0 'message'.
+ * While the parser adds the namespace to the id, the field originalId contains the id as specified in the BPMN diagram.
  * 
  * @author Esteban Robles Luna
+ * @author BPMNData
  */
 public class MessageDefinition {
 
   protected String id;
   
+  protected String originalId;
+  
   protected ItemDefinition itemDefinition;
 
   protected String name;
   
-  public MessageDefinition(String id, String name) {
+  public MessageDefinition(String id, String originalId, String name) {
     this.id = id;
+    this.originalId = originalId;
     this.name = name;
   }
   
@@ -51,6 +56,10 @@ public class MessageDefinition {
 
   public String getId() {
     return this.id;
+  }
+  
+  public String getOriginalId() {
+    return this.originalId;
   }
   
   public String getName() {

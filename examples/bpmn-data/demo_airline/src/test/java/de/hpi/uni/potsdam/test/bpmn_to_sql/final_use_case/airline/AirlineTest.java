@@ -26,20 +26,20 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
   private static final String DEMO_DATA_MAPPING_FILE = "de/hpi/uni/potsdam/test/bpmn_to_sql/db/demo_mappings.xml";
   
   private static final String REQUEST_MESSAGE = 
-      "<message name=\"Request\">" +
+      "<message name=\"Message_2\">" +
       " <correlation>" +
-      "   <key name=\"Global_Request\">" +
+      "   <key name=\"Flight_Request\">" +
       "     <property name=\"request_id\">42</property>" +
       "   </key>" +
       " </correlation>" +
       " <payload>"+
-      "  <Global_Request>" +
+      "  <Flight_Request>" +
       "   <request_id>42</request_id>" +
       "   <departure>Berlin</departure>" +
       "   <destination>London</destination>" +
       "   <start_date>1.1.2000</start_date>" +
       "   <return_date>7.1.2000</return_date>" +
-      "  </Global_Request>" +
+      "  </Flight_Request>" +
       " </payload>" +
       "</message>";
   
@@ -60,7 +60,7 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
   }
   
   @DatabaseSetup(resources = "setup_airline_db.sql")
-  @Deployment(resources = "FinalPresUseCase_Airline.bpmn")
+  @Deployment(resources = "airline.compiled.bpmn")
   public void testCustomer() {
     runtimeService.correlateBpmnDataMessage(REQUEST_MESSAGE);
     
@@ -73,7 +73,7 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
 	  .shouldHave("state", "created")
     .doAssert();
     
-    assertAndRunDataInputJobForActivity("sid-FEC86014-FD18-4BF7-88E5-1B3F8C343264", 1, 1);
+    assertAndRunDataInputJobForActivity("UserTask_1", 1, 1);
     
     Task createOfferTask = taskService.createTaskQuery().singleResult();
     Map<String, Object> variables = new HashMap<String, Object>();
@@ -90,7 +90,7 @@ public class AirlineTest extends AbstractBpmnDataTestCase {
   	  .shouldHave("price", 1000.0d)
     .doAssert();
     
-    assertAndRunDataInputJobForActivity("sid-BB118ADF-5E9D-49E3-B9C2-BCE5FADD1954", 1, 1);
+    assertAndRunDataInputJobForActivity("SendTask_1", 1, 1);
     
     // instance should have finished
     Assert.assertNull(runtimeService.createProcessInstanceQuery().singleResult());

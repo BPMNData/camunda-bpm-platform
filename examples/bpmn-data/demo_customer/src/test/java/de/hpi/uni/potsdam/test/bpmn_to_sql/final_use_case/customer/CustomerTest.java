@@ -26,7 +26,7 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
   private static final String DEMO_DATA_MAPPING_FILE = "de/hpi/uni/potsdam/test/bpmn_to_sql/db/demo_mappings.xml";
   
   private static final String OFFER_MESSAGE = 
-      "<message name=\"Offer\">" +
+      "<message name=\"Message_4\">" +
       " <correlation>" +
       "   <key name=\"Global_Request\">" +
       "     <property name=\"request_id\">42</property>" +
@@ -34,7 +34,6 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
       " </correlation>" +
       " <payload>"+
       "  <Global_Offer>" +
-      "   <airline>Lufthansa</airline>" +
       "   <inboundFlightNumber>123</inboundFlightNumber>" +
       "   <outboundFlightNumber>345</outboundFlightNumber>" +
       "   <price>1000</price>" +
@@ -59,30 +58,27 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
   }
   
   @DatabaseSetup(resources = "setup_customer_db.sql")
-  @Deployment(resources = "FinalPresUseCase_Customer.bpmn")
+  @Deployment(resources = "customer.compiled.bpmn")
   public void testCustomer() {
     String caseObjectId = "42";
     
     ProcessInstance instance = 
-        runtimeService.startBpmnDataAwareProcessInstanceByKey("sid-FFA22F25-36EF-4BD5-A146-ED92C461BF3D", caseObjectId);
+        runtimeService.startBpmnDataAwareProcessInstanceByKey("Customer", caseObjectId);
     
     Task enterDetailsTask = taskService.createTaskQuery().singleResult();
     Map<String, Object> variables = new HashMap<String, Object>();
     variables.put("departure", "Berlin");
     variables.put("destination", "London");
-    variables.put("hotel", "asdf");
     variables.put("start_date", "10.1.2013");
     variables.put("return_date", "1.1.2013");
-    variables.put("price", 1000.0d);
     taskService.complete(enterDetailsTask.getId(), variables);
     
     dataObjects("TravelDetails", 1).where("travelID", caseObjectId)
       .shouldHave("state", "created")
       .shouldHave("departure", "Berlin")
-      .shouldHave("price", 1000.0d)
       .doAssert();
     
-    assertAndRunDataInputJobForActivity("sid-DCCABAF9-7DB7-4172-AF27-7165547156AE", 1, 1);
+    assertAndRunDataInputJobForActivity("SendTask_1", 1, 1);
     
     runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
     
@@ -92,13 +88,11 @@ public class CustomerTest extends AbstractBpmnDataTestCase {
     dataObjects("TravelDetails", 1).where("travelID", caseObjectId)
       .shouldHave("state", "updated")
       .shouldHave("departure", "Berlin")
-      .shouldHave("price", 1000.0d)
       .doAssert();
     
     dataObjects("Flights", 1)
       .shouldHave("travelID", "42")
       .shouldHave("state", "received")
-//      .shouldHave("airline", "Lufthansa")
       .shouldHave("inboundFlightNumber", "123")
       .shouldHave("outboundFlightNumber", "345")
       .shouldHave("price", 1000.0d)

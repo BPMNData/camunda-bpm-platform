@@ -5,16 +5,13 @@
 <mapper namespace="de.hpi.uni.potsdam.test.bpmn_to_sql.db">
 
   <select id="selectSingleTraveldetails" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select travelID, cu_request_id, customer, departure, destination, start_date, return_date, state from TravelDetails 
+    select travelID, cu_request_id, departure, destination, start_date, return_date, state from TravelDetails 
     <where>
         <if test="travelID != null">
             travelID = #{travelID}
         </if>
         <if test="cu_request_id != null">
             and cu_request_id = #{cu_request_id}
-        </if>
-        <if test="customer != null">
-            and customer = #{customer}
         </if>
         <if test="departure != null">
             and departure = #{departure}

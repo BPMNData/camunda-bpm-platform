@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS `TravelDetails`;
 CREATE TABLE IF NOT EXISTS `TravelDetails` (
   `travelID` varchar(60) NOT NULL,
   `cu_request_id` varchar(60),
-  `customer` varchar(255),
   `departure` varchar(255),
   `destination` varchar(255),
   `start_date` varchar(255),
@@ -17,7 +16,6 @@ CREATE TABLE IF NOT EXISTS `TravelDetails` (
 CREATE TABLE IF NOT EXISTS `AirlineRequest` (
   `requestID` varchar(60) NOT NULL,
   `travelID` varchar(60),
-  `airline` varchar(255),
   `departure` varchar(255),
   `destination` varchar(255),
   `start_date` varchar(255),
@@ -33,7 +31,6 @@ CREATE TABLE IF NOT EXISTS `AirlineRequest` (
 CREATE TABLE IF NOT EXISTS `Offer` (
   `offerID` varchar(60) NOT NULL,
   `travelID` varchar(60),
-  `airline` varchar(255),
   `inboundFlightNumber` varchar(255),
   `outboundFlightNumber` varchar(255),
   `price` DOUBLE,

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_F4dT8BR5EeOjvZzS2XC0ig" targetNamespace="http://activiti.org/bpmn">
+  <bpmn2:extensionElements>
+    <bpt:schemaMappingImport location="/demo_agency/src/main/resources/data/local-global.schemamapping"/>
+  </bpmn2:extensionElements>
   <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/demo_agency/src/main/resources/data/global-data-model.xsd" namespace="http://localhost:8080"/>
   <bpmn2:collaboration id="_Collaboration_3">
     <bpmn2:participant id="Participant_1" name="Travel Agency" processRef="Process_3"/>
@@ -22,12 +25,6 @@
       <bpmn2:messageFlowRef>MessageFlow_4</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_3</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_6</bpmn2:messageFlowRef>
-      <bpmn2:correlationKey id="CorrelationKey_1" name="Flight_Request">
-        <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
-      </bpmn2:correlationKey>
-      <bpmn2:correlationKey id="CorrelationKey_2" name="Global_Request">
-        <bpmn2:correlationPropertyRef>CorrelationProperty_2</bpmn2:correlationPropertyRef>
-      </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
   <bpmn2:process id="Process_3" isExecutable="true">
@@ -44,8 +41,6 @@
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
         <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
         <bpmn2:targetRef>DataObject_1</bpmn2:targetRef>
-        <bpmn2:transformation id="FormalExpression_7" language="XQuery">let $msg := ./message/payload/Global_Request
-return &lt;TravelDetails>&lt;cu_request_id>{$msg/request_id/text()}&lt;/cu_request_id>&lt;departure>{$msg/departure/text()}&lt;/departure>&lt;destination>{$msg/destination/text()}&lt;/destination>&lt;start_date>{$msg/start_date/text()}&lt;/start_date>&lt;return_date>{$msg/return_date/text()}&lt;/return_date>&lt;/TravelDetails></bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
     <bpmn2:serviceTask id="ServiceTask_1" activiti:class="de.hpi.uni.potsdam.test.bpmn_to_sql.final_use_case.agency.CreateAirlineRequestsDelegate" name="Create Request">
@@ -112,7 +107,7 @@ return &lt;TravelDetails>&lt;cu_request_id>{$msg/request_id/text()}&lt;/cu_reque
         <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
         <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
       </bpmn2:serviceTask>
-      <bpmn2:sendTask id="SendTask_1" name="Send Request" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="Message_2">
+      <bpmn2:sendTask id="SendTask_1" name="Send Request" messageRef="Message_2">
         <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
         <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
         <bpmn2:ioSpecification id="InputOutputSpecification_4">
@@ -123,8 +118,6 @@ return &lt;TravelDetails>&lt;cu_request_id>{$msg/request_id/text()}&lt;/cu_reque
         <bpmn2:dataInputAssociation id="DataInputAssociation_3">
           <bpmn2:sourceRef>DataObject_3</bpmn2:sourceRef>
           <bpmn2:targetRef>DataInput_3</bpmn2:targetRef>
-          <bpmn2:transformation id="FormalExpression_5" language="XQuery">let $AirlineRequest := ./DataObjects/AirlineRequest
-return &lt;message name=&quot;Message_2&quot;>&lt;correlation>&lt;key name=&quot;Flight_Request&quot;>&lt;property name=&quot;request_id&quot;>{$AirlineRequest/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Flight_Request>&lt;request_id>{$AirlineRequest/requestID/text()}&lt;/request_id>&lt;departure>{$AirlineRequest/departure/text()}&lt;/departure>&lt;destination>{$AirlineRequest/destination/text()}&lt;/destination>&lt;start_date>{$AirlineRequest/start_date/text()}&lt;/start_date>&lt;return_date>{$AirlineRequest/return_date/text()}&lt;/return_date>&lt;/Flight_Request>&lt;/payload>&lt;/message></bpmn2:transformation>
         </bpmn2:dataInputAssociation>
       </bpmn2:sendTask>
       <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="ServiceTask_2" targetRef="SendTask_1"/>
@@ -146,8 +139,6 @@ return &lt;message name=&quot;Message_2&quot;>&lt;correlation>&lt;key name=&quot
         <bpmn2:dataOutputAssociation id="DataOutputAssociation_3">
           <bpmn2:sourceRef>DataOutput_3</bpmn2:sourceRef>
           <bpmn2:targetRef>DataObject_4</bpmn2:targetRef>
-          <bpmn2:transformation id="FormalExpression_8" language="XQuery">let $msg := ./message/payload/Flight_Offer
-return &lt;AirlineRequest>&lt;inboundFlightNumber>{$msg/inboundFlightNumber/text()}&lt;/inboundFlightNumber>&lt;outboundFlightNumber>{$msg/outboundFlightNumber/text()}&lt;/outboundFlightNumber>&lt;price>{$msg/price/text()}&lt;/price>&lt;/AirlineRequest></bpmn2:transformation>
         </bpmn2:dataOutputAssociation>
       </bpmn2:receiveTask>
       <bpmn2:sequenceFlow id="SequenceFlow_5" name="" sourceRef="SendTask_1" targetRef="ReceiveTask_2"/>
@@ -186,7 +177,7 @@ return &lt;AirlineRequest>&lt;inboundFlightNumber>{$msg/inboundFlightNumber/text
       </bpmn2:dataOutputAssociation>
     </bpmn2:userTask>
     <bpmn2:sequenceFlow id="SequenceFlow_7" name="" sourceRef="SubProcess_1" targetRef="UserTask_1"/>
-    <bpmn2:sendTask id="SendTask_2" name="Refer Customer to Airline" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="Message_4">
+    <bpmn2:sendTask id="SendTask_2" name="Refer Customer to Airline" messageRef="Message_4">
       <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_9</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_7">
@@ -197,9 +188,6 @@ return &lt;AirlineRequest>&lt;inboundFlightNumber>{$msg/inboundFlightNumber/text
       <bpmn2:dataInputAssociation id="DataInputAssociation_5">
         <bpmn2:sourceRef>DataObject_6</bpmn2:sourceRef>
         <bpmn2:targetRef>DataInput_5</bpmn2:targetRef>
-        <bpmn2:transformation id="FormalExpression_6" language="XQuery">let $TravelDetails := ./DataObjects/TravelDetails
-let $Offer := ./DataObjects/Offer
-return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot;Global_Request&quot;>&lt;property name=&quot;request_id&quot;>{$TravelDetails/cu_request_id/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Global_Offer>&lt;inboundFlightNumber>{$Offer/inboundFlightNumber/text()}&lt;/inboundFlightNumber>&lt;outboundFlightNumber>{$Offer/outboundFlightNumber/text()}&lt;/outboundFlightNumber>&lt;price>{$Offer/price/text()}&lt;/price>&lt;/Global_Offer>&lt;/payload>&lt;/message></bpmn2:transformation>
       </bpmn2:dataInputAssociation>
     </bpmn2:sendTask>
     <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="UserTask_1" targetRef="SendTask_2"/>
@@ -224,22 +212,22 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
   </bpmn2:process>
   <bpmn2:message id="Message_1" name="Message_1">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_8"><bpt:correlationIdentifierLink ref="ItemDefinition_8"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_8"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_8"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="Message_2" name="Message_2">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_6"><bpt:correlationIdentifierLink ref="ItemDefinition_6"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_6"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_6"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="Message_3" name="Message_3">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_5"><bpt:correlationIdentifierLink ref="ItemDefinition_6"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_5"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_6"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="Message_4" name="Message_4">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_7"><bpt:correlationIdentifierLink ref="ItemDefinition_8"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_7"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_8"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:itemDefinition id="ItemDefinition_5" structureRef="_StructureDefinition_8">
@@ -278,22 +266,6 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
       <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_2" messageRef="Message_2">
-      <bpmn2:messagePath id="FormalExpression_2" language="XPath">/message/correlation/key[@name='Flight_Request']/property[@name='request_id']/text()</bpmn2:messagePath>
-    </bpmn2:correlationPropertyRetrievalExpression>
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_3" messageRef="Message_3">
-      <bpmn2:messagePath id="FormalExpression_3" language="XPath">/message/correlation/key[@name='Flight_Request']/property[@name='request_id']/text()</bpmn2:messagePath>
-    </bpmn2:correlationPropertyRetrievalExpression>
-  </bpmn2:correlationProperty>
-  <bpmn2:correlationProperty id="CorrelationProperty_2" name="request_id">
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="Message_1">
-      <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Global_Request']/property[@name='request_id']/text()</bpmn2:messagePath>
-    </bpmn2:correlationPropertyRetrievalExpression>
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_4" messageRef="Message_4">
-      <bpmn2:messagePath id="FormalExpression_4" language="XPath">/message/correlation/key[@name='Global_Request']/property[@name='request_id']/text()</bpmn2:messagePath>
-    </bpmn2:correlationPropertyRetrievalExpression>
-  </bpmn2:correlationProperty>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="_Collaboration_3">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_5" bpmnElement="Participant_1" isHorizontal="true">
@@ -306,10 +278,10 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="55.0" y="211.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_Participant_6" targetElement="_BPMNShape_ReceiveTask_4">
-        <di:waypoint x="265.0" y="655.0"/>
-        <di:waypoint x="105.0" y="639.0"/>
-        <di:waypoint x="105.0" y="473.0"/>
-        <di:waypoint x="105.0" y="291.0"/>
+        <di:waypoint xsi:type="dc:Point" x="265.0" y="655.0"/>
+        <di:waypoint xsi:type="dc:Point" x="105.0" y="639.0"/>
+        <di:waypoint xsi:type="dc:Point" x="105.0" y="473.0"/>
+        <di:waypoint xsi:type="dc:Point" x="105.0" y="291.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="162.0" y="645.0"/>
         </bpmndi:BPMNLabel>
@@ -324,8 +296,8 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="211.0" y="211.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_ReceiveTask_4" targetElement="_BPMNShape_ServiceTask_2">
-        <di:waypoint x="155.0" y="251.0"/>
-        <di:waypoint x="211.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="155.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="211.0" y="251.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="176.0" y="251.0"/>
         </bpmndi:BPMNLabel>
@@ -337,12 +309,12 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_ReceiveTask_4" targetElement="_BPMNShape_DataObject_6">
-        <di:waypoint x="116.0" y="291.0"/>
-        <di:waypoint x="149.0" y="415.0"/>
+        <di:waypoint xsi:type="dc:Point" x="116.0" y="291.0"/>
+        <di:waypoint xsi:type="dc:Point" x="149.0" y="415.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_6" targetElement="_BPMNShape_ServiceTask_2">
-        <di:waypoint x="191.0" y="415.0"/>
-        <di:waypoint x="244.0" y="291.0"/>
+        <di:waypoint xsi:type="dc:Point" x="191.0" y="415.0"/>
+        <di:waypoint xsi:type="dc:Point" x="244.0" y="291.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_7" bpmnElement="DataObject_2">
         <dc:Bounds height="120.0" width="100.0" x="295.0" y="415.0"/>
@@ -351,21 +323,21 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_DataObject_7">
-        <di:waypoint x="276.0" y="291.0"/>
-        <di:waypoint x="323.0" y="415.0"/>
+        <di:waypoint xsi:type="dc:Point" x="276.0" y="291.0"/>
+        <di:waypoint xsi:type="dc:Point" x="323.0" y="415.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_SubProcess_2" bpmnElement="SubProcess_1" isExpanded="true">
         <dc:Bounds height="336.0" width="601.0" x="427.0" y="199.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_2" bpmnElement="DataInputAssociation_2" sourceElement="_BPMNShape_DataObject_7" targetElement="_BPMNShape_SubProcess_2">
-        <di:waypoint x="395.0" y="461.0"/>
-        <di:waypoint x="427.0" y="452.0"/>
+        <di:waypoint xsi:type="dc:Point" x="395.0" y="461.0"/>
+        <di:waypoint xsi:type="dc:Point" x="427.0" y="452.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_SubProcess_2">
-        <di:waypoint x="311.0" y="251.0"/>
-        <di:waypoint x="369.0" y="251.0"/>
-        <di:waypoint x="369.0" y="367.0"/>
-        <di:waypoint x="427.0" y="367.0"/>
+        <di:waypoint xsi:type="dc:Point" x="311.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="369.0" y="251.0"/>
+        <di:waypoint xsi:type="dc:Point" x="369.0" y="367.0"/>
+        <di:waypoint xsi:type="dc:Point" x="427.0" y="367.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="366.0" y="309.0"/>
         </bpmndi:BPMNLabel>
@@ -380,8 +352,8 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="523.0" y="237.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_StartEvent_4" targetElement="_BPMNShape_ServiceTask_3">
-        <di:waypoint x="487.0" y="277.0"/>
-        <di:waypoint x="523.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="487.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="523.0" y="277.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="507.0" y="277.0"/>
         </bpmndi:BPMNLabel>
@@ -390,8 +362,8 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="667.0" y="237.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_3" targetElement="_BPMNShape_SendTask_4">
-        <di:waypoint x="623.0" y="277.0"/>
-        <di:waypoint x="667.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="623.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="667.0" y="277.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="642.0" y="277.0"/>
         </bpmndi:BPMNLabel>
@@ -406,12 +378,12 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="823.0" y="237.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_3" bpmnElement="DataInputAssociation_3" sourceElement="_BPMNShape_DataObject_8" targetElement="_BPMNShape_SendTask_4">
-        <di:waypoint x="645.0" y="364.0"/>
-        <di:waypoint x="684.0" y="317.0"/>
+        <di:waypoint xsi:type="dc:Point" x="645.0" y="364.0"/>
+        <di:waypoint xsi:type="dc:Point" x="684.0" y="317.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_SendTask_4" targetElement="_BPMNShape_ReceiveTask_5">
-        <di:waypoint x="767.0" y="277.0"/>
-        <di:waypoint x="823.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="767.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="823.0" y="277.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="792.0" y="277.0"/>
         </bpmndi:BPMNLabel>
@@ -423,8 +395,8 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="_BPMNShape_ReceiveTask_5" targetElement="_BPMNShape_DataObject_9">
-        <di:waypoint x="881.0" y="317.0"/>
-        <di:waypoint x="888.0" y="354.0"/>
+        <di:waypoint xsi:type="dc:Point" x="881.0" y="317.0"/>
+        <di:waypoint xsi:type="dc:Point" x="888.0" y="354.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_EndEvent_6" bpmnElement="EndEvent_1">
         <dc:Bounds height="36.0" width="36.0" x="973.0" y="259.0"/>
@@ -433,8 +405,8 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_ReceiveTask_5" targetElement="_BPMNShape_EndEvent_6">
-        <di:waypoint x="923.0" y="277.0"/>
-        <di:waypoint x="973.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="923.0" y="277.0"/>
+        <di:waypoint xsi:type="dc:Point" x="973.0" y="277.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="0.0" width="0.0" x="948.0" y="277.0"/>
         </bpmndi:BPMNLabel>
@@ -443,10 +415,10 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="1087.0" y="223.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="_BPMNShape_SubProcess_2" targetElement="_BPMNShape_UserTask_2">
-        <di:waypoint x="1027.0" y="367.0"/>
-        <di:waypoint x="1062.0" y="367.0"/>
-        <di:waypoint x="1062.0" y="263.0"/>
-        <di:waypoint x="1087.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1027.0" y="367.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1062.0" y="367.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1062.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1087.0" y="263.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="1059.0" y="353.0"/>
         </bpmndi:BPMNLabel>
@@ -455,26 +427,26 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="80.0" width="100.0" x="1255.0" y="223.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_UserTask_2" targetElement="_BPMNShape_SendTask_5">
-        <di:waypoint x="1187.0" y="263.0"/>
-        <di:waypoint x="1255.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1187.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1255.0" y="263.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_EndEvent_7" bpmnElement="EndEvent_2">
         <dc:Bounds height="36.0" width="36.0" x="1405.0" y="245.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_9" sourceElement="_BPMNShape_SendTask_5" targetElement="_BPMNShape_EndEvent_7">
-        <di:waypoint x="1355.0" y="263.0"/>
-        <di:waypoint x="1405.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1355.0" y="263.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1405.0" y="263.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_10" bpmnElement="DataObject_5">
         <dc:Bounds height="120.0" width="100.0" x="1071.0" y="384.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_4" bpmnElement="DataOutputAssociation_4" sourceElement="_BPMNShape_SubProcess_2" targetElement="_BPMNShape_DataObject_10">
-        <di:waypoint x="1027.0" y="426.0"/>
-        <di:waypoint x="1071.0" y="434.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1027.0" y="426.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1071.0" y="434.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_4" bpmnElement="DataInputAssociation_4" sourceElement="_BPMNShape_DataObject_10" targetElement="_BPMNShape_UserTask_2">
-        <di:waypoint x="1126.0" y="384.0"/>
-        <di:waypoint x="1133.0" y="303.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1126.0" y="384.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1133.0" y="303.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_11" bpmnElement="DataObject_6">
         <dc:Bounds height="120.0" width="100.0" x="1219.0" y="384.0"/>
@@ -483,12 +455,12 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_5" bpmnElement="DataOutputAssociation_5" sourceElement="_BPMNShape_UserTask_2" targetElement="_BPMNShape_DataObject_11">
-        <di:waypoint x="1166.0" y="303.0"/>
-        <di:waypoint x="1225.0" y="384.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1166.0" y="303.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1225.0" y="384.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_5" bpmnElement="DataInputAssociation_5" sourceElement="_BPMNShape_DataObject_11" targetElement="_BPMNShape_SendTask_5">
-        <di:waypoint x="1281.0" y="384.0"/>
-        <di:waypoint x="1297.0" y="303.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1281.0" y="384.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1297.0" y="303.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_4" bpmnElement="Message_2">
         <dc:Bounds height="20.0" width="30.0" x="717.0" y="169.0"/>
@@ -503,10 +475,10 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_4" bpmnElement="MessageFlow_4" sourceElement="_BPMNShape_SendTask_5" targetElement="_BPMNShape_Participant_6">
-        <di:waypoint x="1355.0" y="300.0"/>
-        <di:waypoint x="1394.0" y="329.0"/>
-        <di:waypoint x="1394.0" y="632.0"/>
-        <di:waypoint x="1196.0" y="655.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1355.0" y="300.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1394.0" y="329.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1394.0" y="632.0"/>
+        <di:waypoint xsi:type="dc:Point" x="1196.0" y="655.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="1299.0" y="643.0"/>
         </bpmndi:BPMNLabel>
@@ -521,19 +493,19 @@ return &lt;message name=&quot;Message_4&quot;>&lt;correlation>&lt;key name=&quot
         <dc:Bounds height="100.0" width="600.0" x="472.0" y="0.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_3" bpmnElement="MessageFlow_3" sourceElement="_BPMNShape_SendTask_4" targetElement="_BPMNShape_Participant_13">
-        <di:waypoint x="717.0" y="237.0"/>
-        <di:waypoint x="717.0" y="141.0"/>
-        <di:waypoint x="772.0" y="141.0"/>
-        <di:waypoint x="772.0" y="100.0"/>
+        <di:waypoint xsi:type="dc:Point" x="717.0" y="237.0"/>
+        <di:waypoint xsi:type="dc:Point" x="717.0" y="141.0"/>
+        <di:waypoint xsi:type="dc:Point" x="772.0" y="141.0"/>
+        <di:waypoint xsi:type="dc:Point" x="772.0" y="100.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="714.0" y="149.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_6" bpmnElement="MessageFlow_6" sourceElement="_BPMNShape_Participant_13" targetElement="_BPMNShape_ReceiveTask_5">
-        <di:waypoint x="772.0" y="100.0"/>
-        <di:waypoint x="772.0" y="142.0"/>
-        <di:waypoint x="873.0" y="142.0"/>
-        <di:waypoint x="873.0" y="237.0"/>
+        <di:waypoint xsi:type="dc:Point" x="772.0" y="100.0"/>
+        <di:waypoint xsi:type="dc:Point" x="772.0" y="142.0"/>
+        <di:waypoint xsi:type="dc:Point" x="873.0" y="142.0"/>
+        <di:waypoint xsi:type="dc:Point" x="873.0" y="237.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="830.0" y="142.0"/>
         </bpmndi:BPMNLabel>

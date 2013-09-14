@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="de.hpi.uni.potsdam.test.bpmn_to_sql.db">
   <select id="selectSingleTraveldetails" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select travelID, state, departure, destination, start_date, return_date, hotel, price from TravelDetails 
+    select travelID, state, departure, destination, start_date, return_date from TravelDetails 
     <where>
         <if test="travelID != null">
             travelID = #{travelID}
@@ -19,31 +19,22 @@
             and destination = #{destination}
         </if>
         <if test="start_date != null">
-            start_date = #{start_date}
+            and start_date = #{start_date}
         </if>
         <if test="return_date != null">
             and return_date = #{return_date}
-        </if>
-        <if test="hotel != null">
-            and hotel = #{hotel}
-        </if>
-        <if test="price != null">
-            and price = #{price}
         </if>
     </where>
   </select>
   
   <select id="selectSingleFlights" parameterType="java.util.Map" resultType="java.util.HashMap">
-    select flightID, travelID, airline, inboundFlightNumber, outboundFlightNumber, price, state from Flights 
+    select flightID, travelID, inboundFlightNumber, outboundFlightNumber, price, state from Flights 
     <where>
         <if test="flightID != null">
             flightID = #{flightID}
         </if>
         <if test="travelID != null">
             and travelID = #{travelID}
-        </if>
-        <if test="airline != null">
-            and airline = #{airline}
         </if>
         <if test="inboundFlightNumber != null">
             and inboundFlightNumber = #{inboundFlightNumber}

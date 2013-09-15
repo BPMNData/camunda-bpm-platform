@@ -33,10 +33,14 @@ Downloads
 ---------
 
 [BPMNData modeler update site](https://www.dropbox.com/s/a5yfx130sy04gbd/update-site.zip)
+[BPMNData Tomcat distro](https://www.dropbox.com/s/d4xifu61a7pyryn/camunda-bpm-tomcat-7.0.0-Final.zip)
+[BPMNData Demo Process Applications](https://www.dropbox.com/s/44odwcjogajsrhp/demo_process_applications.zip)
+
 
 Links
 -----
 
 * [BPMNData modeler sources](https://github.com/BPMNData/camunda-modeler)
 * [BPMNData modeler usage](https://github.com/BPMNData/camunda-modeler/blob/bpmn_data/documentation/BPMNData.md)
+* [BPMNData modeler screencast](https://www.dropbox.com/s/p7gp28a2hbt0w5c/modeler-demo.mp4)
 * [BPMNData project page](http://bpt.hpi.uni-potsdam.de/Public/BPMNData)

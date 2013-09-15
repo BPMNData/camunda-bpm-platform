@@ -17,7 +17,7 @@ Avoid Known Pitfalls
 Building and Deploying a Process Application
 --------------------------------------------
 
-When deploying to the Tomcat distro, please follow the [camunda docs on how to build a Process Application](http://docs.camunda.org/guides/user-guide/). There is no additional deployment configuration neccessary when using a platform-shared process engine.
+When deploying to the Tomcat distro, please follow the [camunda docs on how to build a Process Application](http://docs.camunda.org/guides/user-guide/) or look at an application from our demo use case, like the [travel agency application](/examples/bpmn-data/demo_agency). There is no additional deployment configuration neccessary when using a platform-shared process engine.
 
 Testing a BPMNData process application
 --------------------------------------

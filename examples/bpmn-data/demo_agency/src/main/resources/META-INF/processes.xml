@@ -6,7 +6,7 @@
 
   <process-archive name="pa">
     <process-engine>default</process-engine>
-    <process>FinalPresUseCase_TravelAgency.bpmn</process>
+    <process>travel-agency.compiled.bpmn</process>
     <properties>
       <property name="isDeleteUponUndeploy">false</property>
       <property name="isScanForProcessDefinitions">false</property>

@@ -8,7 +8,11 @@ Additions/Extensions to the camunda modules
 
 ### Engine
 
-The core functionality has been added to the engine. The following gives a rough overview of the components added/extended
+The core functionality has been added to the engine. The following diagram gives a rough overview of the components added/extended:
+
+![Extension Overview](overview.png)
+
+The single components are described below:
 
 
 #### Data Input Jobs

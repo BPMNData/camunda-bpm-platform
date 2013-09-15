@@ -29,7 +29,7 @@ Central packages, classes and methods:
 
 * [RefactoredDataInputChecker](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/execution/RefactoredDataInputChecker.java): Builds data object specifications out of the data objects of a task.
 * [pattern package](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/pattern): Provides a fluent API for specifying data object constellations and retrieving SQL statements for these.
-* [DataObjectSpecification](/de/hpi/uni/potsdam/bpmn_to_sql/pattern/DataObjectSpecification.java): Entry point for declaratively building data object SQL statements. The example below returns a SQL statement that selects the number of line items in state `created` that references an order with id 42.
+* [DataObjectSpecification](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/pattern/DataObjectSpecification.java): Entry point for declaratively building data object SQL statements. The example below returns a SQL statement that selects the number of line items in state `created` that references an order with id 42.
 
     `anyDataObject("LineItem", "lid").attribute("state", "created").references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();`
 

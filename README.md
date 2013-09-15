@@ -1,7 +1,7 @@
 BPMNData Extensions for the camunda BPM platform
 ================================================
 
-This prototype implements a model-driven approach for building process choreographies from A to Z. The methodology has been developed by Kimon Batoulis, Sebastian Kruse, Thorben Lindhauer and Thomas Stoff during their Master studies at Hasso-Plattner-Institute Potsdam. This distribution of the execution platform is accompanied by an extended version of the camunda modeler. See the [Downloads](#Downloads) and [Links](#Links) section for binaries.
+This prototype implements a model-driven approach for building process choreographies from A to Z. The methodology has been developed by Kimon Batoulis, Sebastian Kruse, Thorben Lindhauer and Thomas Stoff during their Master studies at Hasso-Plattner-Institute Potsdam. This distribution of the execution platform is accompanied by an extended version of the camunda modeler. See the [Downloads](#downloads) and [Links](#links) section for binaries. Confer the [Extensions documentation](bpmn-data-docs/extension-overview.md) for technical details on the extensions we made in the platform.
 
 Building engine & distro
 ------------------------
@@ -21,7 +21,7 @@ Platform Configuration
 ----------------------
 
 1. Check the Tomcat distro: `/server/apache-tomcat-{version}/lib` should containt the `bpmn-data-camunda-engine` artifact. `/server/apache-tomcat-{version}/webapps` should contain `bpmn-data-endpoint.war`.
-2. Check `/server/apache-tomcat-{version}/conf/bpm-platform.xml`: The default engine should have a proerty `bpmnDataAware` set to true. Furthermore, you can set the database connection properties for the data object persistence in the `bpmnDataProperties` element. Note that this prototype is restricted to MySQL databases. `dataJobRetryTimeCycle` allows to configure the timeout between two attempts to check the data input of a given activity. It follows the [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals) standard. The default is set to 20 seconds. (In general, you can also configure multiple engines with these extensions. However, please note that you can currently only use the default engine for BPMNData message exchanges. See the [BPMNData Endpoint docs](bpmn-data-docs/extension-overview) for an explanation)
+2. Check `/server/apache-tomcat-{version}/conf/bpm-platform.xml`: The default engine should have a proerty `bpmnDataAware` set to true. Furthermore, you can set the database connection properties for the data object persistence in the `bpmnDataProperties` element. Note that this prototype is restricted to MySQL databases. `dataJobRetryTimeCycle` allows to configure the timeout between two attempts to check the data input of a given activity. It follows the [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals) standard. The default is set to 20 seconds. (In general, you can also configure multiple engines with these extensions. However, please note that you can currently only use the default engine for BPMNData message exchanges. See the [BPMNData Endpoint docs](bpmn-data-docs/extension-overview.md#bpmndata-endpoint) for an explanation)
 3. When running multiple instances on the same machine, you may also want to check `/server/apache-tomcat-{version}/conf/server.xml` and set different ports.
 
 Enacting Choreographies
@@ -37,6 +37,6 @@ Downloads
 Links
 -----
 
-[BPMNData modeler sources](https://github.com/BPMNData/camunda-modeler)
-[BPMNData modeler usage](https://github.com/BPMNData/camunda-modeler/blob/bpmn_data/documentation/BPMNData.md)
-[BPMNData project page](http://bpt.hpi.uni-potsdam.de/Public/BPMNData)
+* [BPMNData modeler sources](https://github.com/BPMNData/camunda-modeler)
+* [BPMNData modeler usage](https://github.com/BPMNData/camunda-modeler/blob/bpmn_data/documentation/BPMNData.md)
+* [BPMNData project page](http://bpt.hpi.uni-potsdam.de/Public/BPMNData)

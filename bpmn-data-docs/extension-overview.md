@@ -13,23 +13,23 @@ The core functionality has been added to the engine. The following gives a rough
 
 #### Data Input Jobs
 
-We have implemented the repeated checking of data inputs against the database by leveraging the platform's [job execution concept](http://docs.camunda.org/guides/user-guide/#!/#job-executor). That means, whenever a task is approached, a job is created to asynchronously check the input. This allows to reuse the platforms capabilities for retrying failed jobs (i.e. tasks with insufficient data input).
+We have implemented the repeated checking of data inputs against the database by leveraging the platform's [job execution concept](http://docs.camunda.org/guides/user-guide/#!/#job-executor). That means, whenever a task is approached, a job is created to asynchronously check the input. This allows to reuse the platforms capabilities for thread management and retrying failed jobs (i.e. tasks with insufficient data input).
 
 Central classes and methods:
 
 * `org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity.performOperation(AtomicOperation)`: Schedules data input jobs for every executed activity that has data inputs
-* `de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler`: Responsible for processing jobs
+* `de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler`: Responsible for processing jobs. Invokes data input checking and transformation of SQL results to XML.
 
 
 #### Data Input Checking
 
-The approach chosen for data input checking is to abstractly describe the constellation of data input objects of an activity and generate SQL statements based on this description. For SQL generation, see below.
+The approach chosen for data input checking is the following: We abstractly describe the constellation of data input objects of an activity and generate SQL statements based on this description. This also allows to test the different BPMNData patterns isolated from process execution. Confer [DataObjectSpecificationTest](/engine/src/test/java/de/hpi/uni/potsdam/test/bpmn_to_sql/pattern/DataObjectSpecificationTest.java) for tests of some of the patterns. For SQL generation, see below.
 
 Central packages, classes and methods:
 
 * `de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataInputChecker`: Builds data object specifications out of the data objects of a task.
 * `de.hpi.uni.potsdam.bpmn_to_sql.pattern`: Provides a fluent API for specifying data object constellations and retrieving SQL statements for these.
-* `de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification`: Entry point for declaratively building data object SQL statements. For example, `anyDataObject("LineItem", "lid").attribute("state", "created").references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();` returns a SQL statement that selects the number of line items in state `created` that reference an order with id 42.
+* `de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification`: Entry point for declaratively building data object SQL statements. For example, `anyDataObject("LineItem", "lid").attribute("state", "created").references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();` returns a SQL statement that selects the number of line items in state `created` that references an order with id 42.
 
 
 #### Data Output
@@ -44,7 +44,7 @@ Central packages, classes and methods:
 
 #### SQL Statement Generation
 
-To transform the abstract data object specifications to plain SQL, we provide an strongly typed API.
+To transform the abstract data object specifications to plain SQL, we provide a strongly typed API.
 
 Central packages, classes and methods:
 
@@ -84,7 +84,7 @@ Central packages, classes and methods:
 
 ### BPMNData Endpoint
 
-The project `bpmn-data-endpoint` implements a simple `POST` interface that takes incoming messages and invokes correlation. It dispatches every message to the default process engine which why you can only use the default engine for inter-engine communcation. The url of this resource is the endpoint that has to be set in process models interacting with it. In the distro, the default address is `http://localhost:8080/bpmn-data-endpoint/message`.
+The project `bpmn-data-endpoint` implements a simple `POST` interface that takes incoming messages and invokes correlation. It dispatches every message to the default process engine which is why you can only use the default engine for inter-engine communcation. The url of this resource is the endpoint that has to be set in process models interacting with it. In the distro, the default address is `http://localhost:8080/bpmn-data-endpoint/message`.
 
 
 ### Web Apps
@@ -94,7 +94,7 @@ We have extended the tasklist application slightly by adding the `documentation`
 
 ### Tomcat Distro
 
-We have extended the Tomcat distribution by adding our artifacts (engine, endpoint) and preconfiguring it with our additional engine configuration. You cannot use the Glassfish and JBoss distributions with this prototype. Important note: The camunda distributions use UUIDs as entity IDs by default as opposed to human-readable IDs with increasing integers in the embedded case. As the code makes an assumption about this format to the scope's name from its id, we have changed the IDGenerator on the platform.
+We have extended the Tomcat distribution by adding our artifacts (engine, endpoint) and preconfiguring it with our additional engine configuration. You cannot use the Glassfish and JBoss distributions with this prototype. **Important note**: The camunda distributions use UUIDs as entity IDs by default as opposed to human-readable IDs with increasing integers in the embedded case. As the code makes an assumption about this format to derive the scope's name from its id, we have changed the IDGenerator on the platform.
 
 
 Demo Applications

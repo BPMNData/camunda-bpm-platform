@@ -17,8 +17,8 @@ We have implemented the repeated checking of data inputs against the database by
 
 Central classes and methods:
 
-* `org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity.performOperation(AtomicOperation)`: Schedules data input jobs for every executed activity that has data inputs
-* `de.hpi.uni.potsdam.bpmn_to_sql.job.AsyncDataInputJobHandler`: Responsible for processing jobs. Invokes data input checking and transformation of SQL results to XML.
+* [ExecutionEntity#performOperation](/engine/src/main/java/org/camunda/bpm/engine/impl/persistence/entity/ExecutionEntity.java): Schedules data input jobs for every executed activity that has data inputs
+* [AsyncDataInputJobHandler](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/job/AsyncDataInputJobHandler.java): Responsible for processing jobs. Invokes data input checking and transformation of SQL results to XML.
 
 
 #### Data Input Checking
@@ -27,9 +27,11 @@ The approach chosen for data input checking is the following: We abstractly desc
 
 Central packages, classes and methods:
 
-* `de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataInputChecker`: Builds data object specifications out of the data objects of a task.
-* `de.hpi.uni.potsdam.bpmn_to_sql.pattern`: Provides a fluent API for specifying data object constellations and retrieving SQL statements for these.
-* `de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification`: Entry point for declaratively building data object SQL statements. For example, `anyDataObject("LineItem", "lid").attribute("state", "created").references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();` returns a SQL statement that selects the number of line items in state `created` that references an order with id 42.
+* [RefactoredDataInputChecker](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/execution/RefactoredDataInputChecker.java): Builds data object specifications out of the data objects of a task.
+* [pattern package](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/pattern): Provides a fluent API for specifying data object constellations and retrieving SQL statements for these.
+* [DataObjectSpecification](/de/hpi/uni/potsdam/bpmn_to_sql/pattern/DataObjectSpecification.java): Entry point for declaratively building data object SQL statements. The example below returns a SQL statement that selects the number of line items in state `created` that references an order with id 42.
+
+    `anyDataObject("LineItem", "lid").attribute("state", "created").references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();`
 
 
 #### Data Output
@@ -38,8 +40,8 @@ Making updates to data objects follows the same idea as data input checking.
 
 Central packages, classes and methods:
 
-* `org.camunda.bpm.engine.impl.bpmn.behavior.BpmnActivityBehavior.performOutgoingBehavior(ActivityExecution, boolean, boolean, List<ActivityExecution>)`: Invokes output data handling for every activity.
-* `de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataOutputHandler`: Declaratively describes the data object constellation, similar to `RefactoredDataInputChecker`. Distinguishes between update, delete and insert cases. Furthermore retrives the xQuery result from the local `dataOutput` variable to populate the data objects with message content. See below for the xQuery handling.
+* [BpmnActivityBehavior#performOutgoingBehavior](/engine/src/main/java/org/camunda/bpm/engine/impl/bpmn/behavior/BpmnActivityBehavior.java): Invokes output data handling for every activity.
+* [RefactoredDataOutputHandler](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/execution/RefactoredDataOutputHandler.java): Declaratively describes the data object constellation, similar to `RefactoredDataInputChecker`. Distinguishes between update, delete and insert cases. Furthermore retrives the xQuery result from the local `dataOutput` variable to populate the data objects with message content. See below for the xQuery handling.
 
 
 #### SQL Statement Generation
@@ -48,7 +50,7 @@ To transform the abstract data object specifications to plain SQL, we provide a 
 
 Central packages, classes and methods:
 
-* `de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql`: Implements statement building. The entry points are the classes `SelectStatement`, `InsertStatement`, `UpdateStatement`, `DeleteStatement`.
+* [sql package](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/pattern/sql): Implements statement building. The entry points are the classes `SelectStatement`, `InsertStatement`, `UpdateStatement`, `DeleteStatement`.
 
 
 #### Message Transformation
@@ -61,15 +63,15 @@ Their result is stored in execution local variables. The typical variable flow i
 
 Central packages, classes and methods:
 
-* `de.hpi.uni.potsdam.bpmn_to_sql.execution.TransformationHandler`: Applies xQuery transformation for input and output associations.
+* [TransformationHandler](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/execution/TransformationHandler.java): Applies xQuery transformation for input and output associations.
 
 
 #### Send/Receive messages
 
 For message exchange, we have added `ActivityBehavior` implementations. 
 
-* `de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataSendTaskBehavior`: Sends the message and populates the correlation keys associated with it. Therefore stores the correlation property values in execution variables, which are reused when an incoming message is correlated, which is the expected BPMN key-based correlation behavior.
-* `de.hpi.uni.potsdam.bpmn_to_sql.behavior.BpmnDataMessageStartEventBehavior`: Adds the ability to use receive tasks for process instantiation. Populates the correlation keys accordingly.
+* [BpmnDataSendTaskBehavior](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/behavior/BpmnDataSendTaskBehavior.java): Sends the message and populates the correlation keys associated with it. Therefore stores the correlation property values in execution variables, which are reused when an incoming message is correlated, which is the expected BPMN key-based correlation behavior.
+* [BpmnDataMessageStartEventBehavior](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/behavior/BpmnDataMessageStartEventBehavior.java): Adds the ability to use receive tasks for process instantiation. Populates the correlation keys accordingly.
 
 
 #### Correlation
@@ -78,8 +80,8 @@ An incoming message is either used to instantiate a new process definition or si
 
 Central packages, classes and methods:
 
-* `de.hpi.uni.potsdam.bpmn_to_sql.correlation.BpmnDataCorrelationHandler`: Implements correlation. When matching to executions, the correlation keys and properties are evaluated by applying the retrieval expressions.
-* `de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelateBpmnDataMessageCmd`: Ensures that the correlation handler is invoked and stores the message in a local variable to be accessible by send/receive tasks.
+* [BpmnDataCorrelationHandler](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/correlation/BpmnDataCorrelationHandler.java): Implements correlation. When matching to executions, the correlation keys and properties are evaluated by applying the retrieval expressions.
+* [CorrelateBpmnDataMessageCmd](/engine/src/main/java/de/hpi/uni/potsdam/bpmn_to_sql/correlation/CorrelateBpmnDataMessageCmd.java): Ensures that the correlation handler is invoked and stores the message in a local variable to be accessible by send/receive tasks.
 
 
 ### BPMNData Endpoint
@@ -100,4 +102,4 @@ We have extended the Tomcat distribution by adding our artifacts (engine, endpoi
 Demo Applications
 -----------------
 
-The folder `/examples/bpmn-data` contains process applications that implement the travel agency example process including process models, data models, database setup scripts, task forms and unit tests. You can build the three projects `demo_agency`, `demo_airline` and `demo_customer` and deploy them to running Tomcats. Make sure that the endpoint addresses of the processes match your Tomcat configuration.
+The [examples folder](/examples/bpmn-data) contains process applications that implement the travel agency example process including process models, data models, database setup scripts, task forms and unit tests. You can build the three projects [demo_agency](/examples/bpmn-data/demo_agency), [demo_airline](/examples/bpmn-data/demo_airline) and [demo_customer](/examples/bpmn-data/demo_customer) and deploy them to running engines. Make sure that the endpoint addresses of the processes match your Tomcat configuration.

@@ -18,6 +18,10 @@ import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataAssociation;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
 
+/**
+ * Checks the data inputs of an activity. {@link RefactoredDataInputChecker#createQueryMap(HashMap, String, String, String)}
+ * builds a query for every data input object.
+ */
 public class RefactoredDataInputChecker {
   
   public boolean checkDataInput(ExecutionEntity execution) {

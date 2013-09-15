@@ -25,6 +25,18 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.UpdateStatement;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereClause;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.sql.WhereSubClause;
 
+/**
+ * <p>
+ * Allows to describe data objects and their relationships to other objects in a fluent way. 
+ * </p>
+ * 
+ * <p>
+ * Example: <code>anyDataObject("LineItem", "lid").attribute("state", "created")
+ * .references("oid", dataObject("Order", "oid", "42")).getSelectCountStatement();</code>
+ * builds a SQL statement that selects the number of LineItems in state 'created' that 
+ * reference an order object with id '42'.
+ * </p>
+ */
 public class DataObjectSpecification {
 
   private String name;

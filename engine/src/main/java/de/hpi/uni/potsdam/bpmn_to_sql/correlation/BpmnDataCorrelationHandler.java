@@ -17,6 +17,11 @@ import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.CorrelationProperty;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.xquery.XQueryHandler;
 
+/**
+ * Correlates a message to an execution by evaluating correlation keys and properties. 
+ * For correlation with process definitions, the behavior from DefaultCorrelationHandler is reused, which
+ * matches by the message's name.
+ */
 public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
 
   public Execution correlateMessageToExecution(CommandContext commandContext, String messageName, CorrelationSet correlationSet) {

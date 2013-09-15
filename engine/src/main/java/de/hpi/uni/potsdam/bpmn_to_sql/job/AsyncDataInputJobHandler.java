@@ -8,6 +8,10 @@ import de.hpi.uni.potsdam.bpmn_to_sql.execution.DataInputUnavailableException;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.RefactoredDataInputChecker;
 import de.hpi.uni.potsdam.bpmn_to_sql.execution.TransformationHandler;
 
+/**
+ * Triggers data input checking for an activity. If successful, 
+ * converts the input to XML and adds it to the execution context.
+ */
 public class AsyncDataInputJobHandler extends AsyncContinuationJobHandler {
 
   public final static String TYPE = "async-data-input";

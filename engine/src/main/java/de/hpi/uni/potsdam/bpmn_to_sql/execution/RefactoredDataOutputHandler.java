@@ -23,6 +23,9 @@ import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectReference;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.DataObjectSpecification;
 import de.hpi.uni.potsdam.bpmn_to_sql.pattern.InsertObjectSpecification;
 
+/**
+ * Runs SQL queries to update the output data objects of an activity.
+ */
 public class RefactoredDataOutputHandler {
 
   /**

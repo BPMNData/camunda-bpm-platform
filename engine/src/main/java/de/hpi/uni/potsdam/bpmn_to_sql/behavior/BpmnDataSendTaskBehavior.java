@@ -15,6 +15,11 @@ import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.MessageInstance;
 
+/**
+ * Sends the message, provided by a variable named 'dataInput' and updates the local correlation properties.
+ * @author Thorben
+ *
+ */
 public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
 
   private static final String MESSAGE_INPUT_VARIABLE_NAME = "dataInput";

@@ -10,6 +10,10 @@ import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.MessageFlow;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.CorrelationHelper;
 import de.hpi.uni.potsdam.bpmn_to_sql.correlation.MessageInstance;
 
+/**
+ * Expects a variable 'startMessage' that contains the message's xml payload.
+ * Populates correlation properties accordingly and provides the message in the 'dataOutput' variable. 
+ */
 public class BpmnDataMessageStartEventBehavior extends FlowNodeActivityBehavior {
 
   @Override

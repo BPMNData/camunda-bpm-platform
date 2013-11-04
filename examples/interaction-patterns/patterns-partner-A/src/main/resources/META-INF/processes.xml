@@ -6,7 +6,6 @@
 	<process-archive name="pattern-evaluation-partner-a">
 		<process-engine>default</process-engine>
 		<process>p3_send_receive_a.compiled.bpmn</process>
-		<process>fill_data_test2.bpmn</process>
 		<properties>
 			<property name="isDeleteUponUndeploy">true</property>
 			<property name="isScanForProcessDefinitions">false</property>

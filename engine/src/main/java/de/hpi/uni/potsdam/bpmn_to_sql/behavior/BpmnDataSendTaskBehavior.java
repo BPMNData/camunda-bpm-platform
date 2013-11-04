@@ -33,7 +33,18 @@ public class BpmnDataSendTaskBehavior extends AbstractBpmnActivityBehavior {
     }
     
     MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getOutgoingMessageFlow();
-    String endPointAddress = (String) messageFlow.getEndpointAddressExpression().getValue(execution);
+    
+    if (messageFlow == null) {
+      throw new ProcessEngineException("activity " + execution.getActivity().getId() + " has no outgoing message flow.");
+    }
+    
+    Expression endPointAddressExpression = messageFlow.getEndpointAddressExpression();
+    
+    if (endPointAddressExpression == null) {
+      throw new ProcessEngineException("no endpoint specified for participant addressed by message flow " + messageFlow.getId());
+    }
+    
+    String endPointAddress = (String) endPointAddressExpression.getValue(execution);
     
     DefaultHttpClient client = new DefaultHttpClient();
     HttpPost post =  new HttpPost(endPointAddress);

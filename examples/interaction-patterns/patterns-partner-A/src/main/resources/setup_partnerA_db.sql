@@ -16,3 +16,13 @@ CREATE TABLE IF NOT EXISTS `ResponseA` (
   PRIMARY KEY (`responseID`),
   FOREIGN KEY (`requestID`) REFERENCES RequestA(`requestID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `RequestB`;
+
+CREATE TABLE IF NOT EXISTS `RequestB` (
+  `requestID` varchar(60) NOT NULL,
+  `requestText` varchar(255),
+  `state` varchar(255) NOT NULL,
+  PRIMARY KEY (`requestID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

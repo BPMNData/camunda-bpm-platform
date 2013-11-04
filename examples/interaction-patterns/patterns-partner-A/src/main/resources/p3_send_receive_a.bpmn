@@ -6,7 +6,9 @@
   <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/data/global-data-model.xsd" namespace="http://localhost"/>
   <bpmn2:collaboration id="p3_send_receive" name="Pattern 3 send/receive">
     <bpmn2:participant id="Partner_A" name="A" processRef="p3_send_receive_a"/>
-    <bpmn2:participant id="Partner_B" name="B"/>
+    <bpmn2:participant id="Partner_B" name="B">
+      <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
+    </bpmn2:participant>
     <bpmn2:messageFlow id="MessageFlow_1" messageRef="p3_request" name="" sourceRef="p3_a_send" targetRef="Partner_B"/>
     <bpmn2:messageFlow id="MessageFlow_2" messageRef="p3_reply" name="" sourceRef="Partner_B" targetRef="p3_a_receive"/>
     <bpmn2:conversation id="Conversation_1">
@@ -16,7 +18,7 @@
   </bpmn2:collaboration>
   <bpmn2:process id="p3_send_receive_a" name="Pattern 3: send/receive (Partner A)" isExecutable="true">
     <bpmn2:extensionElements>
-      <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="Request_A"/>
+      <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="RequestA"/>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="p3_a_start" name="Start Event">
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
@@ -124,6 +126,11 @@
       <bpt:correlationInformation attributeName="response_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
+  <bpmn2:endPoint id="EndPoint_1">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p3_send_receive">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">

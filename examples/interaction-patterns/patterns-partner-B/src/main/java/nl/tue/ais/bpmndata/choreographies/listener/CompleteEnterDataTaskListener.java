@@ -16,12 +16,12 @@ public class CompleteEnterDataTaskListener implements TaskListener {
     StringBuilder xmlBuilder = new StringBuilder();
     // put here the name of the data object to populate
     // requirement: the name matches the name of a table
-    xmlBuilder.append("<RequestA>");
+    xmlBuilder.append("<ResponseB>");
     // add here all attributes set in the form of the user task
     // requirement: the attributes in the user task form are named
     // exactly like columns in the corresponding table 
-    addAttribute(xmlBuilder, delegateTask, "requestText");
-    xmlBuilder.append("</RequestA>");
+    addAttribute(xmlBuilder, delegateTask, "responseText");
+    xmlBuilder.append("</ResponseB>");
     
     System.out.println(delegateTask.getVariables()); // debugging on the console
     

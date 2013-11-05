@@ -1,3 +1,5 @@
+USE `pattern_eval_a`;
+
 DROP TABLE IF EXISTS `ResponseA`;
 DROP TABLE IF EXISTS `RequestA`;
 
@@ -17,6 +19,8 @@ CREATE TABLE IF NOT EXISTS `ResponseA` (
   FOREIGN KEY (`requestID`) REFERENCES RequestA(`requestID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+USE `pattern_eval_b`;
 
 DROP TABLE IF EXISTS `RequestB`;
 

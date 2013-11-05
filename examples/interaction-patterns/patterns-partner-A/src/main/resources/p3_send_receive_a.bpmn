@@ -9,8 +9,8 @@
     <bpmn2:participant id="Partner_B" name="B">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
-    <bpmn2:messageFlow id="MessageFlow_1" messageRef="p3_request" name="" sourceRef="p3_a_send" targetRef="Partner_B"/>
-    <bpmn2:messageFlow id="MessageFlow_2" messageRef="p3_reply" name="" sourceRef="Partner_B" targetRef="p3_a_receive"/>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p3_request" name="" sourceRef="p3_a_send" targetRef="Partner_B"/>
+    <bpmn2:messageFlow id="MessageFlow_2" messageRef="m_p3_response" name="" sourceRef="Partner_B" targetRef="p3_a_receive"/>
     <bpmn2:conversation id="Conversation_1">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
@@ -23,7 +23,7 @@
     <bpmn2:startEvent id="p3_a_start" name="Start Event">
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
     </bpmn2:startEvent>
-    <bpmn2:sendTask id="p3_a_send" name="Send" messageRef="p3_request">
+    <bpmn2:sendTask id="p3_a_send" name="Send" messageRef="m_p3_request">
       <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
       <bpmn2:outgoing>Sequence_Flow_2</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -41,7 +41,7 @@
         <bpmn2:targetRef>p3_a_do3</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:sendTask>
-    <bpmn2:receiveTask id="p3_a_receive" name="Receive" messageRef="p3_reply">
+    <bpmn2:receiveTask id="p3_a_receive" name="Receive" messageRef="m_p3_response">
       <bpmn2:incoming>Sequence_Flow_2</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_3">
@@ -102,16 +102,6 @@
       <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
   </bpmn2:process>
-  <bpmn2:message id="p3_request" name="RequestMsg">
-    <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
-    </bpmn2:extensionElements>
-  </bpmn2:message>
-  <bpmn2:message id="p3_reply" name="ResponseMsg">
-    <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_4"/><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
-    </bpmn2:extensionElements>
-  </bpmn2:message>
   <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_30">
     <bpmn2:extensionElements>
       <bpt:structureDefinition id="_StructureDefinition_30" qname="import1:Request"/>
@@ -126,9 +116,19 @@
       <bpt:correlationInformation attributeName="response_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
+  <bpmn2:message id="m_p3_request" name="m_p3_request">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:message id="m_p3_response" name="m_p3_response">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_4"/><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
   <bpmn2:endPoint id="EndPoint_1">
     <bpmn2:extensionElements>
-      <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
+      <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
@@ -180,7 +180,7 @@
           <dc:Bounds height="6.0" width="6.0" x="360.0" y="338.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_Message_11" bpmnElement="p3_request">
+      <bpmndi:BPMNShape id="_BPMNShape_Message_11" bpmnElement="m_p3_request">
         <dc:Bounds height="20.0" width="30.0" x="180.0" y="329.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="38.0" width="138.0" x="222.0" y="318.0"/>
@@ -195,7 +195,7 @@
           <dc:Bounds height="6.0" width="6.0" x="551.0" y="329.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_Message_12" bpmnElement="p3_reply">
+      <bpmndi:BPMNShape id="_BPMNShape_Message_12" bpmnElement="m_p3_response">
         <dc:Bounds height="20.0" width="30.0" x="564.0" y="329.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="54.0" width="162.0" x="605.0" y="312.0"/>

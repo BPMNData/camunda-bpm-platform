@@ -6,8 +6,8 @@
     <bpmn2:participant id="Partner_A" name="A">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
-    <bpmn2:messageFlow id="MessageFlow_1" messageRef="Message_3" name="" sourceRef="Partner_A" targetRef="p3_b_receive"/>
-    <bpmn2:messageFlow id="MessageFlow_2" messageRef="Message_4" name="" sourceRef="p3_b_send" targetRef="Partner_A"/>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p3_request" name="" sourceRef="Partner_A" targetRef="p3_b_receive"/>
+    <bpmn2:messageFlow id="MessageFlow_2" messageRef="m_p3_response" name="" sourceRef="p3_b_send" targetRef="Partner_A"/>
     <bpmn2:conversation id="Conversation_1">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
@@ -23,7 +23,7 @@
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestB"/>
     </bpmn2:extensionElements>
-    <bpmn2:receiveTask id="p3_b_receive" name="Receive" messageRef="Message_3">
+    <bpmn2:receiveTask id="p3_b_receive" name="Receive" messageRef="m_p3_request">
       <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_1">
         <bpmn2:dataOutput id="DataOutput_1"/>
@@ -37,7 +37,7 @@
 return &lt;RequestB>&lt;requestID>{$msg/request_id/text()}&lt;/requestID>&lt;requestText>{$msg/payload/text()}&lt;/requestText>&lt;/RequestB></bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
-    <bpmn2:sendTask id="p3_b_send" name="Send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="Message_4">
+    <bpmn2:sendTask id="p3_b_send" name="Send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="m_p3_response">
       <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -68,8 +68,6 @@ return &lt;RequestB>&lt;requestID>{$msg/request_id/text()}&lt;/requestID>&lt;req
       <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  <bpmn2:message id="Message_1" name="RequestMsg"/>
-  <bpmn2:message id="Message_2" name="ResponseMsg"/>
   <bpmn2:itemDefinition id="ItemDefinition_1" structureRef="_StructureDefinition_32">
     <bpmn2:extensionElements>
       <bpt:structureDefinition id="_StructureDefinition_32" qname="import1:Request"/>
@@ -84,26 +82,26 @@ return &lt;RequestB>&lt;requestID>{$msg/request_id/text()}&lt;/requestID>&lt;req
       <bpt:correlationInformation attributeName="response_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
-  <bpmn2:message id="Message_3" name="Message">
+  <bpmn2:message id="m_p3_request" name="m_p3_request">
     <bpmn2:extensionElements>
       <bpt:contentDefinition payloadRef="ItemDefinition_1"><bpt:correlationIdentifierLink ref="ItemDefinition_1"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
-  <bpmn2:message id="Message_4" name="Message">
+  <bpmn2:message id="m_p3_response" name="m_p3_response">
     <bpmn2:extensionElements>
       <bpt:contentDefinition payloadRef="ItemDefinition_2"><bpt:correlationIdentifierLink ref="ItemDefinition_2"/><bpt:correlationIdentifierLink ref="ItemDefinition_1"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="Message_3">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p3_request">
       <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_3" messageRef="Message_4">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_3" messageRef="m_p3_response">
       <bpmn2:messagePath id="FormalExpression_3" language="XPath">/message/correlation/key[@name='Request']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
   </bpmn2:correlationProperty>
   <bpmn2:correlationProperty id="CorrelationProperty_2" name="response_id">
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_2" messageRef="Message_4">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_2" messageRef="m_p3_response">
       <bpmn2:messagePath id="FormalExpression_2" language="XPath">/message/correlation/key[@name='Response']/property[@name='response_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
   </bpmn2:correlationProperty>
@@ -143,7 +141,7 @@ return &lt;RequestB>&lt;requestID>{$msg/request_id/text()}&lt;/requestID>&lt;req
           <dc:Bounds height="6.0" width="6.0" x="179.0" y="247.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_Message_13" bpmnElement="Message_3">
+      <bpmndi:BPMNShape id="_BPMNShape_Message_13" bpmnElement="m_p3_request">
         <dc:Bounds height="20.0" width="30.0" x="204.0" y="168.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="54.0" width="142.0" x="252.0" y="163.0"/>
@@ -158,7 +156,7 @@ return &lt;RequestB>&lt;requestID>{$msg/request_id/text()}&lt;/requestID>&lt;req
           <dc:Bounds height="6.0" width="6.0" x="565.0" y="197.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_Message_14" bpmnElement="Message_4">
+      <bpmndi:BPMNShape id="_BPMNShape_Message_14" bpmnElement="m_p3_response">
         <dc:Bounds height="20.0" width="30.0" x="588.0" y="168.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="54.0" width="162.0" x="636.0" y="163.0"/>

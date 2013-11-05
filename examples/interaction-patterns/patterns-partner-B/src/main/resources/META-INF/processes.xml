@@ -3,9 +3,9 @@
 <process-application
 	xmlns="http://www.camunda.org/schema/1.0/ProcessApplication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-	<process-archive name="pattern-evaluation-partner-a">
+	<process-archive name="pattern-evaluation-partner-b">
 		<process-engine>default</process-engine>
-		<process>p3_send_receive_a.compiled.bpmn</process>
+		<process>p3_send_receive_b.compiled.bpmn</process>
 		<properties>
 			<property name="isDeleteUponUndeploy">true</property>
 			<property name="isScanForProcessDefinitions">false</property>

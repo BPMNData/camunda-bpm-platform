@@ -8,7 +8,7 @@ import org.camunda.bpm.engine.delegate.TaskListener;
  * 
  * @author dfahland
  */
-public class CompleteEnterDataTaskListener implements TaskListener {
+public class CompleteEnterResponseListener implements TaskListener {
 
   private String XML_ATTRIBUTE_TEMPLATE = "<%s>%s</%s>";
   

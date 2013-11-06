@@ -39,7 +39,7 @@
         <bpmn2:sourceRef>p3_a_do1</bpmn2:sourceRef>
         <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
         <bpmn2:transformation id="FormalExpression_4" language="XQuery">let $RequestA := ./DataObjects/RequestA
-return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&quot;Request&quot;>&lt;property name=&quot;request_id&quot;>{$RequestA/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Request>&lt;request_id>{$RequestA/requestID/text()}&lt;/request_id>&lt;payload>{$RequestA/requestText/text()}&lt;/payload>&lt;/Request>&lt;/payload>&lt;/message></bpmn2:transformation>
+return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&quot;Request&quot;>&lt;property name=&quot;request_id&quot;>{$RequestA/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Request>&lt;request_id>{$RequestA/requestID/text()}&lt;/request_id>&lt;request_text>{$RequestA/requestText/text()}&lt;/request_text>&lt;/Request>&lt;/payload>&lt;/message></bpmn2:transformation>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
         <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
@@ -48,7 +48,7 @@ return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&q
     </bpmn2:sendTask>
     <bpmn2:receiveTask id="p3_a_receive" name="Receive" messageRef="m_p3_response">
       <bpmn2:incoming>Sequence_Flow_2</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_3">
         <bpmn2:dataInput id="DataInput_2"/>
         <bpmn2:dataOutput id="DataOutput_3"/>
@@ -63,14 +63,13 @@ return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&q
         <bpmn2:sourceRef>DataOutput_3</bpmn2:sourceRef>
         <bpmn2:targetRef>p3_a_do4</bpmn2:targetRef>
         <bpmn2:transformation id="FormalExpression_5" language="XQuery">let $msg := ./message/payload/Response
-return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt;responseText>{$msg/payload/text()}&lt;/responseText>&lt;/ResponseA></bpmn2:transformation>
+return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt;responseText>{$msg/response_text/text()}&lt;/responseText>&lt;/ResponseA></bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
     <bpmn2:sequenceFlow id="Sequence_Flow_2" sourceRef="p3_a_send" targetRef="p3_a_receive"/>
     <bpmn2:endEvent id="p3_a_end" name="End Event">
-      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sequenceFlow id="SequenceFlow_3" sourceRef="p3_a_receive" targetRef="p3_a_end"/>
     <bpmn2:dataObject id="p3_a_do1" name="RequestA">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-c3b68e02-8f37-4b8a-87d9-ed5fa5344dc2" type="new">requestID</bpt:primaryKey>
@@ -107,6 +106,32 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
         <bpt:foreignKey id="fk_uuid-20dbcc34-6f36-493f-9dff-db6a9c9ab35c">requestID</bpt:foreignKey>
       </bpmn2:extensionElements>
       <bpmn2:dataState name="received"/>
+    </bpmn2:dataObject>
+    <bpmn2:userTask id="p3_a_receive_finish" activiti:assignee="demo" name="Finish">
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_4">
+        <bpmn2:dataInput id="DataInput_3"/>
+        <bpmn2:dataOutput id="DataOutput_4"/>
+        <bpmn2:inputSet id="InputSet_4"/>
+        <bpmn2:outputSet id="OutputSet_4"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_3">
+        <bpmn2:sourceRef>p3_a_do4</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_3</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_4">
+        <bpmn2:sourceRef>DataOutput_4</bpmn2:sourceRef>
+        <bpmn2:targetRef>p3_a_do5</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" sourceRef="p3_a_receive" targetRef="p3_a_receive_finish"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_5" name="" sourceRef="p3_a_receive_finish" targetRef="p3_a_end"/>
+    <bpmn2:dataObject id="p3_a_do5" name="RequestA">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-d3ac4756-4a8b-4851-8479-2df7fd5131ec">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="finished"/>
     </bpmn2:dataObject>
   </bpmn2:process>
   <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_30">
@@ -154,10 +179,10 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p3_send_receive">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">
-        <dc:Bounds height="277.0" width="836.0" x="0.0" y="0.0"/>
+        <dc:Bounds height="277.0" width="949.0" x="0.0" y="0.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_Participant_13" bpmnElement="Partner_B" isHorizontal="true">
-        <dc:Bounds height="100.0" width="836.0" x="0.0" y="384.0"/>
+        <dc:Bounds height="100.0" width="949.0" x="0.0" y="384.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_7" bpmnElement="p3_a_start">
         <dc:Bounds height="36.0" width="36.0" x="48.0" y="178.0"/>
@@ -179,25 +204,18 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_EndEvent_11" bpmnElement="p3_a_end">
-        <dc:Bounds height="36.0" width="36.0" x="689.0" y="178.0"/>
+        <dc:Bounds height="36.0" width="36.0" x="876.0" y="178.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="65.0" x="675.0" y="219.0"/>
+          <dc:Bounds height="22.0" width="65.0" x="862.0" y="219.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ReceiveTask_8" targetElement="_BPMNShape_EndEvent_11">
-        <di:waypoint x="604.0" y="196.0"/>
-        <di:waypoint x="689.0" y="196.0"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="629.0" y="196.0"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_Participant_13">
         <di:waypoint x="362.0" y="236.0"/>
-        <di:waypoint x="362.0" y="297.0"/>
-        <di:waypoint x="362.0" y="335.0"/>
-        <di:waypoint x="390.0" y="384.0"/>
+        <di:waypoint x="362.0" y="310.0"/>
+        <di:waypoint x="474.0" y="310.0"/>
+        <di:waypoint x="474.0" y="384.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="6.0" width="6.0" x="360.0" y="338.0"/>
+          <dc:Bounds height="6.0" width="6.0" x="387.0" y="310.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_11" bpmnElement="m_p3_request">
@@ -207,12 +225,12 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_2" bpmnElement="MessageFlow_2" sourceElement="_BPMNShape_Participant_13" targetElement="_BPMNShape_ReceiveTask_8">
-        <di:waypoint x="489.0" y="384.0"/>
-        <di:waypoint x="554.0" y="338.0"/>
-        <di:waypoint x="554.0" y="290.0"/>
+        <di:waypoint x="474.0" y="384.0"/>
+        <di:waypoint x="474.0" y="310.0"/>
+        <di:waypoint x="554.0" y="310.0"/>
         <di:waypoint x="554.0" y="236.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="6.0" width="6.0" x="551.0" y="329.0"/>
+          <dc:Bounds height="6.0" width="6.0" x="486.0" y="310.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_12" bpmnElement="m_p3_response">
@@ -224,7 +242,7 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_33" bpmnElement="p3_a_do1">
         <dc:Bounds height="120.0" width="100.0" x="216.0" y="12.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="70.0" x="231.0" y="137.0"/>
+          <dc:Bounds height="22.0" width="63.0" x="235.0" y="137.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_UserTask_6" bpmnElement="p3_a_usertask">
@@ -233,10 +251,16 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_StartEvent_7" targetElement="_BPMNShape_UserTask_6">
         <di:waypoint x="84.0" y="196.0"/>
         <di:waypoint x="134.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="109.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_SendTask_8">
         <di:waypoint x="234.0" y="196.0"/>
         <di:waypoint x="312.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="270.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_DataObject_33">
         <di:waypoint x="210.0" y="156.0"/>
@@ -249,7 +273,7 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_35" bpmnElement="p3_a_do3">
         <dc:Bounds height="120.0" width="100.0" x="405.0" y="8.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="86.0" x="412.0" y="133.0"/>
+          <dc:Bounds height="22.0" width="63.0" x="424.0" y="133.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_DataObject_35">
@@ -263,12 +287,43 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_36" bpmnElement="p3_a_do4">
         <dc:Bounds height="120.0" width="100.0" x="603.0" y="12.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="80.0" x="613.0" y="137.0"/>
+          <dc:Bounds height="22.0" width="73.0" x="617.0" y="137.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="_BPMNShape_ReceiveTask_8" targetElement="_BPMNShape_DataObject_36">
         <di:waypoint x="586.0" y="156.0"/>
         <di:waypoint x="605.0" y="132.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_12" bpmnElement="p3_a_receive_finish">
+        <dc:Bounds height="80.0" width="100.0" x="696.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_ReceiveTask_8" targetElement="_BPMNShape_UserTask_12">
+        <di:waypoint x="604.0" y="196.0"/>
+        <di:waypoint x="696.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="629.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_UserTask_12" targetElement="_BPMNShape_EndEvent_11">
+        <di:waypoint x="796.0" y="196.0"/>
+        <di:waypoint x="876.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="854.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_3" bpmnElement="DataInputAssociation_3" sourceElement="_BPMNShape_DataObject_36" targetElement="_BPMNShape_UserTask_12">
+        <di:waypoint x="698.0" y="132.0"/>
+        <di:waypoint x="716.0" y="156.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_44" bpmnElement="p3_a_do5">
+        <dc:Bounds height="120.0" width="100.0" x="777.0" y="8.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="86.0" x="784.0" y="133.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_4" bpmnElement="DataOutputAssociation_4" sourceElement="_BPMNShape_UserTask_12" targetElement="_BPMNShape_DataObject_44">
+        <di:waypoint x="771.0" y="156.0"/>
+        <di:waypoint x="789.0" y="128.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

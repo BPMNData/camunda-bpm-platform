@@ -12,7 +12,7 @@
 		</annotation>
 		<sequence>
 			<element name="request_id" type="string" />
-			<element name="payload" type="string" />
+			<element name="request_text" type="string" />
 		</sequence>
 	</complexType>
 
@@ -25,7 +25,7 @@
 		</annotation>
 		<sequence>
 			<element name="response_id" type="string" />
-			<element name="payload" type="string" />
+			<element name="response_text" type="string" />
 		</sequence>
 	</complexType>
 </schema>

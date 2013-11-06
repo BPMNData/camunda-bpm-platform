@@ -55,6 +55,8 @@ public class RefactoredDataOutputHandler {
     // has outputs
     if (BpmnParse.getOutputData().containsKey(execution.getActivity().getId())) {
       
+      // FIXME: calculate dependencies between output objects and write top-level objects first followed by
+      // dependent objects
       List<DataObject> outputObjects = BpmnParse.getOutputData().get(execution.getActivity().getId());
       for (DataObject outputObject : outputObjects) {
         

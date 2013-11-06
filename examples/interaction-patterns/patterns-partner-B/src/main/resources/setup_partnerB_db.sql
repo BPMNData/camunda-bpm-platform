@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `RequestB`;
 
 CREATE TABLE IF NOT EXISTS `RequestB` (
   `requestID` varchar(60) NOT NULL,
+  `requestID_fromA` varchar(60) NOT NULL,
   `requestText` varchar(255),
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`requestID`)

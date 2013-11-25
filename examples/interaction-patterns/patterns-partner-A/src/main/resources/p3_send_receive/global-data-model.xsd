@@ -3,7 +3,7 @@
 	elementFormDefault="qualified" targetNamespace="http://bpt.hpi.uni-potsdam.de/data"
 	xmlns:bpmndata="http://bpt.hpi.uni-potsdam.de/bpmn-data/">
 
-	<complexType name="Request">
+	<complexType name="Request_P3">
 		<annotation>
 			<appinfo>
 				<bpmndata:correlationIdentifier	attributeName="request_id" />
@@ -16,7 +16,7 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="Response">
+	<complexType name="Response_P3">
 		<annotation>
 			<appinfo>
 				<bpmndata:correlationIdentifier	attributeName="response_id" />

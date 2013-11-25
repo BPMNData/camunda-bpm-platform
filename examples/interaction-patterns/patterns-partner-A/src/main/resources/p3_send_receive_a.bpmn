@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_shXwYEGdEeOdB8634S5fDw" targetNamespace="http://activiti.org/bpmn">
   <bpmn2:extensionElements>
-    <bpt:schemaMappingImport location="/interaction-pattern-partner-a/src/main/resources/data/local-global.schemamapping"/>
+    <bpt:schemaMappingImport location="/interaction-pattern-partner-a/src/main/resources/p3_send_receive/local-global.schemamapping"/>
   </bpmn2:extensionElements>
-  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/data/global-data-model.xsd" namespace="http://localhost"/>
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/p3_send_receive/global-data-model.xsd" namespace="http://localhost"/>
   <bpmn2:collaboration id="p3_send_receive" name="Pattern 3 send/receive">
     <bpmn2:participant id="Partner_A" name="A" processRef="p3_send_receive_a"/>
     <bpmn2:participant id="Partner_B" name="B">
@@ -127,28 +127,14 @@
       <bpmn2:dataState name="finished"/>
     </bpmn2:dataObject>
   </bpmn2:process>
-  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_30">
-    <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_30" qname="import1:Request"/>
-      <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="request_id"/>
-    </bpmn2:extensionElements>
-  </bpmn2:itemDefinition>
-  <bpmn2:itemDefinition id="ItemDefinition_4" structureRef="_StructureDefinition_31">
-    <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_31" qname="import1:Response"/>
-      <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="response_id"/>
-    </bpmn2:extensionElements>
-  </bpmn2:itemDefinition>
   <bpmn2:message id="m_p3_request" name="m_p3_request">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_1"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_1"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="m_p3_response" name="m_p3_response">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_4"/><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_2"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_2"/><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_1"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:endPoint id="EndPoint_1">
@@ -156,6 +142,20 @@
       <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
+  <bpmn2:itemDefinition id="ItemDefinition_1" structureRef="_StructureDefinition_34">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_34" qname="import1:Request_P3"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="request_id"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_35">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_35" qname="import1:Response_P3"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="response_id"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p3_send_receive">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">

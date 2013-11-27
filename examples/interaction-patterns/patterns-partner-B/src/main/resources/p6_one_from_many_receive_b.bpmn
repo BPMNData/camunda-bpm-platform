@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_okXsAEWSEeOV9r39XI0W_w" targetNamespace="http://activiti.org/bpmn">
+  <bpmn2:extensionElements>
+    <bpt:schemaMappingImport location="/interaction-pattern-partner-b/src/main/resources/p6_one_from_many_receive/local-global.schemamapping"/>
+  </bpmn2:extensionElements>
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-b/src/main/resources/p6_one_from_many_receive/global-data-model.xsd" namespace="http://localhost"/>
+  <bpmn2:collaboration id="p6_one_from_many_receive" name="Pattern 6 one-from-many receive">
+    <bpmn2:participant id="Partner_B" name="B" processRef="p6_one_from_many_receive_b"/>
+    <bpmn2:participant id="Partner_A" name="A">
+      <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:messageFlow id="MessageFlow_3" messageRef="p6_m_message" name="" sourceRef="p6_b_send_response" targetRef="Partner_A"/>
+    <bpmn2:conversation id="Conversation_1">
+      <bpmn2:messageFlowRef>MessageFlow_3</bpmn2:messageFlowRef>
+    </bpmn2:conversation>
+  </bpmn2:collaboration>
+  <bpmn2:process id="p6_one_from_many_receive_b" name="Pattern 6: one-from-many-receive (Partner B), inst" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="DataObjectB"/>
+    </bpmn2:extensionElements>
+    <bpmn2:endEvent id="p6_b_end" name="End Event">
+      <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:startEvent id="p6_b_start" name="Start Event">
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:userTask id="p6_b_enter_data" activiti:formKey="embedded:app:forms/p6_enter_data.html" activiti:assignee="demo" name="Enter Data">
+      <bpmn2:extensionElements>
+        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.P6EnterDataListener" event="complete"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_5">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:dataOutput id="DataOutput_5"/>
+        <bpmn2:inputSet id="InputSet_5"/>
+        <bpmn2:outputSet id="OutputSet_5"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_6">
+        <bpmn2:sourceRef>DataOutput_5</bpmn2:sourceRef>
+        <bpmn2:targetRef>p6_b_response_generated</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:dataObject id="p6_b_response_generated" name="DataObjectB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-c155f789-d7ab-4841-b055-bc0698e8a39b" type="new">objectID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="generated"/>
+    </bpmn2:dataObject>
+    <bpmn2:sendTask id="p6_b_send_response" name="Send Task" messageRef="p6_m_message">
+      <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_6">
+        <bpmn2:dataInput id="DataInput_3"/>
+        <bpmn2:inputSet id="InputSet_6"/>
+        <bpmn2:outputSet id="OutputSet_6"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_2">
+        <bpmn2:sourceRef>p6_b_response_generated</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_3</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+    </bpmn2:sendTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_7" sourceRef="p6_b_enter_data" targetRef="p6_b_send_response"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_8" name="" sourceRef="p6_b_send_response" targetRef="p6_b_end"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p6_b_start" targetRef="p6_b_enter_data"/>
+  </bpmn2:process>
+  <bpmn2:endPoint id="EndPoint_1">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  <bpmn2:message id="p6_m_message" name="p6_m_message">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_53">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_53" qname="import1:Message_P6"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="conversation_number"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p6_one_from_many_receive">
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_14" bpmnElement="Partner_B" isHorizontal="true">
+        <dc:Bounds height="325.0" width="913.0" x="0.0" y="240.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_15" bpmnElement="Partner_A" isHorizontal="true">
+        <dc:Bounds height="100.0" width="913.0" x="0.0" y="24.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_13" bpmnElement="p6_b_end">
+        <dc:Bounds height="36.0" width="36.0" x="792.0" y="292.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="65.0" x="778.0" y="333.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_9" bpmnElement="p6_b_start">
+        <dc:Bounds height="36.0" width="36.0" x="52.0" y="292.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="70.0" x="35.0" y="333.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_14" bpmnElement="p6_b_enter_data">
+        <dc:Bounds height="80.0" width="100.0" x="276.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_47" bpmnElement="p6_b_response_generated">
+        <dc:Bounds height="120.0" width="100.0" x="356.0" y="396.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="73.0" x="370.0" y="521.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_6" bpmnElement="DataOutputAssociation_6" sourceElement="_BPMNShape_UserTask_14" targetElement="_BPMNShape_DataObject_47">
+        <di:waypoint xsi:type="dc:Point" x="348.0" y="350.0"/>
+        <di:waypoint xsi:type="dc:Point" x="373.0" y="396.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_10" bpmnElement="p6_b_send_response">
+        <dc:Bounds height="80.0" width="100.0" x="455.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="_BPMNShape_UserTask_14" targetElement="_BPMNShape_SendTask_10">
+        <di:waypoint xsi:type="dc:Point" x="376.0" y="310.0"/>
+        <di:waypoint xsi:type="dc:Point" x="455.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="401.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_2" bpmnElement="DataInputAssociation_2" sourceElement="_BPMNShape_DataObject_47" targetElement="_BPMNShape_SendTask_10">
+        <di:waypoint xsi:type="dc:Point" x="447.0" y="396.0"/>
+        <di:waypoint xsi:type="dc:Point" x="478.0" y="350.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_SendTask_10" targetElement="_BPMNShape_EndEvent_13">
+        <di:waypoint xsi:type="dc:Point" x="555.0" y="310.0"/>
+        <di:waypoint xsi:type="dc:Point" x="792.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="671.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_3" bpmnElement="MessageFlow_3" sourceElement="_BPMNShape_SendTask_10" targetElement="_BPMNShape_Participant_15">
+        <di:waypoint xsi:type="dc:Point" x="505.0" y="270.0"/>
+        <di:waypoint xsi:type="dc:Point" x="505.0" y="197.0"/>
+        <di:waypoint xsi:type="dc:Point" x="456.0" y="197.0"/>
+        <di:waypoint xsi:type="dc:Point" x="456.0" y="124.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="478.0" y="197.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_18" bpmnElement="p6_m_message">
+        <dc:Bounds height="20.0" width="30.0" x="516.0" y="182.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="54.0" width="237.0" x="556.0" y="165.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_StartEvent_9" targetElement="_BPMNShape_UserTask_14">
+        <di:waypoint xsi:type="dc:Point" x="88.0" y="310.0"/>
+        <di:waypoint xsi:type="dc:Point" x="276.0" y="310.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

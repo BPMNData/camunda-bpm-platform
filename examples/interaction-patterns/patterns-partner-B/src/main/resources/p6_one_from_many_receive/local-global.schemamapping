@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemamapping:tSchemaMapping xmlns:schemamapping="http://bpt.hpi.uni-potsdam.de/schema-mapping"><schemamapping:classMapping localClass="DataObjectB" globalClass="Message_P6"><schemamapping:attributeMapping localAttribute="objectID" globalAttribute="message_id"/><schemamapping:attributeMapping localAttribute="text" globalAttribute="message_text"/><schemamapping:attributeMapping localAttribute="conversationNumber" globalAttribute="conversation_number"/></schemamapping:classMapping></schemamapping:tSchemaMapping>

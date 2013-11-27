@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bpt.hpi.uni-potsdam.de/data"
+	elementFormDefault="qualified" targetNamespace="http://bpt.hpi.uni-potsdam.de/data"
+	xmlns:bpmndata="http://bpt.hpi.uni-potsdam.de/bpmn-data/">
+
+	<complexType name="Message_P6">
+		<annotation>
+			<appinfo>
+				<bpmndata:correlationIdentifier	attributeName="conversation_number" />
+				<bpmndata:message />
+			</appinfo>
+		</annotation>
+		<sequence>
+			<element name="message_id" type="string" />
+			<element name="conversation_number" type="string" />
+			<element name="message_text" type="string" />
+		</sequence>
+	</complexType>
+</schema>

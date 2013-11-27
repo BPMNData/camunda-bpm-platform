@@ -129,14 +129,33 @@ public class MessageCorrelationTest extends PluggableProcessEngineTestCase {
 
   @Deployment
   public void testMatchingStartEventAndExecution() {
-    runtimeService.startProcessInstanceByKey("process");
+	// instantiate process with correlation information 
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("aKey", "aValue");
+    runtimeService.correlateMessage("newInvoiceMessage", new HashMap<String, Object>(), variables);
+
+    // check that there is 1 instance
+    long instances1a = runtimeService.createProcessInstanceQuery().processDefinitionKey("process")
+            .variableValueEquals("aKey", "aValue").count();
+    assertEquals(1, instances1a);
     
-    try {
-      runtimeService.correlateMessage("newInvoiceMessage");
-      fail("ProcessEngineException expected");
-    } catch (MismatchingMessageCorrelationException e) {
-      assertTextPresent("An execution and a process definition match the correlation", e.getMessage());
-    }
+    // send second message with same correlation information
+    runtimeService.correlateMessage("newInvoiceMessage", new HashMap<String, Object>(), variables);
+    
+    // check that there is still 1 instance
+    long instances1b = runtimeService.createProcessInstanceQuery().processDefinitionKey("process")
+        .variableValueEquals("aKey", "aValue").count();
+    assertEquals(1, instances1b);
+    
+	// instantiate process second time with new correlation information 
+    Map<String, Object> variables2 = new HashMap<String, Object>();
+    variables2.put("aKey", "aValue2");
+    runtimeService.correlateMessage("newInvoiceMessage", new HashMap<String, Object>(), variables2);
+    
+    // check that there is another instance
+    long instances2 = runtimeService.createProcessInstanceQuery().processDefinitionKey("process")
+        .variableValueEquals("aKey", "aValue2").count();
+    assertEquals(1, instances2);
   }
   
   public void testMessageStartEventCorrelationWithNonMatchingDefinition() {
@@ -177,4 +196,63 @@ public class MessageCorrelationTest extends PluggableProcessEngineTestCase {
     
     assertEquals("aBusinessKey", correlatedProcessInstance.getBusinessKey());
   }
+  
+  @Deployment(resources = "org/camunda/bpm/engine/test/api/runtime/MessageCorrelationTest.testPartialCorrelation.bpmn20.xml")
+  public void testPartialCorrelationFailsOnInitializedKeys() {
+
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("aKey", "aValue");
+		runtimeService.startProcessInstanceByKey("process", "aBusinessKey",
+				variables);
+
+		try {
+			String messageName = "newInvoiceMessage";
+			Map<String, Object> correlationKeys = new HashMap<String, Object>();
+			correlationKeys.put("aKey", "aValueFalse");
+			correlationKeys.put("aKey2", "aValue2");
+
+			Map<String, Object> processVariables = new HashMap<String, Object>();
+			processVariables.put("aKey2", "aValue2");
+			runtimeService.correlateMessage(messageName, "aBusinessKey",
+					correlationKeys, processVariables);
+
+			fail("Expect an Exception");
+		} catch (MismatchingMessageCorrelationException e) {
+			assertTextPresent("Cannot correlate message", e.getMessage());
+		}
+  }
+  
+  @Deployment
+  public void testPartialCorrelation() {
+
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("aKey", "aValue");
+    runtimeService.startProcessInstanceByKey("process", "aBusinessKey", variables);
+    
+    String messageName = "newInvoiceMessage";
+    Map<String, Object> correlationKeys = new HashMap<String, Object>();
+    correlationKeys.put("aKey", "aValue");
+    correlationKeys.put("aKey2", "aValue2");
+    
+    Map<String, Object> processVariables = new HashMap<String, Object>();
+    processVariables.put("aKey2", "aValue2");
+    runtimeService.correlateMessage(messageName, "aBusinessKey", correlationKeys, processVariables);
+
+    Map<String, Object> processVariables2 = new HashMap<String, Object>();
+    processVariables2.put("aProcessVariable", "aVariableValue");
+    runtimeService.correlateMessage(messageName, "aBusinessKey", correlationKeys, processVariables2);
+    
+    Execution correlatedExecution = runtimeService.createExecutionQuery()
+        .activityId("task").processVariableValueEquals("aProcessVariable", "aVariableValue")
+        .singleResult();
+    
+    assertNotNull(correlatedExecution);
+    
+    ProcessInstance correlatedProcessInstance = runtimeService.createProcessInstanceQuery()
+        .processInstanceId(correlatedExecution.getProcessInstanceId()).singleResult();
+    
+    assertEquals("aBusinessKey", correlatedProcessInstance.getBusinessKey());
+  }
+  
+  
 }

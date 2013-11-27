@@ -92,18 +92,18 @@ public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
    * it has to hold that they are either undefined for the message or the scope.
    */
   private boolean fulfillsCorrelationCondition(List<CorrelationResult> correlationResults) {
-    boolean oneMatchingKey = false;
+    boolean oneMatchingKeyOrCanBeSet = false;
     boolean allKeysMatchOrUndefined = true;
     for (CorrelationResult correlationResult : correlationResults) {
-      if (correlationResult.keyMatches) {
-        oneMatchingKey = true;
+      if (correlationResult.keyMatches || (!correlationResult.keyMatches && !correlationResult.keyDefinedForScope && correlationResult.keyDefinedForMessage)) {
+        oneMatchingKeyOrCanBeSet = true;
       }
       if (!correlationResult.keyMatches && correlationResult.keyDefinedForScope && correlationResult.keyDefinedForMessage) {
         allKeysMatchOrUndefined = false;
       }
     }
     
-    return oneMatchingKey && allKeysMatchOrUndefined;
+    return oneMatchingKeyOrCanBeSet && allKeysMatchOrUndefined;
   }
 
   private class CorrelationResult {

@@ -17,6 +17,8 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.MismatchingMessageCorrelationException;
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.RuntimeServiceImpl;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -27,6 +29,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 
 /**
  * @author Thorben Lindhauer
+ * @author Dirk Fahland
  */
 public class CorrelateMessageCmd implements Command<Void> {
 
@@ -53,11 +56,13 @@ public class CorrelateMessageCmd implements Command<Void> {
     CorrelationSet correlationSet = new CorrelationSet(businessKey, correlationKeys);
     Execution matchingExecution = correlationHandler.correlateMessageToExecution(commandContext, messageName, correlationSet);
     ProcessDefinition matchingDefinition = correlationHandler.correlateMessageToProcessDefinition(commandContext, messageName);
-    
-    if (matchingExecution != null && matchingDefinition != null) {
-      throw new MismatchingMessageCorrelationException(messageName, businessKey, 
-          correlationKeys, "An execution and a process definition match the correlation.");
-    }
+
+    // do not throw an exception when there are matching executions and definitions (dfahland)
+    // apply strategy: first correlate to existing execution, if none exists create a new instance to correlate the message to
+//    if (matchingExecution != null && matchingDefinition != null) {
+//      throw new MismatchingMessageCorrelationException(messageName, businessKey, 
+//          correlationKeys, "An execution and a process definition match the correlation.");
+//    }
     
     if (matchingExecution != null) {
       triggerExecution(commandContext, matchingExecution);
@@ -69,7 +74,7 @@ public class CorrelateMessageCmd implements Command<Void> {
       return null;
     }
     
-    throw new MismatchingMessageCorrelationException(messageName, "No process definition or execution matches the parameters");
+    throw new MismatchingMessageCorrelationException(messageName, "No process definition or execution matches the parameters: businessKey="+businessKey+", correlationKeys="+correlationKeys);
   }
 
   protected void triggerExecution(CommandContext commandContext, Execution matchingExecution) {

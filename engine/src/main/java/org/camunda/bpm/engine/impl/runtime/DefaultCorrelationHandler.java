@@ -13,18 +13,23 @@
 
 package org.camunda.bpm.engine.impl.runtime;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.camunda.bpm.engine.MismatchingMessageCorrelationException;
 import org.camunda.bpm.engine.impl.ExecutionQueryImpl;
 import org.camunda.bpm.engine.impl.ProcessDefinitionQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.Execution;
 
 /**
  * @author Thorben Lindhauer
+ * @author Dirk Fahland
  */
 public class DefaultCorrelationHandler implements CorrelationHandler {
 
@@ -55,10 +60,88 @@ public class DefaultCorrelationHandler implements CorrelationHandler {
     Execution matchingExecution = null;
     if (!matchingExecutions.isEmpty()) {
       matchingExecution = matchingExecutions.get(0);
+    } else {
+    	// try matching via partial correlation
+    	matchingExecution = correlateMessageToExecution_PartialUnitialized(commandContext, messageName, correlationSet);
     }
 
     return matchingExecution;
   }
+  
+  	/**
+  	 * This method implements the incremental correlation key binding behavior
+  	 * specified in the BPMN2.0 standard, Section 8.3.2 to allow initializing
+  	 * a CorrelationKey that has not been initialized earlier, but requires
+  	 * matching on all initialized correlation keys.
+  	 * 
+	 * @param commandContext
+	 * @param messageName
+	 * @param correlationSet
+	 * @return the execution that partially matches the correlation set where a
+	 *         non-match is allowed if the correlation property is not yet
+	 *         initialized. The returned execution is the one with the highest
+	 *         fit to the correlation set (largest number of matching
+	 *         correlation properties), if it exists.
+	 */
+  public Execution correlateMessageToExecution_PartialUnitialized(
+		  CommandContext commandContext, 
+		  String messageName,
+	      CorrelationSet correlationSet)
+  {
+	  	// get all executions matching the business key and waiting for the particular message
+	    ExecutionQueryImpl query = new ExecutionQueryImpl();
+	    
+	    String businessKey = correlationSet.getBusinessKey();
+	    if(businessKey != null) {
+	      query.processInstanceBusinessKey(businessKey);
+	    }
+	    query.messageEventSubscriptionName(messageName);
+	    List<Execution> matchingExecutions = query.executeList(commandContext, null);
+	    
+	    Map<String, Object> correlationKeys = correlationSet.getCorrelationKeys();
+	    
+	    // then iterate over all executions and sort them by the number of best key matches
+	    Map<Integer, List<Execution>> executionsPerKeyMatches = new HashMap<Integer, List<Execution>>();
+	    int bestKeyMatch = -1;
+	    for (Execution execution : matchingExecutions){ 
+	    	
+	    	if (!(execution instanceof ExecutionEntity)) continue;
+	    	ExecutionEntity executionEntity = (ExecutionEntity)execution;
+	
+	    	boolean isCompatible = true;
+	    	int matchingKeys = 0;
+	    	if (correlationKeys != null) {
+		    	for (Map.Entry<String, Object> correlation : correlationKeys.entrySet()) {
+		    		if (executionEntity.getVariables().containsKey(correlation.getKey())) {
+		    			if (!executionEntity.getVariables().get(correlation.getKey()).equals(correlation.getValue())) {
+		    				isCompatible = false;
+		    				break;
+		    			} {
+		    				matchingKeys++;
+		    			}
+		    		}
+		    	}
+	    	}
+	    	if (isCompatible) {
+	    		if (matchingKeys > bestKeyMatch) bestKeyMatch = matchingKeys;
+	    		if (!executionsPerKeyMatches.containsKey(matchingKeys)) executionsPerKeyMatches.put(matchingKeys, new ArrayList<Execution>());
+	    		executionsPerKeyMatches.get(matchingKeys).add(execution);
+	    	}
+	    }
+
+	    Execution matchingExecution = null;
+	    if (bestKeyMatch >= 0) {
+	    	if (executionsPerKeyMatches.get(bestKeyMatch).size() > 1) {
+	    		throw new MismatchingMessageCorrelationException(messageName, businessKey, correlationKeys, 
+	    				String.valueOf(executionsPerKeyMatches.get(bestKeyMatch).size()) + " executions partially match the correlation keys with "+bestKeyMatch+" matches. Should be one or zero.");
+	    	}
+		    if (!executionsPerKeyMatches.get(bestKeyMatch).isEmpty()) {
+		      matchingExecution = executionsPerKeyMatches.get(bestKeyMatch).get(0);
+		    }
+	    }
+
+	    return matchingExecution;
+	  }
 
   public ProcessDefinition correlateMessageToProcessDefinition(CommandContext commandContext, String messageName) {
     ProcessDefinitionQueryImpl query = (ProcessDefinitionQueryImpl) new ProcessDefinitionQueryImpl().messageEventSubscriptionName(messageName);

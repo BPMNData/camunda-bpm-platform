@@ -16,7 +16,7 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="BtoC_P3">
+	<complexType name="BtoC_P12">
 		<annotation>
 			<appinfo>
 				<bpmndata:correlationIdentifier	attributeName="id_from_b" />
@@ -24,12 +24,13 @@
 			</appinfo>
 		</annotation>
 		<sequence>
+			<element name="id_from_a" type="string" />
 			<element name="id_from_b" type="string" />
 			<element name="request_text" type="string" />
 		</sequence>
 	</complexType>
 	
-	<complexType name="CtoA_P3">
+	<complexType name="CtoA_P12">
 		<annotation>
 			<appinfo>
 				<bpmndata:message />

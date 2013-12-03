@@ -24,6 +24,7 @@
 			</appinfo>
 		</annotation>
 		<sequence>
+			<element name="id_from_a" type="string" />
 			<element name="id_from_b" type="string" />
 			<element name="request_text" type="string" />
 		</sequence>

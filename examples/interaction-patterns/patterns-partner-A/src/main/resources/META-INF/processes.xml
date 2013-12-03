@@ -8,6 +8,10 @@
 		<process>p1_send_a.compiled.bpmn</process>
 		<process>p3_send_receive_a.compiled.bpmn</process>
 		<process>p6_one_from_many_receive_a.compiled.bpmn</process>
+		<process>p11_request_w_referral.compiled.bpmn</process>
+		<process>p11_request_w_referral_multi.compiled.bpmn</process>
+		<process>p12_relayed_request_a.compiled.bpmn</process>
+		<process>p12_relayed_request_c.compiled.bpmn</process>
 		<properties>
 			<property name="isDeleteUponUndeploy">true</property>
 			<property name="isScanForProcessDefinitions">false</property>

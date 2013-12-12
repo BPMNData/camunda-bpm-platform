@@ -5,6 +5,12 @@ import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
 
 public class DataObjectClassification {
+	
+	public static Boolean hasMainDataObjectAnnotation(String scopeName) {
+		return 		BpmnParse.getScopeInformation().containsKey(scopeName)
+				&& 	BpmnParse.getScopeInformation().get(scopeName) != null
+				&& !BpmnParse.getScopeInformation().get(scopeName).isEmpty();
+	}
 
 	public static Boolean isMainDataObject(DataObject dataObj, String scopeName) {
 		if (dataObj.getName().equalsIgnoreCase(BpmnParse.getScopeInformation().get(scopeName))) {

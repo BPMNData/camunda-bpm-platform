@@ -1620,6 +1620,8 @@ public class BpmnParse extends Parse {
       nestedActivity.setScope(true);
       addEventSubscriptionDeclaration(messageDefinition, nestedActivity, messageEventDefinition);
     }
+    
+    activities.put(nestedActivity.getId(), nestedActivity);
 
     for (BpmnParseListener parseListener : parseListeners) {
       parseListener.parseIntermediateMessageCatchEventDefinition(messageEventDefinition, nestedActivity);
@@ -1912,7 +1914,7 @@ public class BpmnParse extends Parse {
     ActivityImpl activity = createActivityOnScope(eventBasedGwElement, scope);
     activity.setActivityBehavior(new EventBasedGatewayActivityBehavior());
     activity.setScope(true);
-
+    
     parseExecutionListenersOnScope(eventBasedGwElement, activity);
 
     for (BpmnParseListener parseListener : parseListeners) {

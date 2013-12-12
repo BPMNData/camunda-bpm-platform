@@ -12,19 +12,29 @@
  */
 package org.camunda.bpm.engine.impl.bpmn.behavior;
 
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
+public class IntermediateCatchEventActivitiBehaviour extends
+		AbstractBpmnActivityBehavior {
 
-public class IntermediateCatchEventActivitiBehaviour extends AbstractBpmnActivityBehavior {
+	public void execute(ActivityExecution execution) throws Exception {
+		// Do nothing: waitstate behavior
+	}
 
+	@Override
+	public void signal(ActivityExecution execution, String signalName, Object signalData) throws Exception {
 
-  public void execute(ActivityExecution execution) throws Exception {
-    // Do nothing: waitstate behavior
-  }
+		if (Context.getProcessEngineConfiguration().isBpmnDataAware()) {
+			if (execution.getActivity() instanceof ActivityImpl && ((ActivityImpl)execution.getActivity()).getIncomingMessageFlow() != null) {
+				String message = (String) execution.getVariable("message");
+				ReceiveTaskActivityBehavior.updateCorrelationKeys(execution, message);
+				//execution.getParent().setVariableLocal("dataOutput", message);
+				execution.setVariableLocal("dataOutput", message);
+			}
+		}
 
-  @Override
-  public void signal(ActivityExecution execution, String signalName, Object signalData) throws Exception {
-    leave(execution);
-  }
+		leave(execution);
+	}
 }
-

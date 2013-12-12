@@ -49,7 +49,7 @@ public class ReceiveTaskActivityBehavior extends TaskActivityBehavior {
     leave(execution);
   }
   
-  protected void updateCorrelationKeys(ActivityExecution execution, String message) {
+  protected static void updateCorrelationKeys(ActivityExecution execution, String message) {
     MessageFlow messageFlow = ((ActivityImpl) execution.getActivity()).getIncomingMessageFlow();
     
     if (messageFlow == null) {

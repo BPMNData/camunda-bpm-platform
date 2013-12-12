@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.ExecutionQueryImpl;
+import org.camunda.bpm.engine.impl.bpmn.behavior.EventBasedGatewayActivityBehavior;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.pvm.PvmActivity;
+import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import org.camunda.bpm.engine.impl.runtime.CorrelationSet;
 import org.camunda.bpm.engine.impl.runtime.DefaultCorrelationHandler;
@@ -38,7 +41,23 @@ public class BpmnDataCorrelationHandler extends DefaultCorrelationHandler {
     for (Execution waitingExecution : waitingExecutions) {
       ExecutionEntity executionEntity = ((ExecutionEntity) waitingExecution);
       ActivityImpl activity = executionEntity.getActivity();
-      MessageFlow incomingMessageFlow = activity.getIncomingMessageFlow();
+      
+      MessageFlow incomingMessageFlow = null;
+      
+      if (activity.getActivityBehavior() instanceof EventBasedGatewayActivityBehavior) {
+    	  for (ActivityImpl successor : activity.getActivities()) {
+			  MessageFlow sFlow = successor.getIncomingMessageFlow();
+			  if (sFlow != null) {
+				  if (sFlow.getMessage().getName().equals(messageName)) {
+					  incomingMessageFlow = sFlow;
+					  break;
+				  }
+			  }
+    	  }
+    	  
+      } else {
+	      incomingMessageFlow = activity.getIncomingMessageFlow();
+      }
       
       if (incomingMessageFlow == null) {
         throw new ProcessEngineException(waitingExecution.toString() + " waits in activity " 

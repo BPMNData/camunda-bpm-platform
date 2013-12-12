@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
+import org.camunda.bpm.engine.impl.pvm.PvmActivity;
+import org.camunda.bpm.engine.impl.pvm.PvmScope;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 
 import de.hpi.uni.potsdam.bpmn_to_sql.bpmn.DataObject;
@@ -180,6 +182,25 @@ public class RefactoredDataOutputHandler {
     return dataSpec;
   }
   
+  public static String getScopeID(PvmActivity activity) {
+	  return activity.getParent().getId().split(":")[0];
+  }
+  
+  public static String getScopeID_withCaseObject(PvmActivity activity) {
+	  
+	  String scopeID = getScopeID(activity);
+	  if (DataObjectClassification.hasMainDataObjectAnnotation(scopeID))
+		  return scopeID;
+	  else {
+		  PvmScope parentScope = activity.getParent();
+		  if (parentScope != null && parentScope instanceof PvmActivity) {
+			  PvmActivity parentActivity = (PvmActivity)parentScope;
+			  return getScopeID_withCaseObject(parentActivity);
+		  }
+	  }
+	  return null;
+  }
+  
   private static class OutputObjectContext {
     private boolean isCaseObject;
     private boolean isDependentObject;
@@ -204,7 +225,7 @@ public class RefactoredDataOutputHandler {
         context.outputObjectState = (String) execution.getVariableLocal(outputObject.getState().substring(1));
       }
       
-      String scope = (String) execution.getActivity().getParent().getId().split(":")[0];
+      String scope = (String) getScopeID_withCaseObject(execution.getActivity());
       context.isCaseObject = DataObjectClassification.isMainDataObject(outputObject, scope);
       context.isDependentObject = !context.isCaseObject;
       context.isSingleDependentDataObject = DataObjectClassification.isDependentDataObject(outputObject, scope);

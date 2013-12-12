@@ -2,7 +2,7 @@
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_shXwYEGdEeOdB8634S5fDw" targetNamespace="http://activiti.org/bpmn">
   <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/p4_racing_incoming/global-data-model.xsd" namespace="http://localhost"/>
   <bpmn2:collaboration id="p4_racing_incoming" name="Pattern 4 racing incoming">
-    <bpmn2:participant id="Partner_A" name="A" processRef="p1_send_a"/>
+    <bpmn2:participant id="Partner_A" name="A" processRef="p4_racing_incoming_a"/>
     <bpmn2:participant id="Partner_B" name="B">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
@@ -12,12 +12,9 @@
       <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P4a">
         <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
       </bpmn2:correlationKey>
-      <bpmn2:correlationKey id="CorrelationKey_2" name="Request_P4c">
-        <bpmn2:correlationPropertyRef>CorrelationProperty_2</bpmn2:correlationPropertyRef>
-      </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="p1_send_a" name="Pattern 1: send (Partner A)" isExecutable="true">
+  <bpmn2:process id="p4_racing_incoming_a" name="Pattern 4: racing incoming (Partner A), inst" isExecutable="true">
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="RequestA"/>
     </bpmn2:extensionElements>
@@ -96,19 +93,11 @@ return &lt;message name=&quot;m_p4_from_a&quot;>&lt;correlation>&lt;key name=&qu
       <bpt:correlationInformation attributeName="request_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
-  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_87">
-    <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_87" qname="import1:Request_P4c"/>
-      <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="request_id"/>
-    </bpmn2:extensionElements>
-  </bpmn2:itemDefinition>
   <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
     <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p4_from_a">
       <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request_P4a']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
   </bpmn2:correlationProperty>
-  <bpmn2:correlationProperty id="CorrelationProperty_2" name="request_id"/>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p4_racing_incoming">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">
@@ -197,7 +186,7 @@ return &lt;message name=&quot;m_p4_from_a&quot;>&lt;correlation>&lt;key name=&qu
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_2" name="Pattern 1: send (Partner A)">
-    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="p1_send_a"/>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_2" name="Pattern 4: racing incoming (Partner A), inst">
+    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="p4_racing_incoming_a"/>
   </bpmndi:BPMNDiagram>
 </bpmn2:definitions>

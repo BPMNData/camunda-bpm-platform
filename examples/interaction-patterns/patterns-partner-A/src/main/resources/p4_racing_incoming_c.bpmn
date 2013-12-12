@@ -84,13 +84,6 @@
       <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_86">
-    <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_86" qname="import1:Request_P4a"/>
-      <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="request_id"/>
-    </bpmn2:extensionElements>
-  </bpmn2:itemDefinition>
   <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_87">
     <bpmn2:extensionElements>
       <bpt:structureDefinition id="_StructureDefinition_87" qname="import1:Request_P4c"/>

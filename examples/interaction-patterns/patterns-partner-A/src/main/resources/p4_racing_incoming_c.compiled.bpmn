@@ -9,11 +9,8 @@
     <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p4_from_c" name="" sourceRef="p4_c_send" targetRef="Partner_B"/>
     <bpmn2:conversation id="Conversation_1">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
-      <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P4a">
+      <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P4c">
         <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
-      </bpmn2:correlationKey>
-      <bpmn2:correlationKey id="CorrelationKey_2" name="Request_P4c">
-        <bpmn2:correlationPropertyRef>CorrelationProperty_2</bpmn2:correlationPropertyRef>
       </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
@@ -89,13 +86,6 @@ return &lt;message name=&quot;m_p4_from_c&quot;>&lt;correlation>&lt;key name=&qu
       <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_86">
-    <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_86" qname="import1:Request_P4a"/>
-      <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="request_id"/>
-    </bpmn2:extensionElements>
-  </bpmn2:itemDefinition>
   <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_87">
     <bpmn2:extensionElements>
       <bpt:structureDefinition id="_StructureDefinition_87" qname="import1:Request_P4c"/>
@@ -103,8 +93,7 @@ return &lt;message name=&quot;m_p4_from_c&quot;>&lt;correlation>&lt;key name=&qu
       <bpt:correlationInformation attributeName="request_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
-  <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id"/>
-  <bpmn2:correlationProperty id="CorrelationProperty_2" name="request_id">
+  <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
     <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p4_from_c">
       <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request_P4c']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>

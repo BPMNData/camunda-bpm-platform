@@ -23,7 +23,7 @@ import de.hpi.uni.potsdam.test.bpmn_to_sql.util.AbstractBpmnDataTestCase;
 import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
 
 @Ignore
-public class P6Test extends AbstractBpmnDataTestCase {
+public class P4Test extends AbstractBpmnDataTestCase {
 
   private static final String OFFER_MESSAGE =
 	"<message name=\"p6_m_message\">" +

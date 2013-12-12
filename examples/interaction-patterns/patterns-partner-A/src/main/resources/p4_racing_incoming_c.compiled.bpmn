@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_shXwYEGdEeOdB8634S5fDw" targetNamespace="http://activiti.org/bpmn">
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/p4_racing_incoming/global-data-model.xsd" namespace="http://localhost"/>
+  <bpmn2:collaboration id="p4_racing_incoming" name="Pattern 4 racing incoming">
+    <bpmn2:participant id="Partner_C" name="C" processRef="p4_racing_incoming_c"/>
+    <bpmn2:participant id="Partner_B" name="B">
+      <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p4_from_c" name="" sourceRef="p4_c_send" targetRef="Partner_B"/>
+    <bpmn2:conversation id="Conversation_1">
+      <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
+      <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P4a">
+        <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
+      </bpmn2:correlationKey>
+      <bpmn2:correlationKey id="CorrelationKey_2" name="Request_P4c">
+        <bpmn2:correlationPropertyRef>CorrelationProperty_2</bpmn2:correlationPropertyRef>
+      </bpmn2:correlationKey>
+    </bpmn2:conversation>
+  </bpmn2:collaboration>
+  <bpmn2:process id="p4_racing_incoming_c" name="Pattern 4: racing incoming (Partner C), inst" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="RequestC"/>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="p1_a_start">
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sendTask id="p4_c_send" name="Send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="m_p4_from_c">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_2">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:dataOutput id="DataOutput_2"/>
+        <bpmn2:inputSet id="InputSet_2"/>
+        <bpmn2:outputSet id="OutputSet_2"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_1">
+        <bpmn2:sourceRef>p4_c_do1</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
+        <bpmn2:transformation id="FormalExpression_2" language="XQuery">let $RequestC := ./DataObjects/RequestC
+return &lt;message name=&quot;m_p4_from_c&quot;>&lt;correlation>&lt;key name=&quot;Request_P4c&quot;>&lt;property name=&quot;request_id&quot;>{$RequestC/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Request_P4c>&lt;request_id>{$RequestC/requestID/text()}&lt;/request_id>&lt;request_text>{$RequestC/requestText/text()}&lt;/request_text>&lt;/Request_P4c>&lt;/payload>&lt;/message></bpmn2:transformation>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
+        <bpmn2:targetRef>p4_c_do2</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:sendTask>
+    <bpmn2:endEvent id="p3_a_end">
+      <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="p4_c_do1" name="RequestC">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-c3b68e02-8f37-4b8a-87d9-ed5fa5344dc2" type="new">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
+    </bpmn2:dataObject>
+    <bpmn2:userTask id="p4_c_usertask" activiti:assignee="demo" activiti:formKey="embedded:app:forms/enter_details.html" name="Enter Data (P4, C)">
+      <bpmn2:extensionElements>
+        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.CompleteEnterDataTaskListener" event="complete"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_1">
+        <bpmn2:dataOutput id="DataOutput_1"/>
+        <bpmn2:inputSet id="InputSet_1"/>
+        <bpmn2:outputSet id="OutputSet_1"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
+        <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
+        <bpmn2:targetRef>p4_c_do1</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="p1_a_start" targetRef="p4_c_usertask"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="p4_c_usertask" targetRef="p4_c_send"/>
+    <bpmn2:dataObject id="p4_c_do2" name="RequestC">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-54de286a-18ef-487c-a297-5820acdaf1d4">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="sent"/>
+    </bpmn2:dataObject>
+    <bpmn2:sequenceFlow id="SequenceFlow_6" name="" sourceRef="p4_c_send" targetRef="p3_a_end"/>
+  </bpmn2:process>
+  <bpmn2:message id="m_p4_from_c" name="m_p4_from_c">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink ref="ItemDefinition_3"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:endPoint id="EndPoint_1">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_86">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_86" qname="import1:Request_P4a"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="request_id"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_87">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_87" qname="import1:Request_P4c"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="request_id"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id"/>
+  <bpmn2:correlationProperty id="CorrelationProperty_2" name="request_id">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p4_from_c">
+      <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request_P4c']/property[@name='request_id']/text()</bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+  </bpmn2:correlationProperty>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p4_racing_incoming">
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_C" isHorizontal="true">
+        <dc:Bounds height="277.0" width="949.0" x="0.0" y="0.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_13" bpmnElement="Partner_B" isHorizontal="true">
+        <dc:Bounds height="100.0" width="949.0" x="0.0" y="384.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_7" bpmnElement="p1_a_start">
+        <dc:Bounds height="36.0" width="36.0" x="48.0" y="178.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="70.0" x="48.0" y="219.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_8" bpmnElement="p4_c_send">
+        <dc:Bounds height="80.0" width="100.0" x="425.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_11" bpmnElement="p3_a_end">
+        <dc:Bounds height="36.0" width="36.0" x="876.0" y="178.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="65.0" x="862.0" y="219.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_Participant_13">
+        <di:waypoint x="475.0" y="236.0"/>
+        <di:waypoint x="475.0" y="310.0"/>
+        <di:waypoint x="474.0" y="310.0"/>
+        <di:waypoint x="474.0" y="384.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="471.0" y="337.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_11" bpmnElement="m_p4_from_c">
+        <dc:Bounds height="20.0" width="30.0" x="504.0" y="327.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="168.0" x="540.0" y="318.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_33" bpmnElement="p4_c_do1">
+        <dc:Bounds height="120.0" width="100.0" x="264.0" y="12.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="63.0" x="283.0" y="137.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_6" bpmnElement="p4_c_usertask">
+        <dc:Bounds height="80.0" width="100.0" x="134.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_StartEvent_7" targetElement="_BPMNShape_UserTask_6">
+        <di:waypoint x="84.0" y="196.0"/>
+        <di:waypoint x="134.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="109.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_SendTask_8">
+        <di:waypoint x="234.0" y="196.0"/>
+        <di:waypoint x="425.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="270.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_DataObject_33">
+        <di:waypoint x="226.0" y="156.0"/>
+        <di:waypoint x="264.0" y="120.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_33" targetElement="_BPMNShape_SendTask_8">
+        <di:waypoint x="364.0" y="111.0"/>
+        <di:waypoint x="425.0" y="157.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_35" bpmnElement="p4_c_do2">
+        <dc:Bounds height="120.0" width="100.0" x="564.0" y="12.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="63.0" x="583.0" y="137.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_DataObject_35">
+        <di:waypoint x="520.0" y="156.0"/>
+        <di:waypoint x="564.0" y="117.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_EndEvent_11">
+        <di:waypoint x="525.0" y="196.0"/>
+        <di:waypoint x="876.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="754.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_2" name="Pattern 4: racing incoming (Partner C), inst">
+    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="p4_racing_incoming_c"/>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

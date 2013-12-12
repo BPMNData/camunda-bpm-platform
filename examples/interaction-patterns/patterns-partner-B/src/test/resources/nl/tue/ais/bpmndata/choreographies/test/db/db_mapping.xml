@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nl.tue.ais.bpmndata.choreographies.test.db">
+  <!-- select id="selectSingleTraveldetails" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select travelID, state, departure, destination, start_date, return_date from TravelDetails 
+    <where>
+        <if test="travelID != null">
+            travelID = #{travelID}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+        <if test="departure != null">
+            and departure = #{departure}
+        </if>
+        <if test="destination != null">
+            and destination = #{destination}
+        </if>
+        <if test="start_date != null">
+            and start_date = #{start_date}
+        </if>
+        <if test="return_date != null">
+            and return_date = #{return_date}
+        </if>
+    </where>
+  </select>
+  
+  <select id="selectSingleFlights" parameterType="java.util.Map" resultType="java.util.HashMap">
+    select flightID, travelID, inboundFlightNumber, outboundFlightNumber, price, state from Flights 
+    <where>
+        <if test="flightID != null">
+            flightID = #{flightID}
+        </if>
+        <if test="travelID != null">
+            and travelID = #{travelID}
+        </if>
+        <if test="inboundFlightNumber != null">
+            and inboundFlightNumber = #{inboundFlightNumber}
+        </if>
+        <if test="outboundFlightNumber != null">
+            and outboundFlightNumber = #{outboundFlightNumber}
+        </if>
+        <if test="price != null">
+            and price = #{price}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </where>
+  </select -->
+</mapper>

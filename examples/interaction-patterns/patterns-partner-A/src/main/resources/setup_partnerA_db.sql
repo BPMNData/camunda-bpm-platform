@@ -46,6 +46,7 @@ DROP TABLE IF EXISTS `RequestC`;
 
 CREATE TABLE IF NOT EXISTS `RequestC` (
   `requestID` varchar(60) NOT NULL,
+  `requestID_fromA` varchar(60) NOT NULL,
   `requestID_fromB` varchar(60) NOT NULL,
   `requestText` varchar(255),
   `state` varchar(255) NOT NULL,

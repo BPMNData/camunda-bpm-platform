@@ -5,7 +5,7 @@
   </bpmn2:extensionElements>
   <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-b/src/main/resources/p1_send/global-data-model.xsd" namespace="http://localhost"/>
   <bpmn2:collaboration id="p1_send" name="Pattern 1 send">
-    <bpmn2:participant id="Partner_B" name="B" processRef="p1_send_b"/>
+    <bpmn2:participant id="Partner_B" name="B" processRef="p2_receive_b"/>
     <bpmn2:participant id="Partner_A" name="A">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
@@ -14,7 +14,7 @@
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="p1_send_b" name="Pattern 1: send (Partner B)" isExecutable="true">
+  <bpmn2:process id="p2_receive_b" name="Pattern 2: receive (Partner B)" isExecutable="true">
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestB"/>
     </bpmn2:extensionElements>

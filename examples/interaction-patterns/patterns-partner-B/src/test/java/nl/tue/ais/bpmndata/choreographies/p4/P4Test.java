@@ -1,4 +1,4 @@
-package nl.tue.ais.bpmndata.choreographies.p6;
+package nl.tue.ais.bpmndata.choreographies.p4;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -23,24 +23,20 @@ import de.hpi.uni.potsdam.test.bpmn_to_sql.util.AbstractBpmnDataTestCase;
 import de.hpi.uni.potsdam.test.bpmn_to_sql.util.DatabaseSetup;
 
 @Ignore
-public class P6Test extends AbstractBpmnDataTestCase {
+public class P4Test extends AbstractBpmnDataTestCase {
 
   private static final String OFFER_MESSAGE =
-	"<message name=\"p6_m_message\">" +
+	"<message name=\"m_p4_from_a\">" +
 	"    <correlation>       " +
-	"		<key name=\"Message_P6\">"+
-    "	    	<property name=\"conversation_number\">42</property>"+
-	"		</key>" +
-	"		<key name=\"Message_P6\">"+
-    "	    	<property name=\"conversation_number\">42</property>"+
+	"		<key name=\"Message_P4a\">"+
+    "	    	<property name=\"request_id\">42</property>"+
 	"		</key>" +
 	"	 </correlation>" +
 	"    <payload>"+
-	"		<Message_P6>"+
-	"			<message_id>5610</message_id>"+
-	"			<message_text>test</message_text>"+
-	"			<conversation_number>42</conversation_number>"+
-	"		</Message_P6>"+
+	"		<Message_P4a>"+
+	"			<request_id>5610</request_id>"+
+	"			<request_text>test</request_text>"+
+	"		</Message_P4a>"+
 	"	</payload>"+
 	"</message>";
   
@@ -60,17 +56,14 @@ public class P6Test extends AbstractBpmnDataTestCase {
         .willReturn(aResponse().withStatus(204)));
   }
   
-  @DatabaseSetup(resources = "setup_partnerA_db.sql")
-  @Deployment(resources = "p6_one_from_many_receive_a.compiled.bpmn")
+  @DatabaseSetup(resources = "setup_partnerB_db.sql")
+  @Deployment(resources = "p4_racing_incoming_b.compiled.bpmn")
   public void testCustomer() {
     String caseObjectId = "42";
     
     ProcessInstance instance = 
-        runtimeService.startBpmnDataAwareProcessInstanceByKey("p6_one_from_many_receive_a", caseObjectId);
+        runtimeService.startBpmnDataAwareProcessInstanceByKey("p4_racing_incoming_b", caseObjectId);
     
-    runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
-    runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
-    runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
     runtimeService.correlateBpmnDataMessage(OFFER_MESSAGE);
     
     // instance should have finished

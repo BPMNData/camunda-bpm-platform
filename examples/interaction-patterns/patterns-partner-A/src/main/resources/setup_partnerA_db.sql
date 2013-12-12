@@ -1,5 +1,6 @@
 USE `pattern_eval_a`;
 
+DROP TABLE IF EXISTS `SubRequestA`;
 DROP TABLE IF EXISTS `ResponseA`;
 DROP TABLE IF EXISTS `RequestA`;
 
@@ -17,6 +18,15 @@ CREATE TABLE IF NOT EXISTS `ResponseA` (
   `conversationNumber` varchar(255),
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`responseID`),
+  FOREIGN KEY (`requestID`) REFERENCES RequestA(`requestID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `SubRequestA` (
+  `subRequestID` varchar(60) NOT NULL,
+  `requestID` varchar(60),
+  `requestText` varchar(255),
+  `state` varchar(255) NOT NULL,
+  PRIMARY KEY (`subRequestID`),
   FOREIGN KEY (`requestID`) REFERENCES RequestA(`requestID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

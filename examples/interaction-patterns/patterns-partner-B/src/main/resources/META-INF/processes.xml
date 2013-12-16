@@ -9,6 +9,7 @@
 		<process>p3_send_receive_b.compiled.bpmn</process>
 		<process>p4_racing_incoming_b.compiled.bpmn</process>
 		<process>p6_one_from_many_receive_b.compiled.bpmn</process>
+		<process>p8_multi_response_b.compiled.bpmn</process>
 		<process>p12_relayed_request_b.compiled.bpmn</process>
 		<properties>
 			<property name="isDeleteUponUndeploy">true</property>

@@ -16,8 +16,14 @@ public class P6UpdateCounterListener implements ExecutionListener {
 		
 		Long received = new Long(0);
 		
-		if (execution.hasVariable("received"))
-			received = (Long)execution.getVariable("received");
+		if (execution.hasVariable("received")) {
+			Object _received = execution.getVariable("received");
+			try {
+				received = new Long(_received.toString());
+			} catch (NumberFormatException e) {
+			}
+		}
+			
 		
 		execution.setVariable("received", received+1);
 	}

@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_okXsAEWSEeOV9r39XI0W_w" targetNamespace="http://activiti.org/bpmn">
   <bpmn2:extensionElements>
-    <bpt:schemaMappingImport location="/interaction-pattern-partner-b/src/main/resources/p3_send_receive/local-global.schemamapping"/>
+    <bpt:schemaMappingImport location="/interaction-pattern-partner-a/src/main/resources/p3_send_receive/local-global_c.schemamapping"/>
   </bpmn2:extensionElements>
-  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-b/src/main/resources/p3_send_receive/global-data-model.xsd" namespace="http://localhost"/>
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/p3_send_receive/global-data-model.xsd" namespace="http://localhost"/>
   <bpmn2:collaboration id="p3_send_receive" name="Pattern 3 send/receive">
-    <bpmn2:participant id="Partner_B" name="B" processRef="p3_send_receive_b"/>
+    <bpmn2:participant id="Partner_C" name="C" processRef="p3_send_receive_c"/>
     <bpmn2:participant id="Partner_A" name="A">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
-    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p3_request" name="" sourceRef="Partner_A" targetRef="p3_b_receive"/>
-    <bpmn2:messageFlow id="MessageFlow_2" messageRef="m_p3_response" name="" sourceRef="p3_b_send" targetRef="Partner_A"/>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p3_request" name="" sourceRef="Partner_A" targetRef="p3_c_receive"/>
+    <bpmn2:messageFlow id="MessageFlow_2" messageRef="m_p3_response" name="" sourceRef="p3_c_send" targetRef="Partner_A"/>
     <bpmn2:conversation id="Conversation_1">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
       <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
     </bpmn2:conversation>
   </bpmn2:collaboration>
-  <bpmn2:process id="p3_send_receive_b" name="Pattern 3: send/receive (Partner B)" isExecutable="true">
+  <bpmn2:process id="p3_send_receive_c" name="Pattern 3: send/receive (Partner C)" isExecutable="true">
     <bpmn2:extensionElements>
-      <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestB"/>
+      <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestC"/>
     </bpmn2:extensionElements>
-    <bpmn2:receiveTask id="p3_b_receive" name="Receive" instantiate="true" messageRef="m_p3_request">
+    <bpmn2:receiveTask id="p3_c_receive" name="Receive" instantiate="true" messageRef="m_p3_request">
       <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_1">
         <bpmn2:dataOutput id="DataOutput_1"/>
@@ -32,7 +32,7 @@
         <bpmn2:targetRef>request_received</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
-    <bpmn2:sendTask id="p3_b_send" name="Send" messageRef="m_p3_response">
+    <bpmn2:sendTask id="p3_c_send" name="Send" messageRef="m_p3_response">
       <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_2">
@@ -57,16 +57,16 @@
     <bpmn2:endEvent id="EndEvent_1" name="End Event">
       <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="p3_b_send" targetRef="EndEvent_1"/>
-    <bpmn2:dataObject id="request_received" name="RequestB">
+    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="p3_c_send" targetRef="EndEvent_1"/>
+    <bpmn2:dataObject id="request_received" name="RequestC">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-46ba2655-5d13-40f4-a5c4-ad9b41ef4c86" type="new">requestID</bpt:primaryKey>
       </bpmn2:extensionElements>
       <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
-    <bpmn2:userTask id="p3_b_enter_response" activiti:assignee="demo" activiti:formKey="embedded:app:forms/enter_response.html" name="Enter Response">
+    <bpmn2:userTask id="p3_c_enter_response" activiti:assignee="demo" activiti:formKey="embedded:app:forms/enter_response.html" name="Enter Response">
       <bpmn2:extensionElements>
-        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.CompleteEnterResponseListener" event="complete"/>
+        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.P12_C_EnterResponseListener" event="complete"/>
       </bpmn2:extensionElements>
       <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
@@ -85,16 +85,16 @@
         <bpmn2:targetRef>response_entered</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:userTask>
-    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p3_b_receive" targetRef="p3_b_enter_response"/>
-    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="p3_b_enter_response" targetRef="p3_b_send"/>
-    <bpmn2:dataObject id="response_sent" name="ResponseB">
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p3_c_receive" targetRef="p3_c_enter_response"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="p3_c_enter_response" targetRef="p3_c_send"/>
+    <bpmn2:dataObject id="response_sent" name="ResponseC">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-dc4574d0-767e-4357-a614-6357d72e6a89">responseID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-62b8a6dd-e8e9-4cf9-9bae-df457adba354">requestID</bpt:foreignKey>
       </bpmn2:extensionElements>
       <bpmn2:dataState name="sent"/>
     </bpmn2:dataObject>
-    <bpmn2:dataObject id="response_entered" name="ResponseB">
+    <bpmn2:dataObject id="response_entered" name="ResponseC">
       <bpmn2:extensionElements>
         <bpt:primaryKey id="pk_uuid-d5804847-8db3-4d0a-9602-53c813fdeb4b" type="new">responseID</bpt:primaryKey>
         <bpt:foreignKey id="fk_uuid-02288bba-4662-402e-86c2-e94e0edec3ca">requestID</bpt:foreignKey>
@@ -109,39 +109,39 @@
   </bpmn2:endPoint>
   <bpmn2:message id="m_p3_request" name="m_p3_request">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_1"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_1"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="m_p3_response" name="m_p3_response">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_2"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_1"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink xsi:type="bpt:tItemDefinitionLink" ref="ItemDefinition_3"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
-  <bpmn2:itemDefinition id="ItemDefinition_1" structureRef="_StructureDefinition_108">
+  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_104">
     <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_108" qname="import1:Request_P3"/>
+      <bpt:structureDefinition id="_StructureDefinition_104" qname="import1:Request_P3"/>
       <bpt:messageObject/>
       <bpt:correlationInformation attributeName="request_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
-  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_109">
+  <bpmn2:itemDefinition id="ItemDefinition_4" structureRef="_StructureDefinition_105">
     <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_109" qname="import1:Response_P3"/>
+      <bpt:structureDefinition id="_StructureDefinition_105" qname="import1:Response_P3"/>
       <bpt:messageObject/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p3_send_receive">
-      <bpmndi:BPMNShape id="_BPMNShape_Participant_14" bpmnElement="Partner_B" isHorizontal="true">
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_14" bpmnElement="Partner_C" isHorizontal="true">
         <dc:Bounds height="397.0" width="764.0" x="0.0" y="240.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_Participant_15" bpmnElement="Partner_A" isHorizontal="true">
         <dc:Bounds height="100.0" width="764.0" x="0.0" y="24.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_ReceiveTask_9" bpmnElement="p3_b_receive">
+      <bpmndi:BPMNShape id="_BPMNShape_ReceiveTask_9" bpmnElement="p3_c_receive">
         <dc:Bounds height="80.0" width="100.0" x="132.0" y="270.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_SendTask_9" bpmnElement="p3_b_send">
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_9" bpmnElement="p3_c_send">
         <dc:Bounds height="80.0" width="100.0" x="516.0" y="270.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_EndEvent_13" bpmnElement="EndEvent_1">
@@ -158,25 +158,23 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_Participant_15" targetElement="_BPMNShape_ReceiveTask_9">
-        <di:waypoint xsi:type="dc:Point" x="382.0" y="124.0"/>
-        <di:waypoint xsi:type="dc:Point" x="382.0" y="197.0"/>
+        <di:waypoint xsi:type="dc:Point" x="301.0" y="124.0"/>
         <di:waypoint xsi:type="dc:Point" x="182.0" y="197.0"/>
         <di:waypoint xsi:type="dc:Point" x="182.0" y="270.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="6.0" width="6.0" x="279.0" y="197.0"/>
+          <dc:Bounds height="6.0" width="6.0" x="179.0" y="230.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_13" bpmnElement="m_p3_request">
-        <dc:Bounds height="20.0" width="30.0" x="204.0" y="168.0"/>
+        <dc:Bounds height="20.0" width="30.0" x="214.0" y="190.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="54.0" width="142.0" x="252.0" y="163.0"/>
+          <dc:Bounds height="38.0" width="161.0" x="253.0" y="185.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_2" bpmnElement="MessageFlow_2" sourceElement="_BPMNShape_SendTask_9" targetElement="_BPMNShape_Participant_15">
         <di:waypoint xsi:type="dc:Point" x="566.0" y="270.0"/>
         <di:waypoint xsi:type="dc:Point" x="566.0" y="197.0"/>
-        <di:waypoint xsi:type="dc:Point" x="382.0" y="197.0"/>
-        <di:waypoint xsi:type="dc:Point" x="382.0" y="124.0"/>
+        <di:waypoint xsi:type="dc:Point" x="457.0" y="124.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="6.0" width="6.0" x="565.0" y="197.0"/>
         </bpmndi:BPMNLabel>
@@ -197,7 +195,7 @@
         <di:waypoint xsi:type="dc:Point" x="182.0" y="350.0"/>
         <di:waypoint xsi:type="dc:Point" x="182.0" y="420.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_UserTask_11" bpmnElement="p3_b_enter_response">
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_11" bpmnElement="p3_c_enter_response">
         <dc:Bounds height="80.0" width="100.0" x="333.0" y="270.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ReceiveTask_9" targetElement="_BPMNShape_UserTask_11">

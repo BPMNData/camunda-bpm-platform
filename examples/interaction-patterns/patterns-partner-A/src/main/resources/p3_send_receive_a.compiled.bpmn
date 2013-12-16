@@ -14,9 +14,6 @@
       <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P3">
         <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
       </bpmn2:correlationKey>
-      <bpmn2:correlationKey id="CorrelationKey_2" name="Response_P3">
-        <bpmn2:correlationPropertyRef>CorrelationProperty_2</bpmn2:correlationPropertyRef>
-      </bpmn2:correlationKey>
     </bpmn2:conversation>
   </bpmn2:collaboration>
   <bpmn2:process id="p3_send_receive_a" name="Pattern 3: send/receive (Partner A)" isExecutable="true">
@@ -38,7 +35,7 @@
       <bpmn2:dataInputAssociation id="DataInputAssociation_1">
         <bpmn2:sourceRef>p3_a_do1</bpmn2:sourceRef>
         <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
-        <bpmn2:transformation id="FormalExpression_4" language="XQuery">let $RequestA := ./DataObjects/RequestA
+        <bpmn2:transformation id="FormalExpression_3" language="XQuery">let $RequestA := ./DataObjects/RequestA
 return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&quot;Request_P3&quot;>&lt;property name=&quot;request_id&quot;>{$RequestA/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Request_P3>&lt;request_id>{$RequestA/requestID/text()}&lt;/request_id>&lt;request_text>{$RequestA/requestText/text()}&lt;/request_text>&lt;/Request_P3>&lt;/payload>&lt;/message></bpmn2:transformation>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
@@ -62,7 +59,7 @@ return &lt;message name=&quot;m_p3_request&quot;>&lt;correlation>&lt;key name=&q
       <bpmn2:dataOutputAssociation id="DataOutputAssociation_3">
         <bpmn2:sourceRef>DataOutput_3</bpmn2:sourceRef>
         <bpmn2:targetRef>p3_a_do4</bpmn2:targetRef>
-        <bpmn2:transformation id="FormalExpression_5" language="XQuery">let $msg := ./message/payload/Response_P3
+        <bpmn2:transformation id="FormalExpression_4" language="XQuery">let $msg := ./message/payload/Response_P3
 return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt;responseText>{$msg/response_text/text()}&lt;/responseText>&lt;/ResponseA></bpmn2:transformation>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
@@ -136,12 +133,12 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
   </bpmn2:process>
   <bpmn2:message id="m_p3_request" name="m_p3_request">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_1"><bpt:correlationIdentifierLink ref="ItemDefinition_1"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink ref="ItemDefinition_3"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:message id="m_p3_response" name="m_p3_response">
     <bpmn2:extensionElements>
-      <bpt:contentDefinition payloadRef="ItemDefinition_2"><bpt:correlationIdentifierLink ref="ItemDefinition_2"/><bpt:correlationIdentifierLink ref="ItemDefinition_1"/></bpt:contentDefinition>
+      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink ref="ItemDefinition_3"/></bpt:contentDefinition>
     </bpmn2:extensionElements>
   </bpmn2:message>
   <bpmn2:endPoint id="EndPoint_1">
@@ -149,31 +146,25 @@ return &lt;ResponseA>&lt;responseID>{$msg/response_id/text()}&lt;/responseID>&lt
       <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
     </bpmn2:extensionElements>
   </bpmn2:endPoint>
-  <bpmn2:itemDefinition id="ItemDefinition_1" structureRef="_StructureDefinition_34">
+  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_102">
     <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_34" qname="import1:Request_P3"/>
+      <bpt:structureDefinition id="_StructureDefinition_102" qname="import1:Request_P3"/>
       <bpt:messageObject/>
       <bpt:correlationInformation attributeName="request_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
-  <bpmn2:itemDefinition id="ItemDefinition_2" structureRef="_StructureDefinition_35">
+  <bpmn2:itemDefinition id="ItemDefinition_4" structureRef="_StructureDefinition_103">
     <bpmn2:extensionElements>
-      <bpt:structureDefinition id="_StructureDefinition_35" qname="import1:Response_P3"/>
+      <bpt:structureDefinition id="_StructureDefinition_103" qname="import1:Response_P3"/>
       <bpt:messageObject/>
-      <bpt:correlationInformation attributeName="response_id"/>
     </bpmn2:extensionElements>
   </bpmn2:itemDefinition>
   <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
     <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p3_request">
       <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request_P3']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
-    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_3" messageRef="m_p3_response">
-      <bpmn2:messagePath id="FormalExpression_3" language="XPath">/message/correlation/key[@name='Request_P3']/property[@name='request_id']/text()</bpmn2:messagePath>
-    </bpmn2:correlationPropertyRetrievalExpression>
-  </bpmn2:correlationProperty>
-  <bpmn2:correlationProperty id="CorrelationProperty_2" name="response_id">
     <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_2" messageRef="m_p3_response">
-      <bpmn2:messagePath id="FormalExpression_2" language="XPath">/message/correlation/key[@name='Response_P3']/property[@name='response_id']/text()</bpmn2:messagePath>
+      <bpmn2:messagePath id="FormalExpression_2" language="XPath">/message/correlation/key[@name='Request_P3']/property[@name='request_id']/text()</bpmn2:messagePath>
     </bpmn2:correlationPropertyRetrievalExpression>
   </bpmn2:correlationProperty>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">

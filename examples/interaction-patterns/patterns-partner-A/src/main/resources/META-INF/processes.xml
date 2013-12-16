@@ -7,11 +7,13 @@
 		<process-engine>default</process-engine>
 		<process>p1_p2_send_a.compiled.bpmn</process>
 		<process>p3_send_receive_a.compiled.bpmn</process>
+		<process>p3_send_receive_c.compiled.bpmn</process>
 		<process>p4_racing_incoming_a.compiled.bpmn</process>
 		<process>p4_racing_incoming_c.compiled.bpmn</process>
 		<process>p6_one_from_many_receive_a.compiled.bpmn</process>
 		<process>p7_one_to_many_send_receive_a.compiled.bpmn</process>
 		<process>p8_multi_response_a.compiled.bpmn</process>
+		<process>p9_contingent_request_a.compiled.bpmn</process>
 		<process>p11_request_w_referral.compiled.bpmn</process>
 		<process>p11_request_w_referral_multi.compiled.bpmn</process>
 		<process>p12_relayed_request_a.compiled.bpmn</process>

@@ -19,7 +19,6 @@
 	<complexType name="Response_P3">
 		<annotation>
 			<appinfo>
-				<bpmndata:correlationIdentifier	attributeName="response_id" />
 				<bpmndata:message />
 			</appinfo>
 		</annotation>

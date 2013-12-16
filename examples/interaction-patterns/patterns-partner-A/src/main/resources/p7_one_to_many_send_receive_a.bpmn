@@ -50,20 +50,6 @@
       </bpmn2:dataOutputAssociation>
     </bpmn2:userTask>
     <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="p7_a_start" targetRef="p7_a_usertask"/>
-    <bpmn2:dataObject id="p3_a_do3" name="SubRequestA">
-      <bpmn2:extensionElements>
-        <bpt:primaryKey id="pk_uuid-54de286a-18ef-487c-a297-5820acdaf1d4">subRequestID</bpt:primaryKey>
-        <bpt:foreignKey id="fk_uuid-f9f2dc9e-50b7-4a83-9b5f-f33843e94be2">requestID</bpt:foreignKey>
-      </bpmn2:extensionElements>
-      <bpmn2:dataState name="sent"/>
-    </bpmn2:dataObject>
-    <bpmn2:dataObject id="p3_a_do4" name="ResponseA">
-      <bpmn2:extensionElements>
-        <bpt:primaryKey id="pk_uuid-ee998f8f-1b40-4643-8869-6ea4071e9e30" type="new">responseID</bpt:primaryKey>
-        <bpt:foreignKey id="fk_uuid-20dbcc34-6f36-493f-9dff-db6a9c9ab35c">requestID</bpt:foreignKey>
-      </bpmn2:extensionElements>
-      <bpmn2:dataState name="received"/>
-    </bpmn2:dataObject>
     <bpmn2:userTask id="p7_a_receive_finish" activiti:assignee="demo" name="Finish">
       <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
@@ -120,7 +106,7 @@
         </bpmn2:dataInputAssociation>
         <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
           <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
-          <bpmn2:targetRef>p3_a_do3</bpmn2:targetRef>
+          <bpmn2:targetRef>p7_do_2_sub</bpmn2:targetRef>
         </bpmn2:dataOutputAssociation>
       </bpmn2:sendTask>
       <bpmn2:sequenceFlow id="Sequence_Flow_2" sourceRef="p7_a_send" targetRef="p7_a_receive"/>
@@ -134,12 +120,12 @@
           <bpmn2:outputSet id="OutputSet_3"/>
         </bpmn2:ioSpecification>
         <bpmn2:dataInputAssociation id="DataInputAssociation_2">
-          <bpmn2:sourceRef>p3_a_do3</bpmn2:sourceRef>
+          <bpmn2:sourceRef>p7_do_2_sub</bpmn2:sourceRef>
           <bpmn2:targetRef>DataInput_2</bpmn2:targetRef>
         </bpmn2:dataInputAssociation>
         <bpmn2:dataOutputAssociation id="DataOutputAssociation_3">
           <bpmn2:sourceRef>DataOutput_3</bpmn2:sourceRef>
-          <bpmn2:targetRef>p3_a_do4</bpmn2:targetRef>
+          <bpmn2:targetRef>p7_do_3_sub</bpmn2:targetRef>
         </bpmn2:dataOutputAssociation>
       </bpmn2:receiveTask>
       <bpmn2:sequenceFlow id="SequenceFlow_8" sourceRef="p7_a_receive" targetRef="EndEvent_1"/>
@@ -152,6 +138,20 @@
           <bpt:foreignKey id="fk_uuid-e2530735-56fc-4bbd-9894-99328f530191">requestID</bpt:foreignKey>
         </bpmn2:extensionElements>
         <bpmn2:dataState name="created"/>
+      </bpmn2:dataObject>
+      <bpmn2:dataObject id="p7_do_2_sub" name="SubRequestA">
+        <bpmn2:extensionElements>
+          <bpt:primaryKey id="pk_uuid-54de286a-18ef-487c-a297-5820acdaf1d4">subRequestID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-f9f2dc9e-50b7-4a83-9b5f-f33843e94be2">requestID</bpt:foreignKey>
+        </bpmn2:extensionElements>
+        <bpmn2:dataState name="sent"/>
+      </bpmn2:dataObject>
+      <bpmn2:dataObject id="p7_do_3_sub" name="ResponseA">
+        <bpmn2:extensionElements>
+          <bpt:primaryKey id="pk_uuid-ee998f8f-1b40-4643-8869-6ea4071e9e30" type="new">responseID</bpt:primaryKey>
+          <bpt:foreignKey id="fk_uuid-20dbcc34-6f36-493f-9dff-db6a9c9ab35c">requestID</bpt:foreignKey>
+        </bpmn2:extensionElements>
+        <bpmn2:dataState name="received"/>
       </bpmn2:dataObject>
     </bpmn2:subProcess>
     <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p7_a_sub" targetRef="p7_a_receive_finish"/>
@@ -298,29 +298,29 @@
         <di:waypoint xsi:type="dc:Point" x="177.0" y="241.0"/>
         <di:waypoint xsi:type="dc:Point" x="187.0" y="264.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_DataObject_35" bpmnElement="p3_a_do3">
-        <dc:Bounds height="120.0" width="100.0" x="629.0" y="81.0"/>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_35" bpmnElement="p7_do_2_sub">
+        <dc:Bounds height="120.0" width="100.0" x="612.0" y="81.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="86.0" x="636.0" y="206.0"/>
+          <dc:Bounds height="22.0" width="86.0" x="619.0" y="206.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_DataObject_35">
-        <di:waypoint xsi:type="dc:Point" x="618.0" y="227.0"/>
-        <di:waypoint xsi:type="dc:Point" x="637.0" y="201.0"/>
+        <di:waypoint xsi:type="dc:Point" x="613.0" y="227.0"/>
+        <di:waypoint xsi:type="dc:Point" x="628.0" y="201.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_2" bpmnElement="DataInputAssociation_2" sourceElement="_BPMNShape_DataObject_35" targetElement="_BPMNShape_ReceiveTask_8">
-        <di:waypoint xsi:type="dc:Point" x="722.0" y="201.0"/>
-        <di:waypoint xsi:type="dc:Point" x="741.0" y="227.0"/>
+        <di:waypoint xsi:type="dc:Point" x="712.0" y="199.0"/>
+        <di:waypoint xsi:type="dc:Point" x="736.0" y="227.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_DataObject_36" bpmnElement="p3_a_do4">
-        <dc:Bounds height="120.0" width="100.0" x="780.0" y="81.0"/>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_36" bpmnElement="p7_do_3_sub">
+        <dc:Bounds height="120.0" width="100.0" x="768.0" y="81.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="22.0" width="73.0" x="794.0" y="206.0"/>
+          <dc:Bounds height="22.0" width="73.0" x="782.0" y="206.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="_BPMNShape_ReceiveTask_8" targetElement="_BPMNShape_DataObject_36">
-        <di:waypoint xsi:type="dc:Point" x="789.0" y="227.0"/>
-        <di:waypoint xsi:type="dc:Point" x="801.0" y="201.0"/>
+        <di:waypoint xsi:type="dc:Point" x="785.0" y="227.0"/>
+        <di:waypoint xsi:type="dc:Point" x="795.0" y="201.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_UserTask_12" bpmnElement="p7_a_receive_finish">
         <dc:Bounds height="80.0" width="100.0" x="936.0" y="161.0"/>
@@ -411,6 +411,9 @@
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_ServiceTask_4" targetElement="_BPMNShape_SubProcess_5">
         <di:waypoint xsi:type="dc:Point" x="364.0" y="201.0"/>
         <di:waypoint xsi:type="dc:Point" x="456.0" y="201.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="407.0" y="201.0"/>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_6" bpmnElement="DataOutputAssociation_6" sourceElement="_BPMNShape_ServiceTask_4" targetElement="_BPMNShape_DataObject_47">
         <di:waypoint xsi:type="dc:Point" x="364.0" y="226.0"/>

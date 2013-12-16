@@ -18,7 +18,7 @@
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="RequestA"/>
     </bpmn2:extensionElements>
-    <bpmn2:startEvent id="p1_a_start" name="Start Event">
+    <bpmn2:startEvent id="p1_a_start" name="">
       <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
     </bpmn2:startEvent>
     <bpmn2:sendTask id="p1_a_send" name="Send" messageRef="m_p1_request">
@@ -39,7 +39,7 @@
         <bpmn2:targetRef>p3_a_do3</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:sendTask>
-    <bpmn2:endEvent id="p3_a_end" name="End Event">
+    <bpmn2:endEvent id="p3_a_end" name="">
       <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:dataObject id="p3_a_do1" name="RequestA">
@@ -136,25 +136,25 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_UserTask_6" bpmnElement="p1_a_usertask">
-        <dc:Bounds height="80.0" width="100.0" x="134.0" y="156.0"/>
+        <dc:Bounds height="80.0" width="100.0" x="132.0" y="156.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_StartEvent_7" targetElement="_BPMNShape_UserTask_6">
         <di:waypoint xsi:type="dc:Point" x="84.0" y="196.0"/>
-        <di:waypoint xsi:type="dc:Point" x="134.0" y="196.0"/>
+        <di:waypoint xsi:type="dc:Point" x="132.0" y="196.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="0.0" width="0.0" x="109.0" y="196.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_SendTask_8">
-        <di:waypoint xsi:type="dc:Point" x="234.0" y="196.0"/>
+        <di:waypoint xsi:type="dc:Point" x="232.0" y="196.0"/>
         <di:waypoint xsi:type="dc:Point" x="425.0" y="196.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="6.0" width="6.0" x="270.0" y="196.0"/>
+          <dc:Bounds height="6.0" width="6.0" x="268.0" y="196.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_DataObject_33">
-        <di:waypoint xsi:type="dc:Point" x="226.0" y="156.0"/>
-        <di:waypoint xsi:type="dc:Point" x="264.0" y="120.0"/>
+        <di:waypoint xsi:type="dc:Point" x="225.0" y="156.0"/>
+        <di:waypoint xsi:type="dc:Point" x="264.0" y="119.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_33" targetElement="_BPMNShape_SendTask_8">
         <di:waypoint xsi:type="dc:Point" x="364.0" y="111.0"/>

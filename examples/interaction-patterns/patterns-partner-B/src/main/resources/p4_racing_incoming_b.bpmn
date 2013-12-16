@@ -26,7 +26,7 @@
     <bpmn2:endEvent id="p4_b_end">
       <bpmn2:incoming>SequenceFlow_11</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:startEvent id="p4_b_start">
+    <bpmn2:startEvent id="p4_b_start" name=" ">
       <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
     </bpmn2:startEvent>
     <bpmn2:eventBasedGateway id="p4_b_event">
@@ -124,7 +124,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p4_racing_incoming">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_14" bpmnElement="Partner_B" isHorizontal="true">
-        <dc:Bounds height="337.0" width="764.0" x="0.0" y="240.0"/>
+        <dc:Bounds height="301.0" width="764.0" x="0.0" y="240.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_Participant_15" bpmnElement="Partner_A" isHorizontal="true">
         <dc:Bounds height="100.0" width="373.0" x="0.0" y="24.0"/>
@@ -141,7 +141,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_8" bpmnElement="p4_b_start">
         <dc:Bounds height="36.0" width="36.0" x="52.0" y="364.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="70.0" y="405.0"/>
+          <dc:Bounds height="22.0" width="10.0" x="65.0" y="405.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_EventBasedGateway_2" bpmnElement="p4_b_event">

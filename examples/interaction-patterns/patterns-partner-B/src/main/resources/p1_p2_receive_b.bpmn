@@ -30,7 +30,7 @@
         <bpmn2:targetRef>request_received</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:receiveTask>
-    <bpmn2:endEvent id="p1_b_end" name="End Event">
+    <bpmn2:endEvent id="p1_b_end" name="">
       <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:dataObject id="request_received" name="RequestB">
@@ -101,9 +101,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_13" bpmnElement="m_p1_request">
-        <dc:Bounds height="20.0" width="30.0" x="204.0" y="168.0"/>
+        <dc:Bounds height="20.0" width="30.0" x="122.0" y="156.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="54.0" width="142.0" x="252.0" y="163.0"/>
+          <dc:Bounds height="38.0" width="161.0" x="161.0" y="151.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_38" bpmnElement="request_received">

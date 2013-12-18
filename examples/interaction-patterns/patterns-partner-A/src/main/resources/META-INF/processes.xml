@@ -19,6 +19,8 @@
 		<process>p11_request_w_referral_c.compiled.bpmn</process>
 		<process>p12_relayed_request_a.compiled.bpmn</process>
 		<process>p12_relayed_request_c.compiled.bpmn</process>
+		<process>p13_dynamic_routing_a.compiled.bpmn</process>
+		<process>p13_dynamic_routing_c.compiled.bpmn</process>
 		<properties>
 			<property name="isDeleteUponUndeploy">true</property>
 			<property name="isScanForProcessDefinitions">false</property>

@@ -40,3 +40,13 @@ CREATE TABLE IF NOT EXISTS `RequestC` (
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`requestID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `RequestD`;
+
+CREATE TABLE IF NOT EXISTS `RequestD` (
+  `requestID` varchar(60) NOT NULL,
+  `requestID_fromB` varchar(60),
+  `requestText` varchar(255),
+  `state` varchar(255) NOT NULL,
+  PRIMARY KEY (`requestID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

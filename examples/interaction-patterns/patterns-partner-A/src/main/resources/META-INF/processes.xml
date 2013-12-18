@@ -14,6 +14,7 @@
 		<process>p7_one_to_many_send_receive_a.compiled.bpmn</process>
 		<process>p8_multi_response_a.compiled.bpmn</process>
 		<process>p9_contingent_request_a.compiled.bpmn</process>
+		<process>p10_atomic_multicast_a.compiled.bpmn</process>
 		<process>p11_request_w_referral.compiled.bpmn</process>
 		<process>p11_request_w_referral_multi.compiled.bpmn</process>
 		<process>p12_relayed_request_a.compiled.bpmn</process>

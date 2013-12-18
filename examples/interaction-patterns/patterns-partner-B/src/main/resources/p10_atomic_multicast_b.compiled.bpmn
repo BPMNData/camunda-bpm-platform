@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_okXsAEWSEeOV9r39XI0W_w" targetNamespace="http://activiti.org/bpmn">
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-b/src/main/resources/p10_atomic_multicast/global-data-model.xsd" namespace="http://localhost"/>
+  <bpmn2:collaboration id="p10_atomic_multicast" name="Pattern 10 atomic multicast">
+    <bpmn2:participant id="Partner_B" name="B" processRef="p10_atomic_multicast_b"/>
+    <bpmn2:participant id="Partner_A" name="A">
+      <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p10_request" name="" sourceRef="Partner_A" targetRef="p10_b_receive"/>
+    <bpmn2:messageFlow id="MessageFlow_2" messageRef="m_p10_response" name="" sourceRef="p10_b_send" targetRef="Partner_A"/>
+    <bpmn2:messageFlow id="m_p10_cancel_flow" messageRef="m_p10_cancel" sourceRef="Partner_A" targetRef="p10_b_cancel"/>
+    <bpmn2:conversation id="Conversation_1">
+      <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
+      <bpmn2:messageFlowRef>MessageFlow_2</bpmn2:messageFlowRef>
+      <bpmn2:messageFlowRef>m_p10_cancel_flow</bpmn2:messageFlowRef>
+      <bpmn2:correlationKey id="CorrelationKey_1" name="Request_P10">
+        <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
+      </bpmn2:correlationKey>
+    </bpmn2:conversation>
+  </bpmn2:collaboration>
+  <bpmn2:process id="p10_atomic_multicast_b" name="Pattern 10: atomic multicast (Partner B)" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestB"/>
+    </bpmn2:extensionElements>
+    <bpmn2:receiveTask id="p10_b_receive" name="Receive" instantiate="true" messageRef="m_p10_request">
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_1">
+        <bpmn2:dataOutput id="DataOutput_1"/>
+        <bpmn2:inputSet id="InputSet_1"/>
+        <bpmn2:outputSet id="OutputSet_1"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
+        <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
+        <bpmn2:targetRef>p10_b_request_received</bpmn2:targetRef>
+        <bpmn2:transformation id="FormalExpression_6" language="XQuery">let $msg := ./message/payload/Request_P10
+return &lt;RequestB>&lt;requestID_fromA>{$msg/request_id/text()}&lt;/requestID_fromA>&lt;requestText>{$msg/request_text/text()}&lt;/requestText>&lt;/RequestB></bpmn2:transformation>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:receiveTask>
+    <bpmn2:sendTask id="p10_b_send" name="Send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="m_p10_response">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_2">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:dataOutput id="DataOutput_3"/>
+        <bpmn2:inputSet id="InputSet_2"/>
+        <bpmn2:outputSet id="OutputSet_2"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_3">
+        <bpmn2:sourceRef>p10_b_request_received</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
+        <bpmn2:transformation id="FormalExpression_4" language="XQuery">let $ResponseB := ./DataObjects/ResponseB
+let $RequestB := ./DataObjects/RequestB
+return &lt;message name=&quot;m_p10_response&quot;>&lt;correlation>&lt;key name=&quot;Request_P10&quot;>&lt;property name=&quot;request_id&quot;>{$RequestB/requestID_fromA/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Response_P10>&lt;response_id>{$ResponseB/responseID/text()}&lt;/response_id>&lt;response_text>{$ResponseB/responseText/text()}&lt;/response_text>&lt;/Response_P10>&lt;/payload>&lt;/message></bpmn2:transformation>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_5">
+        <bpmn2:sourceRef>p10_b_response_entered</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
+        <bpmn2:transformation id="FormalExpression_5" language="XQuery">let $ResponseB := ./DataObjects/ResponseB
+let $RequestB := ./DataObjects/RequestB
+return &lt;message name=&quot;m_p10_response&quot;>&lt;correlation>&lt;key name=&quot;Request_P10&quot;>&lt;property name=&quot;request_id&quot;>{$RequestB/requestID_fromA/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;Response_P10>&lt;response_id>{$ResponseB/responseID/text()}&lt;/response_id>&lt;response_text>{$ResponseB/responseText/text()}&lt;/response_text>&lt;/Response_P10>&lt;/payload>&lt;/message></bpmn2:transformation>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_3">
+        <bpmn2:sourceRef>DataOutput_3</bpmn2:sourceRef>
+        <bpmn2:targetRef>p10_b_response_sent</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:sendTask>
+    <bpmn2:endEvent id="EndEvent_1" name="">
+      <bpmn2:incoming>SequenceFlow_11</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="p10_b_request_received" name="RequestB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-46ba2655-5d13-40f4-a5c4-ad9b41ef4c86" type="new">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="received"/>
+    </bpmn2:dataObject>
+    <bpmn2:userTask id="p10_b_enter_response" activiti:assignee="demo" activiti:formKey="embedded:app:forms/enter_response.html" name="Enter Response">
+      <bpmn2:extensionElements>
+        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.CompleteEnterResponseListener" event="complete"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_3">
+        <bpmn2:dataInput id="DataInput_2"/>
+        <bpmn2:dataOutput id="DataOutput_2"/>
+        <bpmn2:inputSet id="InputSet_3"/>
+        <bpmn2:outputSet id="OutputSet_3"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_1">
+        <bpmn2:sourceRef>p10_b_request_received</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_2</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_5">
+        <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
+        <bpmn2:targetRef>p10_b_response_entered</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p10_b_receive" targetRef="p10_b_enter_response"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="p10_b_enter_response" targetRef="p10_b_send"/>
+    <bpmn2:dataObject id="p10_b_response_sent" name="ResponseB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-dc4574d0-767e-4357-a614-6357d72e6a89">responseID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-62b8a6dd-e8e9-4cf9-9bae-df457adba354">requestID</bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="sent"/>
+    </bpmn2:dataObject>
+    <bpmn2:dataObject id="p10_b_response_entered" name="ResponseB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-d5804847-8db3-4d0a-9602-53c813fdeb4b" type="new">responseID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-02288bba-4662-402e-86c2-e94e0edec3ca">requestID</bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="entered"/>
+    </bpmn2:dataObject>
+    <bpmn2:eventBasedGateway id="EventBasedGateway_1" name="">
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_8</bpmn2:outgoing>
+    </bpmn2:eventBasedGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="p10_b_send" targetRef="EventBasedGateway_1"/>
+    <bpmn2:intermediateCatchEvent id="p10_b_cancel" name="cancel">
+      <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_6</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_1" messageRef="m_p10_cancel"/>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_5" sourceRef="EventBasedGateway_1" targetRef="p10_b_cancel"/>
+    <bpmn2:userTask id="p10_b_fail" activiti:assignee="demo" name="Fail">
+      <bpmn2:incoming>SequenceFlow_6</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_5">
+        <bpmn2:dataOutput id="DataOutput_5"/>
+        <bpmn2:inputSet id="InputSet_5"/>
+        <bpmn2:outputSet id="OutputSet_5"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_4">
+        <bpmn2:sourceRef>DataOutput_5</bpmn2:sourceRef>
+        <bpmn2:targetRef>p10_b_do_failed</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_6" sourceRef="p10_b_cancel" targetRef="p10_b_fail"/>
+    <bpmn2:intermediateCatchEvent id="p10_b_timeout" name="2min timeout">
+      <bpmn2:incoming>SequenceFlow_8</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_9</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="TimerEventDefinition_1">
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression">P0DT0H2M0S</bpmn2:timeDuration>
+      </bpmn2:timerEventDefinition>
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_8" sourceRef="EventBasedGateway_1" targetRef="p10_b_timeout"/>
+    <bpmn2:userTask id="p10_b_success" activiti:assignee="demo" name="Success">
+      <bpmn2:incoming>SequenceFlow_9</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_12</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_4">
+        <bpmn2:dataOutput id="DataOutput_4"/>
+        <bpmn2:inputSet id="InputSet_4"/>
+        <bpmn2:outputSet id="OutputSet_4"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:sourceRef>DataOutput_4</bpmn2:sourceRef>
+        <bpmn2:targetRef>p10_b_do_success</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_9" sourceRef="p10_b_timeout" targetRef="p10_b_success"/>
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_1" name="">
+      <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_12</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_11</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_10" sourceRef="p10_b_fail" targetRef="ExclusiveGateway_1"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_11" name="" sourceRef="ExclusiveGateway_1" targetRef="EndEvent_1"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_12" name="" sourceRef="p10_b_success" targetRef="ExclusiveGateway_1"/>
+    <bpmn2:dataObject id="p10_b_do_success" name="ResponseB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-b28be746-9cb5-4eb1-b5c4-1915d723c36e">responseID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-9a08558b-f2c4-40c1-a2b2-a052c94b2938">requestID</bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="accepted"/>
+    </bpmn2:dataObject>
+    <bpmn2:dataObject id="p10_b_do_failed" name="ResponseB">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-56a398d4-9ef0-48e4-9a68-a1b6ac6b1286">responseID</bpt:primaryKey>
+        <bpt:foreignKey id="fk_uuid-cc477c8c-a0b5-4625-9bc4-134ab26964b2">requestID</bpt:foreignKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="rejected"/>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:endPoint id="EndPoint_1">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  <bpmn2:message id="m_p10_request" name="m_p10_request">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_4"><bpt:correlationIdentifierLink ref="ItemDefinition_4"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:message id="m_p10_response" name="m_p10_response">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_5"><bpt:correlationIdentifierLink ref="ItemDefinition_4"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:message id="m_p10_cancel" name="m_p10_cancel">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_3"><bpt:correlationIdentifierLink ref="ItemDefinition_4"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:itemDefinition id="ItemDefinition_3" structureRef="_StructureDefinition_129">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_129" qname="import1:Cancel_P10"/>
+      <bpt:messageObject/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:itemDefinition id="ItemDefinition_4" structureRef="_StructureDefinition_130">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_130" qname="import1:Request_P10"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="request_id"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:itemDefinition id="ItemDefinition_5" structureRef="_StructureDefinition_131">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_131" qname="import1:Response_P10"/>
+      <bpt:messageObject/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:correlationProperty id="CorrelationProperty_1" name="request_id">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p10_request">
+      <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='Request_P10']/property[@name='request_id']/text()</bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_2" messageRef="m_p10_response">
+      <bpmn2:messagePath id="FormalExpression_2" language="XPath">/message/correlation/key[@name='Request_P10']/property[@name='request_id']/text()</bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_3" messageRef="m_p10_cancel">
+      <bpmn2:messagePath id="FormalExpression_3" language="XPath">/message/correlation/key[@name='Request_P10']/property[@name='request_id']/text()</bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+  </bpmn2:correlationProperty>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p10_atomic_multicast">
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_14" bpmnElement="Partner_B" isHorizontal="true">
+        <dc:Bounds height="397.0" width="1141.0" x="0.0" y="240.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_15" bpmnElement="Partner_A" isHorizontal="true">
+        <dc:Bounds height="100.0" width="961.0" x="0.0" y="24.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ReceiveTask_9" bpmnElement="p10_b_receive">
+        <dc:Bounds height="80.0" width="100.0" x="132.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_9" bpmnElement="p10_b_send">
+        <dc:Bounds height="80.0" width="100.0" x="516.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_13" bpmnElement="EndEvent_1">
+        <dc:Bounds height="36.0" width="36.0" x="1080.0" y="292.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1095.0" y="333.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_1" bpmnElement="MessageFlow_1" sourceElement="_BPMNShape_Participant_15" targetElement="_BPMNShape_ReceiveTask_9">
+        <di:waypoint x="294.0" y="124.0"/>
+        <di:waypoint x="182.0" y="154.0"/>
+        <di:waypoint x="182.0" y="197.0"/>
+        <di:waypoint x="182.0" y="270.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="179.0" y="211.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_13" bpmnElement="m_p10_request">
+        <dc:Bounds height="20.0" width="30.0" x="204.0" y="168.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="54.0" width="142.0" x="252.0" y="163.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_2" bpmnElement="MessageFlow_2" sourceElement="_BPMNShape_SendTask_9" targetElement="_BPMNShape_Participant_15">
+        <di:waypoint x="566.0" y="270.0"/>
+        <di:waypoint x="566.0" y="197.0"/>
+        <di:waypoint x="566.0" y="166.0"/>
+        <di:waypoint x="527.0" y="124.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="565.0" y="197.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_14" bpmnElement="m_p10_response">
+        <dc:Bounds height="20.0" width="30.0" x="588.0" y="168.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="54.0" width="162.0" x="636.0" y="163.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_38" bpmnElement="p10_b_request_received">
+        <dc:Bounds height="120.0" width="100.0" x="132.0" y="420.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="63.0" x="151.0" y="545.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_ReceiveTask_9" targetElement="_BPMNShape_DataObject_38">
+        <di:waypoint x="182.0" y="350.0"/>
+        <di:waypoint x="182.0" y="420.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_11" bpmnElement="p10_b_enter_response">
+        <dc:Bounds height="80.0" width="100.0" x="333.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ReceiveTask_9" targetElement="_BPMNShape_UserTask_11">
+        <di:waypoint x="232.0" y="310.0"/>
+        <di:waypoint x="333.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="280.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_11" targetElement="_BPMNShape_SendTask_9">
+        <di:waypoint x="433.0" y="310.0"/>
+        <di:waypoint x="516.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="472.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_38" targetElement="_BPMNShape_UserTask_11">
+        <di:waypoint x="232.0" y="438.0"/>
+        <di:waypoint x="336.0" y="350.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_41" bpmnElement="p10_b_response_sent">
+        <dc:Bounds height="120.0" width="100.0" x="608.0" y="420.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="73.0" x="622.0" y="545.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_3" bpmnElement="DataOutputAssociation_3" sourceElement="_BPMNShape_SendTask_9" targetElement="_BPMNShape_DataObject_41">
+        <di:waypoint x="588.0" y="350.0"/>
+        <di:waypoint x="626.0" y="420.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_3" bpmnElement="DataInputAssociation_3" sourceElement="_BPMNShape_DataObject_38" targetElement="_BPMNShape_SendTask_9">
+        <di:waypoint x="232.0" y="458.0"/>
+        <di:waypoint x="516.0" y="332.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_43" bpmnElement="p10_b_response_entered">
+        <dc:Bounds height="120.0" width="100.0" x="417.0" y="420.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="73.0" x="431.0" y="545.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_5" bpmnElement="DataOutputAssociation_5" sourceElement="_BPMNShape_UserTask_11" targetElement="_BPMNShape_DataObject_43">
+        <di:waypoint x="403.0" y="350.0"/>
+        <di:waypoint x="437.0" y="420.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_5" bpmnElement="DataInputAssociation_5" sourceElement="_BPMNShape_DataObject_43" targetElement="_BPMNShape_SendTask_9">
+        <di:waypoint x="502.0" y="420.0"/>
+        <di:waypoint x="543.0" y="350.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_EventBasedGateway_3" bpmnElement="EventBasedGateway_1">
+        <dc:Bounds height="50.0" width="50.0" x="696.0" y="285.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="718.0" y="340.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_SendTask_9" targetElement="_BPMNShape_EventBasedGateway_3">
+        <di:waypoint x="616.0" y="310.0"/>
+        <di:waypoint x="696.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="655.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_4" bpmnElement="p10_b_cancel">
+        <dc:Bounds height="36.0" width="36.0" x="796.0" y="292.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="44.0" x="792.0" y="333.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_EventBasedGateway_3" targetElement="_BPMNShape_IntermediateCatchEvent_4">
+        <di:waypoint x="746.0" y="310.0"/>
+        <di:waypoint x="796.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="771.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_17" bpmnElement="p10_b_fail">
+        <dc:Bounds height="80.0" width="100.0" x="882.0" y="270.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="_BPMNShape_IntermediateCatchEvent_4" targetElement="_BPMNShape_UserTask_17">
+        <di:waypoint x="832.0" y="310.0"/>
+        <di:waypoint x="882.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="857.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_IntermediateCatchEvent_5" bpmnElement="p10_b_timeout">
+        <dc:Bounds height="36.0" width="36.0" x="796.0" y="392.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="81.0" x="774.0" y="433.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="_BPMNShape_EventBasedGateway_3" targetElement="_BPMNShape_IntermediateCatchEvent_5">
+        <di:waypoint x="721.0" y="335.0"/>
+        <di:waypoint x="721.0" y="410.0"/>
+        <di:waypoint x="796.0" y="410.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="721.0" y="410.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_18" bpmnElement="p10_b_success">
+        <dc:Bounds height="80.0" width="100.0" x="882.0" y="370.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_9" sourceElement="_BPMNShape_IntermediateCatchEvent_5" targetElement="_BPMNShape_UserTask_18">
+        <di:waypoint x="832.0" y="410.0"/>
+        <di:waypoint x="882.0" y="410.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_19" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <dc:Bounds height="50.0" width="50.0" x="1008.0" y="285.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="116.0" x="975.0" y="340.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_UserTask_17" targetElement="_BPMNShape_ExclusiveGateway_19">
+        <di:waypoint x="982.0" y="310.0"/>
+        <di:waypoint x="1008.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="995.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_11" sourceElement="_BPMNShape_ExclusiveGateway_19" targetElement="_BPMNShape_EndEvent_13">
+        <di:waypoint x="1058.0" y="310.0"/>
+        <di:waypoint x="1080.0" y="310.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1064.0" y="310.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_12" bpmnElement="SequenceFlow_12" sourceElement="_BPMNShape_UserTask_18" targetElement="_BPMNShape_ExclusiveGateway_19">
+        <di:waypoint x="982.0" y="410.0"/>
+        <di:waypoint x="1033.0" y="410.0"/>
+        <di:waypoint x="1033.0" y="335.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="1030.0" y="398.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_3" bpmnElement="m_p10_cancel_flow" sourceElement="_BPMNShape_Participant_15" targetElement="_BPMNShape_IntermediateCatchEvent_4">
+        <di:waypoint x="703.0" y="124.0"/>
+        <di:waypoint x="814.0" y="149.0"/>
+        <di:waypoint x="814.0" y="208.0"/>
+        <di:waypoint x="814.0" y="292.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="814.0" y="286.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_27" bpmnElement="m_p10_cancel">
+        <dc:Bounds height="20.0" width="30.0" x="824.0" y="168.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="168.0" x="864.0" y="159.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_57" bpmnElement="p10_b_do_success">
+        <dc:Bounds height="120.0" width="100.0" x="882.0" y="468.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="86.0" x="889.0" y="593.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_UserTask_18" targetElement="_BPMNShape_DataObject_57">
+        <di:waypoint x="932.0" y="450.0"/>
+        <di:waypoint x="932.0" y="468.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_58" bpmnElement="p10_b_do_failed">
+        <dc:Bounds height="120.0" width="100.0" x="1008.0" y="449.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="86.0" x="1015.0" y="574.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_4" bpmnElement="DataOutputAssociation_4" sourceElement="_BPMNShape_UserTask_17" targetElement="_BPMNShape_DataObject_58">
+        <di:waypoint x="982.0" y="350.0"/>
+        <di:waypoint x="1009.0" y="371.0"/>
+        <di:waypoint x="1037.0" y="449.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

@@ -9,7 +9,7 @@
     <bpmn2:participant id="Partner_B" name="B">
       <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
     </bpmn2:participant>
-    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p11_b_to_c" name="" sourceRef="Partner_B" targetRef="p1_b_receive"/>
+    <bpmn2:messageFlow id="MessageFlow_1" messageRef="m_p11_b_to_c" name="" sourceRef="Partner_B" targetRef="p11_c_receive"/>
     <bpmn2:conversation id="Conversation_1">
       <bpmn2:messageFlowRef>MessageFlow_1</bpmn2:messageFlowRef>
     </bpmn2:conversation>
@@ -18,7 +18,7 @@
     <bpmn2:extensionElements>
       <bpt:scopeInformation id="si-557bd291-665e-4575-a7e1-f330f0e8b30b" caseObject="RequestC"/>
     </bpmn2:extensionElements>
-    <bpmn2:receiveTask id="p1_b_receive" name="Receive" instantiate="true" messageRef="m_p11_b_to_c">
+    <bpmn2:receiveTask id="p11_c_receive" name="Receive" instantiate="true" messageRef="m_p11_b_to_c">
       <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
       <bpmn2:ioSpecification id="InputOutputSpecification_1">
         <bpmn2:dataOutput id="DataOutput_1"/>
@@ -39,7 +39,7 @@
       </bpmn2:extensionElements>
       <bpmn2:dataState name="received"/>
     </bpmn2:dataObject>
-    <bpmn2:userTask id="p1_b_finish" activiti:assignee="demo" name="Finish">
+    <bpmn2:userTask id="p11_c_finish" activiti:assignee="demo" name="Finish">
       <bpmn2:extensionElements/>
       <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
@@ -54,8 +54,8 @@
         <bpmn2:targetRef>DataInput_2</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
     </bpmn2:userTask>
-    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p1_b_receive" targetRef="p1_b_finish"/>
-    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="p1_b_finish" targetRef="p1_b_end"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p11_c_receive" targetRef="p11_c_finish"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="p11_c_finish" targetRef="p1_b_end"/>
   </bpmn2:process>
   <bpmn2:endPoint id="EndPoint_1">
     <bpmn2:extensionElements>
@@ -82,7 +82,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_Participant_15" bpmnElement="Partner_B" isHorizontal="true">
         <dc:Bounds height="64.0" width="577.0" x="0.0" y="96.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_ReceiveTask_9" bpmnElement="p1_b_receive">
+      <bpmndi:BPMNShape id="_BPMNShape_ReceiveTask_9" bpmnElement="p11_c_receive">
         <dc:Bounds height="80.0" width="100.0" x="132.0" y="270.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_EndEvent_13" bpmnElement="p1_b_end">
@@ -116,7 +116,7 @@
         <di:waypoint xsi:type="dc:Point" x="182.0" y="350.0"/>
         <di:waypoint xsi:type="dc:Point" x="182.0" y="379.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_UserTask_11" bpmnElement="p1_b_finish">
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_11" bpmnElement="p11_c_finish">
         <dc:Bounds height="80.0" width="100.0" x="333.0" y="270.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ReceiveTask_9" targetElement="_BPMNShape_UserTask_11">

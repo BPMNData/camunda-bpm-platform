@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS `RequestA`;
 CREATE TABLE IF NOT EXISTS `RequestA` (
   `requestID` varchar(60) NOT NULL,
   `requestText` varchar(255),
+  `endPoint` varchar(255),
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`requestID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -66,8 +67,8 @@ DROP TABLE IF EXISTS `RequestC`;
 
 CREATE TABLE IF NOT EXISTS `RequestC` (
   `requestID` varchar(60) NOT NULL,
-  `requestID_fromA` varchar(60) NOT NULL,
-  `requestID_fromB` varchar(60) NOT NULL,
+  `requestID_fromA` varchar(60),
+  `requestID_fromB` varchar(60),
   `requestText` varchar(255),
   `state` varchar(255) NOT NULL,
   PRIMARY KEY (`requestID`)

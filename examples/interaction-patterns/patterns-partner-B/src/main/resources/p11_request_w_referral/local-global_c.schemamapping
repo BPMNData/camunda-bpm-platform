@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemamapping:tSchemaMapping xmlns:schemamapping="http://bpt.hpi.uni-potsdam.de/schema-mapping"><schemamapping:classMapping localClass="RequestC" globalClass="BtoC_P11"><schemamapping:attributeMapping localAttribute="requestText" globalAttribute="request_text"/><schemamapping:attributeMapping localAttribute="requestID_fromB" globalAttribute="id_from_b"/></schemamapping:classMapping></schemamapping:tSchemaMapping>

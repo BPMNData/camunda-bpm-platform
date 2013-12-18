@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpt="http://bpt.hpi.uni-potsdam.de" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:import1="http://bpt.hpi.uni-potsdam.de/data" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="_shXwYEGdEeOdB8634S5fDw" targetNamespace="http://activiti.org/bpmn">
+  <bpmn2:import importType="http://www.w3.org/2001/XMLSchema" location="/interaction-pattern-partner-a/src/main/resources/p11_request_w_referral/global-data-model_a.xsd" namespace="http://localhost"/>
+  <bpmn2:collaboration id="p11_request_w_referral" name="Pattern 11 Request with Referral">
+    <bpmn2:participant id="Partner_A" name="A" processRef="p11_a_request_w_referral"/>
+    <bpmn2:participant id="Partner_B" name="B">
+      <bpmn2:endPointRef>EndPoint_1</bpmn2:endPointRef>
+    </bpmn2:participant>
+    <bpmn2:messageFlow id="message_flow_a_to_b" messageRef="m_p11_a_to_b" sourceRef="p11_a_send" targetRef="Partner_B"/>
+    <bpmn2:conversation id="Conversation_1">
+      <bpmn2:messageFlowRef>message_flow_a_to_b</bpmn2:messageFlowRef>
+      <bpmn2:correlationKey id="CorrelationKey_1" name="AtoB_P11">
+        <bpmn2:correlationPropertyRef>CorrelationProperty_1</bpmn2:correlationPropertyRef>
+      </bpmn2:correlationKey>
+    </bpmn2:conversation>
+  </bpmn2:collaboration>
+  <bpmn2:process id="p11_a_request_w_referral" name="Pattern 11: Request with Referral (Partner A, inst)" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpt:scopeInformation id="si-91861f0f-86c1-497a-9d91-d646a588ae31" caseObject="RequestA"/>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="p3_a_start" name="">
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sendTask id="p11_a_send" name="Send" implementation="http://bpt.hpi.uni-potsdam.de/Public/BPMNData" messageRef="m_p11_a_to_b">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_2">
+        <bpmn2:dataInput id="DataInput_1"/>
+        <bpmn2:dataOutput id="DataOutput_2"/>
+        <bpmn2:inputSet id="InputSet_2"/>
+        <bpmn2:outputSet id="OutputSet_2"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="DataInputAssociation_1">
+        <bpmn2:sourceRef>p12_a_do1</bpmn2:sourceRef>
+        <bpmn2:targetRef>DataInput_1</bpmn2:targetRef>
+        <bpmn2:transformation id="FormalExpression_2" language="XQuery">let $RequestA := ./DataObjects/RequestA
+return &lt;message name=&quot;m_p11_a_to_b&quot;>&lt;correlation>&lt;key name=&quot;AtoB_P11&quot;>&lt;property name=&quot;id_from_a&quot;>{$RequestA/requestID/text()}&lt;/property>&lt;/key>&lt;/correlation>&lt;payload>&lt;AtoB_P11>&lt;id_from_a>{$RequestA/requestID/text()}&lt;/id_from_a>&lt;request_text>{$RequestA/requestText/text()}&lt;/request_text>&lt;end_point>{$RequestA/endPoint/text()}&lt;/end_point>&lt;/AtoB_P11>&lt;/payload>&lt;/message></bpmn2:transformation>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_2">
+        <bpmn2:sourceRef>DataOutput_2</bpmn2:sourceRef>
+        <bpmn2:targetRef>p12_a_do3</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:sendTask>
+    <bpmn2:endEvent id="p3_a_end" name="">
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="p12_a_do1" name="RequestA">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-c3b68e02-8f37-4b8a-87d9-ed5fa5344dc2" type="new">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="created"/>
+    </bpmn2:dataObject>
+    <bpmn2:userTask id="p11_a_enter_data" activiti:assignee="demo" activiti:formKey="embedded:app:forms/p11_enter_details.html" name="Enter Data">
+      <bpmn2:extensionElements>
+        <activiti:taskListener class="nl.tue.ais.bpmndata.choreographies.listener.P11_CompleteEnterDataTaskListener" event="complete"/>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="InputOutputSpecification_1">
+        <bpmn2:dataOutput id="DataOutput_1"/>
+        <bpmn2:inputSet id="InputSet_1"/>
+        <bpmn2:outputSet id="OutputSet_1"/>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataOutputAssociation id="DataOutputAssociation_1">
+        <bpmn2:sourceRef>DataOutput_1</bpmn2:sourceRef>
+        <bpmn2:targetRef>p12_a_do1</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" sourceRef="p3_a_start" targetRef="p11_a_enter_data"/>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="p11_a_enter_data" targetRef="p11_a_send"/>
+    <bpmn2:dataObject id="p12_a_do3" name="RequestA">
+      <bpmn2:extensionElements>
+        <bpt:primaryKey id="pk_uuid-54de286a-18ef-487c-a297-5820acdaf1d4">requestID</bpt:primaryKey>
+      </bpmn2:extensionElements>
+      <bpmn2:dataState name="sent"/>
+    </bpmn2:dataObject>
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="p11_a_send" targetRef="p3_a_end"/>
+  </bpmn2:process>
+  <bpmn2:endPoint id="EndPoint_1">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8081/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  <bpmn2:endPoint id="EndPoint_2">
+    <bpmn2:extensionElements>
+      <activiti:address value="http://localhost:8080/bpmn-data-endpoint/message"/>
+    </bpmn2:extensionElements>
+  </bpmn2:endPoint>
+  <bpmn2:message id="m_p11_a_to_b" name="m_p11_a_to_b">
+    <bpmn2:extensionElements>
+      <bpt:contentDefinition payloadRef="ItemDefinition_1"><bpt:correlationIdentifierLink ref="ItemDefinition_1"/></bpt:contentDefinition>
+    </bpmn2:extensionElements>
+  </bpmn2:message>
+  <bpmn2:itemDefinition id="ItemDefinition_1" structureRef="_StructureDefinition_136">
+    <bpmn2:extensionElements>
+      <bpt:structureDefinition id="_StructureDefinition_136" qname="import1:AtoB_P11"/>
+      <bpt:messageObject/>
+      <bpt:correlationInformation attributeName="id_from_a"/>
+    </bpmn2:extensionElements>
+  </bpmn2:itemDefinition>
+  <bpmn2:correlationProperty id="CorrelationProperty_1" name="id_from_a">
+    <bpmn2:correlationPropertyRetrievalExpression id="CorrelationPropertyRetrievalExpression_1" messageRef="m_p11_a_to_b">
+      <bpmn2:messagePath id="FormalExpression_1" language="XPath">/message/correlation/key[@name='AtoB_P11']/property[@name='id_from_a']/text()</bpmn2:messagePath>
+    </bpmn2:correlationPropertyRetrievalExpression>
+  </bpmn2:correlationProperty>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p11_request_w_referral">
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">
+        <dc:Bounds height="277.0" width="529.0" x="0.0" y="0.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_Participant_13" bpmnElement="Partner_B" isHorizontal="true">
+        <dc:Bounds height="100.0" width="529.0" x="0.0" y="348.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_7" bpmnElement="p3_a_start">
+        <dc:Bounds height="36.0" width="36.0" x="48.0" y="178.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="80.0" y="219.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_SendTask_8" bpmnElement="p11_a_send">
+        <dc:Bounds height="80.0" width="100.0" x="312.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_EndEvent_11" bpmnElement="p3_a_end">
+        <dc:Bounds height="36.0" width="36.0" x="469.0" y="178.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="484.0" y="219.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_33" bpmnElement="p12_a_do1">
+        <dc:Bounds height="120.0" width="100.0" x="216.0" y="12.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="63.0" x="235.0" y="137.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_6" bpmnElement="p11_a_enter_data">
+        <dc:Bounds height="80.0" width="100.0" x="134.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_StartEvent_7" targetElement="_BPMNShape_UserTask_6">
+        <di:waypoint x="84.0" y="196.0"/>
+        <di:waypoint x="134.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="109.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_SendTask_8">
+        <di:waypoint x="234.0" y="196.0"/>
+        <di:waypoint x="312.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="270.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_1" bpmnElement="DataOutputAssociation_1" sourceElement="_BPMNShape_UserTask_6" targetElement="_BPMNShape_DataObject_33">
+        <di:waypoint x="210.0" y="156.0"/>
+        <di:waypoint x="226.0" y="132.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataInputAssociation_1" bpmnElement="DataInputAssociation_1" sourceElement="_BPMNShape_DataObject_33" targetElement="_BPMNShape_SendTask_8">
+        <di:waypoint x="312.0" y="132.0"/>
+        <di:waypoint x="331.0" y="156.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_DataObject_35" bpmnElement="p12_a_do3">
+        <dc:Bounds height="120.0" width="100.0" x="405.0" y="8.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="22.0" width="63.0" x="424.0" y="133.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_DataOutputAssociation_2" bpmnElement="DataOutputAssociation_2" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_DataObject_35">
+        <di:waypoint x="391.0" y="156.0"/>
+        <di:waypoint x="411.0" y="128.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_3" bpmnElement="message_flow_a_to_b" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_Participant_13">
+        <di:waypoint x="362.0" y="236.0"/>
+        <di:waypoint x="362.0" y="292.0"/>
+        <di:waypoint x="264.0" y="292.0"/>
+        <di:waypoint x="264.0" y="348.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="302.0" y="311.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_Message_21" bpmnElement="m_p11_a_to_b">
+        <dc:Bounds height="20.0" width="30.0" x="296.0" y="309.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="145.0" x="338.0" y="300.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_SendTask_8" targetElement="_BPMNShape_EndEvent_11">
+        <di:waypoint x="412.0" y="196.0"/>
+        <di:waypoint x="469.0" y="196.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="6.0" width="6.0" x="438.0" y="196.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_2" name="Pattern 11: Request with Referral (Partner A, inst)">
+    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="p11_a_request_w_referral"/>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

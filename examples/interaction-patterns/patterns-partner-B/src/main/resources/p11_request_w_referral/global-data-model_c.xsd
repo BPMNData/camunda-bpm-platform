@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://bpt.hpi.uni-potsdam.de/data"
+	elementFormDefault="qualified" targetNamespace="http://bpt.hpi.uni-potsdam.de/data"
+	xmlns:bpmndata="http://bpt.hpi.uni-potsdam.de/bpmn-data/">
+
+	<complexType name="BtoC_P11">
+		<annotation>
+			<appinfo>
+				<bpmndata:correlationIdentifier	attributeName="id_from_b" />
+				<bpmndata:message />
+			</appinfo>
+		</annotation>
+		<sequence>
+			<element name="id_from_b" type="string" />
+			<element name="request_text" type="string" />
+		</sequence>
+	</complexType>
+	
+</schema>

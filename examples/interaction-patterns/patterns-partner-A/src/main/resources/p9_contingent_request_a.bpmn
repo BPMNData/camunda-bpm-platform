@@ -251,7 +251,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Pattern 3: send/receive (Partner A)">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="p9_contingent_request">
       <bpmndi:BPMNShape id="_BPMNShape_Participant_12" bpmnElement="Partner_A" isHorizontal="true">
-        <dc:Bounds height="553.0" width="1129.0" x="0.0" y="48.0"/>
+        <dc:Bounds height="530.0" width="1129.0" x="0.0" y="48.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_Participant_13" bpmnElement="Partner_B" isHorizontal="true">
         <dc:Bounds height="100.0" width="673.0" x="336.0" y="648.0"/>
@@ -284,9 +284,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_11" bpmnElement="m_p3_request">
-        <dc:Bounds height="20.0" width="30.0" x="357.0" y="617.0"/>
+        <dc:Bounds height="20.0" width="30.0" x="357.0" y="601.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="38.0" width="161.0" x="388.0" y="606.0"/>
+          <dc:Bounds height="38.0" width="161.0" x="388.0" y="590.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_MessageFlow_2" bpmnElement="MessageFlow_2" sourceElement="_BPMNShape_Participant_13" targetElement="_BPMNShape_ReceiveTask_8">
@@ -299,9 +299,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_Message_12" bpmnElement="m_p3_response">
-        <dc:Bounds height="20.0" width="30.0" x="732.0" y="608.0"/>
+        <dc:Bounds height="20.0" width="30.0" x="732.0" y="601.0"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="54.0" width="185.0" x="766.0" y="601.0"/>
+          <dc:Bounds height="38.0" width="161.0" x="778.0" y="594.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_DataObject_33" bpmnElement="p9_a_do1">
